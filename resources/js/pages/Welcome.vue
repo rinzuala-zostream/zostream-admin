@@ -6,7 +6,7 @@
         alt="Girl in a jacket"
       />
       <h1>This Page is restricted!</h1>
-      <p>Phalna neilo chuan api.zostream.in hi hman theih a ni lo</p>
+      <p>Phalna neilo chuan admin.zostream.in hi hman theih a ni lo</p>
   
       <div class="link-container">
         <button class="login-button" @click="goToLogin">Login</button>
