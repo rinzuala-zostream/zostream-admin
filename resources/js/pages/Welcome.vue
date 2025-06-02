@@ -1,42 +1,58 @@
 <template>
-    <div class="content">
-      <img
-        class="main-image"
-        src="https://blr1.vultrobjects.com/zostream/AAPK/ssddff.jpg"
-        alt="Girl in a jacket"
-      />
-      <h1>This Page is restricted!</h1>
-      <p>Phalna neilo chuan admin.zostream.in hi hman theih a ni lo</p>
+    <div class="wrapper">
+      <nav class="flex items-center justify-end gap-4 nav-bar">
+        <Link
+          v-if="$page.props.auth.user"
+          :href="route('movie')"
+          class="inline-block rounded-sm border border-[#19140035] px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#1915014a] dark:border-[#3E3E3A] dark:text-[#EDEDEC] dark:hover:border-[#62605b]"
+        >
+          Dashboard
+        </Link>
+        <template v-else>
+          <Link
+            :href="route('login')"
+            class="inline-block rounded-sm border border-transparent px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#19140035] dark:text-[#EDEDEC] dark:hover:border-[#3E3E3A]"
+          >
+            Log in
+          </Link>
+        </template>
+      </nav>
   
-      <div class="link-container">
-        <button class="login-button" @click="goToLogin">Login</button>
+      <div class="content">
+        <img
+          class="main-image"
+          src="https://blr1.vultrobjects.com/zostream/AAPK/ssddff.jpg"
+          alt="Girl in a jacket"
+        />
+        <h1>This Page is restricted!</h1>
+        <p>Phalna neilo chuan api.zostream.in hi hman theih a ni lo</p>
       </div>
     </div>
   </template>
   
   <script setup>
-  const goToLogin = () => {
-    // Replace with your actual login logic or router push
-    window.location.href = "/login";
-  };
+  import { Link, usePage } from '@inertiajs/vue3'
   </script>
   
   <style scoped>
-  body, html {
-    margin: 0;
-    padding: 0;
-    font-family: 'DM Sans', sans-serif;
+  .wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
     background-color: #F4F5FF;
+    font-family: 'DM Sans', sans-serif;
+  }
+  
+  .nav-bar {
+    padding: 1rem;
   }
   
   .content {
+    flex: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    width: 100vw;
-    height: 100vh;
-    min-height: 675px;
     text-align: center;
   }
   
@@ -60,30 +76,12 @@
     height: auto;
   }
   
-  .link-container {
-    margin-top: 32px;
-  }
-  
-  .login-button {
-    font-family: 'DM Sans', sans-serif;
-    font-weight: 700;
-    font-size: 14px;
-    color: #fff;
-    background-color: #673DE6;
-    border: none;
-    padding: 12px 24px;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-  }
-  
-  .login-button:hover {
-    background-color: #5631cc;
-  }
-  
   @media screen and (max-width: 580px) {
-    h1, p, .link-container {
+    h1,
+    p,
+    .nav-bar {
       width: 80%;
+      margin: auto;
     }
   }
   </style>
