@@ -81,8 +81,8 @@ import {
     Tv, 
     Users, 
     Smartphone, 
-    HelpCircle,
-    ChevronDown
+    ChevronDown,
+    Crown
 } from 'lucide-vue-next';
 
 const mainNavItems: NavItem[] = [
@@ -114,10 +114,10 @@ const managementItems: NavItem[] = [
         active: route().current('device*')
     },
     { 
-        title: 'FAQs', 
-        href: '/faq', 
-        icon: HelpCircle,
-        active: route().current('faq*')
+        title: 'Subscription', 
+        href: '/subscribe', 
+        icon: Crown,
+        active: route().current('subscribe*')
     },
 ];
 

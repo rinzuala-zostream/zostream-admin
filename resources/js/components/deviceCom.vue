@@ -40,10 +40,9 @@
     error.value = false
   
     try {
-      await axios.post(route('proxy.post'), {
+      await axios.post(route('proxy.post'), { user_id: uid.value }, {
         params: {
           endpoint: 'clear-device',
-          uid: uid.value 
         },
       })
   
