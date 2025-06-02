@@ -291,18 +291,22 @@ const openEditModal = () => {
 }
 
 const submitEditForm = async () => {
-  const formData = new FormData()
-  formData.append('endpoint', 'update-profile')
-  formData.append('uid', editForm.value.uid)
-  formData.append('name', editForm.value.name)
-  formData.append('veng', editForm.value.veng)
-  formData.append('khua', editForm.value.khua)
-  formData.append('call', editForm.value.call)
-  formData.append('edit_date', editForm.value.edit_date)
-  formData.append('isAccountComplete', editForm.value.isAccountComplete ? '1' : '0')
+  const body = {
+    uid: editForm.value.uid,
+    name: editForm.value.name,
+    veng: editForm.value.veng,
+    khua: editForm.value.khua,
+    call: editForm.value.call,
+    edit_date: editForm.value.edit_date,
+    isAccountComplete: editForm.value.isAccountComplete ? 1 : 0,
+  }
 
   try {
-    await axios.post(route('proxy.post'), formData)
+    await axios.post(route('proxy.post'), body, {
+      params: {
+        endpoint: 'update-profile', // ✅ sent as query string
+      },
+    })
     alert('Profile updated successfully.')
     showEditModal.value = false
   } catch (err) {
