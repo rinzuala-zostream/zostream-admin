@@ -113,7 +113,7 @@
       </div>
       <button
         @click="updateDOB"
-        :disabled="loading || !updateMail || !newDob"
+        :disabled="loading || !newDob"
         class="w-full px-4 py-2 bg-yellow-500 text-white rounded-xl hover:bg-yellow-600 disabled:opacity-50"
       >
         Update DOB
