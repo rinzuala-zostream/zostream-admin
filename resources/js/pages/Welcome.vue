@@ -9,7 +9,7 @@
         />
         <h1 class="text-2xl font-bold mt-4">This Page is restricted!</h1>
         <p class="text-base text-[#727586] dark:text-[#aaa] max-w-[550px]">
-          Phalna neilo chuan api.zostream.in hi hman theih a ni lo
+          Phalna neilo chuan admin.zostream.in hi hman theih a ni lo
         </p>
   
         <!-- Auth Button -->

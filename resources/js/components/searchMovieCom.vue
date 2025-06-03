@@ -604,6 +604,7 @@ const editMovie = async (itemFromList, pMovieId = null, pSeasonId = null) => {
         }
       });
       itemDetails = response.data;
+      console.log(itemDetails);
     } else {
       // Fetching movie details via your proxy (assuming proxy handles its own auth if needed)
       const fetchParams = {
@@ -750,7 +751,7 @@ const submitForm = async () => {
     }
 
 
-    let updateEndpointName = isEpisode ? 'proxy.put/episode' : 'proxy.put=movies/itemCtx.id';
+    let updateEndpointName = isEpisode ? 'proxy.put/movies/${itemIdToFetch}' : 'proxy.put/movies/${itemIdToFetch}';
 
     // If your episode update endpoint needs movieId/seasonId in params, add them here:
     if (isEpisode) { updateParams.movieId = itemCtx.movieId; updateParams.seasonId = itemCtx.seasonId; }
