@@ -508,11 +508,16 @@ const decryptUrl = async (urlToDecrypt) => {
 const encryptViaProxy = async (plainUrl) => {
   if (!plainUrl || typeof plainUrl !== 'string' || !plainUrl.trim()) return '';
   try {
-    const res = await axios.get(route('proxy.get', { params: { endpoint: 'encrypt', message: plainUrl } }));
-    return res.data.encrypted_message || res.data.encrypted || ''; // Adjust to actual response key
+    const res = await axios.get(route('proxy.get'), {
+      params: {
+        endpoint: 'encrypt',
+        message: plainUrl
+      }
+    })
+    return res.data.encrypted || ''
   } catch (e) {
-    console.warn('Encryption failed:', plainUrl, e.response?.data || e.message);
-    return ''; // Or return plainUrl if encryption is optional/can fail gracefully
+    console.warn(`Encryption failed for: ${plainUrl}`, e)
+    return ''
   }
 };
 
