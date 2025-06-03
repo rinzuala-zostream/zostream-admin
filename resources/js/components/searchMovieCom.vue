@@ -405,7 +405,7 @@ const editMovie = async (itemFromList, pMovieId = null, pSeasonId = null) => {
 if (isFetchingEditItemDetails.value) return;
 
 isFetchingEditItemDetails.value = true;
-editingItemContext.value = { id: itemFromList.id, seasonId: pSeasonId || undefined };
+editingItemContext.value = { id: itemFromList.id, seasonId: ep.id || undefined };
 modalMessage.value = '';
 
 const isEpisode = !!pSeasonId;
