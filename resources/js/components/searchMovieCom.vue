@@ -426,25 +426,32 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import axios from 'axios';
-import { db } from '@/firebase';
+import { db } from '@/firebase'; // Used for toggleMovie, toggleSeasonEpisodes (local Firestore data)
 import { collection, getDocs } from 'firebase/firestore';
 
+// --- Configuration ---
+// IMPORTANT: For production, use environment variables and ideally a backend proxy for API keys.
+const ZOS_API_KEY = import.meta.env.VITE_ZOS_API_KEY || 'ljkfdnakadsfthbretmjsavbigruw3niadghr67errh8';
+const ZOS_BASE_URL = 'https://apis.zostream.in/api'; // Centralize base URL
+
+// --- Reactive State ---
 const movies = ref([]);
 const search = ref('');
 const sortOrder = ref('asc');
-const loading = ref(false);
+const loading = ref(false); // Main search loading
 const expandedMovie = ref(null);
 const hasSearchedAtLeastOnce = ref(false);
 
+// Modal State
 const showEditModal = ref(false);
-const editingItem = ref(null); // Stores context: { id, movieId?, seasonId? }
-const editForm = ref({}); // Will be dynamically populated
-const modalLoading = ref(false);
+const editingItem = ref(null); // { id (movie/ep ID), movieId?, seasonId? }
+const editForm = ref({});
+const modalLoading = ref(false); // Modal submission loading
 const modalMessage = ref('');
 const isFetchingEditItemDetails = ref(false);
-const editingItemContext = ref(null);
+const editingItemContext = ref(null); // { id, seasonId? } for loading spinner on edit button
 
-// Define separate boolean fields for movies and episodes if they differ
+// --- Form Field Definitions ---
 const movieBooleanFields = ref({
   isProtected: 'Protected', isBollywood: 'Bollywood', isCompleted: 'Completed',
   isDocumentary: 'Documentary', isAgeRestricted: 'Age Restricted', isDubbed: 'Dubbed',
@@ -456,11 +463,10 @@ const movieBooleanFields = ref({
 const episodeBooleanFields = ref({
   isProtected: 'Protected',
   isEnable: 'Enable',
-  isPPV: 'Pay Per View',
+  isPPV: 'Pay Per View', // Assuming this maps to an API field like isPayPerView or isPpv
   isPremium: 'Premium',
 });
 
-// Helper to initialize form structure
 const getInitialMovieForm = () => ({
   title: '', description: '', genre: '', director: '', duration: '',
   ppv_amount: '', status: '', create_date: '', poster: '', cover_img: '',
@@ -469,28 +475,53 @@ const getInitialMovieForm = () => ({
 });
 
 const getInitialEpisodeForm = () => ({
-  title: '', // Episode Title
-  desc: '',  // Episode Description
-  txt: '',   // Episode Identifier (S1 E1)
-  season_id: '', // Season ID (usually pre-filled)
-  ppv_amount: '',
-  img: '',   // Episode Cover Image URL
-  url: '',
-  dash_url: '',
-  hls_url: '',
-  status: '',
-  create_date: '',
+  title: '', desc: '', txt: '', season_id: '', ppv_amount: '',
+  img: '', url: '', dash_url: '', hls_url: '', status: '', create_date: '',
   ...Object.fromEntries(Object.keys(episodeBooleanFields.value).map(key => [key, false]))
 });
 
+// --- Utility Functions ---
+const formatDateForInput = (dateStringOrTimestamp) => {
+  if (!dateStringOrTimestamp) return '';
+  try {
+    const date = new Date(
+      typeof dateStringOrTimestamp === 'object' && dateStringOrTimestamp.seconds
+        ? dateStringOrTimestamp.seconds * 1000
+        : dateStringOrTimestamp
+    );
+    if (isNaN(date.valueOf())) return '';
+    return date.toISOString().split('T')[0];
+  } catch (e) { return ''; }
+};
 
-const fetchMovies = async (query = '') => { /* ... same ... */
+const decryptUrl = async (urlToDecrypt) => {
+  if (!urlToDecrypt || typeof urlToDecrypt !== 'string' || !urlToDecrypt.trim()) return '';
+  try {
+    const response = await axios.post(route('decrypt'), { encrypted_url: urlToDecrypt });
+    return (response.data && typeof response.data.url === 'string') ? response.data.url : urlToDecrypt;
+  } catch (error) {
+    console.error('Decryption failed:', urlToDecrypt, error.response?.data || error.message);
+    return urlToDecrypt;
+  }
+};
+
+const encryptViaProxy = async (plainUrl) => {
+  if (!plainUrl || typeof plainUrl !== 'string' || !plainUrl.trim()) return '';
+  try {
+    const res = await axios.get(route('proxy.get', { params: { endpoint: 'encrypt', message: plainUrl } }));
+    return res.data.encrypted_message || res.data.encrypted || ''; // Adjust to actual response key
+  } catch (e) {
+    console.warn('Encryption failed:', plainUrl, e.response?.data || e.message);
+    return ''; // Or return plainUrl if encryption is optional/can fail gracefully
+  }
+};
+
+// --- Core Logic Functions ---
+const fetchMovies = async (query = '') => {
   loading.value = true;
   movies.value = [];
   try {
-    const response = await axios.get(route('proxy.get', {
-      endpoint: 'search', q: query, age_restriction: true, is_enable: true
-    }));
+    const response = await axios.get(route('proxy.get', { endpoint: 'search', q: query, age_restriction: true, is_enable: true }));
     movies.value = Array.isArray(response.data) ? response.data : [];
   } catch (error) {
     console.error('Failed to fetch movies:', error);
@@ -499,83 +530,22 @@ const fetchMovies = async (query = '') => { /* ... same ... */
     loading.value = false;
   }
 };
-const performSearch = async () => { /* ... same ... */
+
+const performSearch = async () => {
   hasSearchedAtLeastOnce.value = true;
   await fetchMovies(search.value.trim());
 };
-onMounted(() => { /* No initial fetch */ });
 
-const filteredMovies = computed(() => { /* ... same ... */
+onMounted(() => { /* No initial fetch on component mount */ });
+
+const filteredMovies = computed(() => {
   if (!Array.isArray(movies.value)) return [];
-  const moviesToSort = [...movies.value];
-  moviesToSort.sort((a, b) => {
+  return [...movies.value].sort((a, b) => {
     const titleA = String(a.title || '').toLowerCase();
     const titleB = String(b.title || '').toLowerCase();
     return sortOrder.value === 'asc' ? titleA.localeCompare(titleB) : titleB.localeCompare(titleA);
   });
-  return moviesToSort;
 });
-
-const formatDateForInput = (dateStringOrTimestamp) => { /* ... same ... */
-  if (!dateStringOrTimestamp) return '';
-  try {
-    let date;
-    if (typeof dateStringOrTimestamp === 'object' && dateStringOrTimestamp.seconds) {
-      date = new Date(dateStringOrTimestamp.seconds * 1000);
-    } else {
-      date = new Date(dateStringOrTimestamp);
-    }
-    if (isNaN(date.valueOf())) return '';
-    return date.toISOString().split('T')[0];
-  } catch (e) {
-    return '';
-  }
-};
-
-const decryptUrl = async (urlToDecrypt) => {
-  if (!urlToDecrypt || typeof urlToDecrypt !== 'string' || !urlToDecrypt.trim()) {
-    return ''; // Return empty if input is invalid
-  }
-  try {
-    // console.log(`Decrypting URL: ${urlToDecrypt}`); // CORRECTED: Use urlToDecrypt
-    const response = await axios.post(route('decrypt'), { // Assuming 'decrypt' is the correct route name for your controller
-      encrypted_url: urlToDecrypt // CORRECTED: Use urlToDecrypt
-    });
-
-    // Controller returns: { "status": "103", "url": "decryptedMessage" }
-    // Access the decrypted URL from response.data.url
-    if (response.data && typeof response.data.url === 'string') {
-      // console.log('Decrypted URL received:', response.data.url);
-      return response.data.url;
-    } else {
-      console.warn('Decryption response did not contain a valid URL string:', response.data);
-      return urlToDecrypt; // Fallback to original URL
-    }
-  } catch (error) {
-    console.error('Failed to decrypt URL:', urlToDecrypt, error.response?.data || error.message);
-    return urlToDecrypt; // Fallback to original URL
-  }
-};
-
-// Encrypt via proxy using "message" parameter
-const encryptViaProxy = async (plainUrl) => {
-  if (!plainUrl || typeof plainUrl !== 'string' || !plainUrl.trim()) {
-    return ''; // Return empty if input is invalid or empty
-  }
-  try {
-    const res = await axios.get(route('proxy.get', { // Assuming your proxy can handle 'encrypt' endpoint via GET
-      params: { // Axios GET request params are nested under 'params' key
-        endpoint: 'encrypt',
-        message: plainUrl
-      }
-    }));
-    // Assuming your encryption endpoint returns { encrypted: "encryptedValue" }
-    return res.data.encrypted_message || res.data.encrypted || ''; // Adjust based on actual response key
-  } catch (e) {
-    console.warn(`Encryption failed for: ${plainUrl}`, e.response?.data || e.message);
-    return ''; // Return empty on failure, or plainUrl if you prefer to send unencrypted
-  }
-};
 
 const editMovie = async (itemFromList, pMovieId = null, pSeasonId = null) => {
   if (isFetchingEditItemDetails.value) return;
@@ -583,192 +553,163 @@ const editMovie = async (itemFromList, pMovieId = null, pSeasonId = null) => {
   isFetchingEditItemDetails.value = true;
   editingItemContext.value = { id: itemFromList.id, seasonId: pSeasonId || undefined };
   modalMessage.value = '';
-
   const isEpisode = !!pSeasonId;
   editForm.value = isEpisode ? getInitialEpisodeForm() : getInitialMovieForm();
-
-  const ZOS_API_KEY = 'ljkfdnakadsfthbretmjsavbigruw3niadghr67errh8'; // Your API Key
 
   try {
     const itemIdToFetch = itemFromList.id;
     let itemDetails;
 
     if (isEpisode) {
-      const episodeDetailUrl = `https://apis.zostream.in/api/episode/${itemIdToFetch}`;
-      // console.log(`Fetching episode details directly from: ${episodeDetailUrl} with API Key`);
-      const response = await axios.get(episodeDetailUrl, {
-        headers: {
-          'X-Api-Key': ZOS_API_KEY // Replace 'X-Api-Key' if the header name is different
-          // If it's a Bearer token:
-          // 'Authorization': `Bearer ${ZOS_API_KEY}`
-        }
-      });
+      const episodeDetailUrl = `${ZOS_BASE_URL}/episode/${itemIdToFetch}`;
+      const response = await axios.get(episodeDetailUrl, { headers: { 'X-Api-Key': ZOS_API_KEY } });
+      // Assuming Zostream API for single episode returns { ..., "episode": { actual_episode_data } }
+      // If it returns episode data at root, use: itemDetails = response.data;
       itemDetails = response.data.episode;
-      console.log(itemDetails);
-    } else {
-      // Fetching movie details via your proxy (assuming proxy handles its own auth if needed)
-      const fetchParams = {
-        endpoint: "movies",
-        id: itemIdToFetch,
-        category_type: "movie"
-      };
-      const response = await axios.get(route("proxy.get", fetchParams));
-      itemDetails = response.data;
+      if (!itemDetails) throw new Error("Episode data not found in Zostream API response.");
+      console.log("Fetched Zostream Episode Details:", itemDetails);
+    } else { // Fetching movie details (assumed via your proxy)
+      const response = await axios.get(route("proxy.get", { endpoint: "movies", id: itemIdToFetch, category_type: "movie" }));
+      itemDetails = response.data; // Assuming proxy returns movie data directly
+      if (!itemDetails) throw new Error("Movie data not found in proxy response.");
+      console.log("Fetched Proxied Movie Details:", itemDetails);
     }
 
-    // --- The rest of the data processing and form population logic remains the same ---
-    if (!itemDetails || typeof itemDetails !== 'object' || (Array.isArray(itemDetails) && itemDetails.length > 1) ) {
-      if (Array.isArray(itemDetails) && itemDetails.length === 1 && itemDetails[0] && typeof itemDetails[0] === 'object') {
-         console.warn("Received single item in an array, using the first element. Consider adjusting API to return an object directly for single item fetches.", itemDetails);
-         // itemDetails = itemDetails[0]; // Uncomment cautiously
-         throw new Error(`Invalid item data received. Expected a single object for single item fetch.`);
-      } else {
-        console.error("Invalid item data received. Expected a single object, got:", itemDetails);
-        throw new Error(`Invalid item data received. Expected a single object, but got ${Array.isArray(itemDetails) ? 'an array' : typeof itemDetails}.`);
-      }
+    // Standardize itemDetails structure check
+    if (typeof itemDetails !== 'object' || Array.isArray(itemDetails)) {
+        throw new Error(`Invalid item data structure. Expected a single object, got ${typeof itemDetails}.`);
     }
 
     const form = editForm.value;
     if (isEpisode) {
-        form.title = itemDetails.title || itemDetails.name || '';
-        form.desc = itemDetails.desc || itemDetails.description || '';
-        form.txt = itemDetails.txt || '';
-        form.season_id = pSeasonId || itemDetails.season_id || '';
-        form.ppv_amount = itemDetails.ppv_amount || '';
-        form.status = itemDetails.status || '';
-        form.create_date = formatDateForInput(itemDetails.create_date || itemDetails.upload_date);
-        const epUrlFields = { img: 'img', url: 'url', dash_url: 'dash_url', hls_url: 'hls_url' };
-        for (const [formKey, detailKey] of Object.entries(epUrlFields)) {
-            form[formKey] = itemDetails[detailKey] ? await decryptUrl(itemDetails[detailKey]) : '';
-        }
-        for (const key in episodeBooleanFields.value) form[key] = !!itemDetails[key];
+      form.title = itemDetails.title || itemDetails.name || '';
+      form.desc = itemDetails.desc || itemDetails.description || '';
+      form.txt = itemDetails.txt || ''; // This might be for display, API might not have/use it
+      form.season_id = pSeasonId || itemDetails.season_id || ''; // API should provide season_id for an episode
+      form.ppv_amount = itemDetails.ppv_amount || itemDetails.ppvAmount || ''; // Check API field name
+      form.status = itemDetails.status || '';
+      form.create_date = formatDateForInput(itemDetails.create_date || itemDetails.upload_date || itemDetails.createdAt);
+
+      const epUrlFields = { img: 'img', url: 'url', dash_url: 'dash_url', hls_url: 'hls_url' };
+      for (const [formKey, detailKey] of Object.entries(epUrlFields)) {
+        form[formKey] = itemDetails[detailKey] ? await decryptUrl(itemDetails[detailKey]) : '';
+      }
+      for (const key in episodeBooleanFields.value) {
+        form[key] = !!itemDetails[key]; // Map API boolean fields
+      }
     } else { // Movie
-        form.title = itemDetails.title || '';
-        form.description = itemDetails.description || '';
-        form.genre = itemDetails.genre || '';
-        form.director = itemDetails.director || '';
-        form.duration = itemDetails.duration || '';
-        form.ppv_amount = itemDetails.ppv_amount || '';
-        form.status = itemDetails.status || '';
-        form.create_date = formatDateForInput(itemDetails.create_date || itemDetails.upload_date);
-        form.release_on = formatDateForInput(itemDetails.release_on);
-        const movieUrlFields = { poster: 'poster', cover_img: 'cover_img', url: 'url', dash_url: 'dash_url', hls_url: 'hls_url' };
-        for (const [formKey, detailKey] of Object.entries(movieUrlFields)) {
-             form[formKey] = itemDetails[detailKey] ? await decryptUrl(itemDetails[detailKey]) : '';
-        }
-        for (const key in movieBooleanFields.value) form[key] = !!itemDetails[key];
+      form.title = itemDetails.title || '';
+      form.description = itemDetails.description || '';
+      form.genre = itemDetails.genre || '';
+      form.director = itemDetails.director || '';
+      form.duration = itemDetails.duration || '';
+      form.ppv_amount = itemDetails.ppv_amount || itemDetails.ppvAmount || '';
+      form.status = itemDetails.status || '';
+      form.create_date = formatDateForInput(itemDetails.create_date || itemDetails.upload_date || itemDetails.createdAt);
+      form.release_on = formatDateForInput(itemDetails.release_on || itemDetails.releaseDate);
+
+      const movieUrlFields = { poster: 'poster', cover_img: 'cover_img', url: 'url', dash_url: 'dash_url', hls_url: 'hls_url' };
+      for (const [formKey, detailKey] of Object.entries(movieUrlFields)) {
+        form[formKey] = itemDetails[detailKey] ? await decryptUrl(itemDetails[detailKey]) : '';
+      }
+      for (const key in movieBooleanFields.value) {
+        form[key] = !!itemDetails[key];
+      }
     }
 
-    editingItem.value = { 
-        id: itemIdToFetch,
-        ...(pMovieId && { movieId: pMovieId }),
-        ...(pSeasonId && { seasonId: pSeasonId })
-    };
+    editingItem.value = { id: itemIdToFetch, movieId: pMovieId || (isEpisode ? null : itemIdToFetch), seasonId: pSeasonId };
     showEditModal.value = true;
 
   } catch (error) {
-    console.error('Failed to prepare item for editing:', error);
-    let errorMessage = 'Unknown error';
+    console.error('Failed to prepare item for editing:', error.config?.url, error);
+    let errorMessage = 'Unknown error loading details.';
     if (error.response) {
-        // Specifically log if it's a 401 or 403, which often indicates auth issues
-        if (error.response.status === 401 || error.response.status === 403) {
-            console.error(`Authentication/Authorization error for ${error.config.url}: ${error.response.status}`, error.response.data);
-            errorMessage = `Access denied. Check API Key or permissions. (Status: ${error.response.status})`;
-        } else {
-            errorMessage = error.response.data?.message || error.response.statusText || 'Server error';
-        }
+      errorMessage = `API Error (${error.response.status}): ${error.response.data?.message || error.response.statusText}`;
     } else if (error.request) {
-        errorMessage = 'No response from server.';
+      errorMessage = 'No response from server.';
     } else {
-        errorMessage = error.message;
+      errorMessage = error.message;
     }
-    alert(`Error loading details: ${errorMessage}`);
+    alert(`Error: ${errorMessage}`);
   } finally {
     isFetchingEditItemDetails.value = false;
     editingItemContext.value = null;
   }
 };
 
-const closeEditModal = () => { /* ... same ... */
+const closeEditModal = () => {
   showEditModal.value = false;
   editingItem.value = null;
-  editForm.value = {}; // Clear form
+  editForm.value = {};
 };
 
 const submitForm = async () => {
   modalLoading.value = true;
   modalMessage.value = '';
-  // const localError = ref(null); // If you want a separate error ref for the modal
 
   try {
-    // validateForm(); // Call your validation function if you have one
-
-    const currentFormState = JSON.parse(JSON.stringify(editForm.value)); // Deep copy to avoid mutating reactive form with encrypted URLs
+    const currentFormState = JSON.parse(JSON.stringify(editForm.value));
     const itemCtx = editingItem.value;
+    if (!itemCtx || !itemCtx.id) throw new Error("Editing context is invalid.");
     const isEpisode = !!itemCtx.seasonId;
 
+    // 1. Encrypt URLs
     let urlsToEncrypt = {};
     if (isEpisode) {
-      urlsToEncrypt = {
+      urlsToEncrypt = { // Fields from getInitialEpisodeForm that are URLs
         url: currentFormState.url,
         dash_url: currentFormState.dash_url,
         hls_url: currentFormState.hls_url,
       };
-    } else { // Movie
+    } else { // Movie fields from getInitialMovieForm that are URLs
       urlsToEncrypt = {
         url: currentFormState.url,
         dash_url: currentFormState.dash_url,
         hls_url: currentFormState.hls_url,
       };
     }
+    const encryptionPromises = Object.entries(urlsToEncrypt).map(async ([key, plainUrl]) =>
+      (plainUrl && typeof plainUrl === 'string' && plainUrl.trim())
+        ? [key, (await encryptViaProxy(plainUrl)) || plainUrl]
+        : [key, '']
+    );
+    const encryptedUrlsMap = Object.fromEntries(await Promise.all(encryptionPromises));
 
-    const encryptionPromises = Object.entries(urlsToEncrypt).map(async ([key, plainUrl]) => {
-      if (plainUrl) {
-        const encrypted = await encryptViaProxy(plainUrl);
-        return [key, encrypted || plainUrl]; // Fallback to plainUrl if encryption returns empty
-      }
-      return [key, '']; // If plainUrl is empty, keep it empty
-    });
+    // 2. Prepare payload
+    const payload = { ...currentFormState, ...encryptedUrlsMap };
 
-    const encryptedUrlResults = await Promise.all(encryptionPromises);
-    const encryptedUrlsMap = Object.fromEntries(encryptedUrlResults);
+    // Ensure boolean fields are correctly set
+    const booleanFieldsConfig = isEpisode ? episodeBooleanFields.value : movieBooleanFields.value;
+    for (const boolKey in booleanFieldsConfig) {
+      payload[boolKey] = !!payload[boolKey]; // Coerce to boolean, handles if key was missing (becomes false)
+    }
 
-    // Prepare final payload with encrypted URLs and other form data
-    // Only include fields that are not empty, or are boolean/numbers
-    const payload = {
-      ...Object.fromEntries(
-        Object.entries(currentFormState)
-          .filter(([key, value]) => !Object.keys(urlsToEncrypt).includes(key) && (value !== '' || typeof value === 'boolean' || typeof value === 'number'))
-      ),
-      ...encryptedUrlsMap // Add the (potentially) encrypted URLs
+    // Add necessary IDs for API
+    if (isEpisode) {
+      payload.season_id = itemCtx.seasonId; // Ensure season_id is in payload if API needs it
+      // payload.id = itemCtx.id; // The episode ID is itemCtx.id, already part of URL usually
+      // payload.txt might not be needed by update API if it's for display only
+      // delete payload.txt; // if txt is only for display/form and not for API
+    }
+    // Remove fields not meant for API if any (e.g. form-specific like 'desc' vs 'description')
+    // Example: if API expects 'description' for episode, but form has 'desc':
+    // if (isEpisode && payload.desc) { payload.description = payload.desc; delete payload.desc; }
+
+
+    // 3. Make direct API call for update (assuming Zostream for both)
+    // The ID in the URL is itemCtx.id (which is movie ID or episode ID)
+    const actualApiUrl = `${ZOS_BASE_URL}/movies/${itemCtx.id}`; // Assuming this endpoint updates both movies and episodes
+    const apiHeaders = {
+      'Content-Type': 'application/json',
+      'X-Api-Key': ZOS_API_KEY,
     };
-    // Ensure boolean fields that might be false are included if they were in the original form definition
-    const booleanFields = isEpisode ? episodeBooleanFields.value : movieBooleanFields.value;
-    for (const boolKey in booleanFields) {
-      if (Object.prototype.hasOwnProperty.call(currentFormState, boolKey)) {
-        payload[boolKey] = currentFormState[boolKey]; // Ensures true/false is preserved
-      }
-    }
 
-
-    let updateEndpointName = isEpisode ? 'proxy.put/movies/${itemIdToFetch}' : 'proxy.put/movies/${itemIdToFetch}';
-
-    // If your episode update endpoint needs movieId/seasonId in params, add them here:
-    if (isEpisode) { updateParams.movieId = itemCtx.movieId; updateParams.seasonId = itemCtx.seasonId; }
-
-    // console.log('Submitting update for item ID:', itemCtx.id, 'Endpoint:', updateEndpointName, 'Payload:', payload);
-    await axios.put(route(updateEndpointName, updateParams), payload, {
-      headers: { // Headers for PUT/POST if needed by your backend
-        'Content-Type': 'application/json',
-        'X-Requested-With': 'XMLHttpRequest' // Common for Laravel AJAX
-      }
-    });
+    console.log(`Submitting update to: ${actualApiUrl}`, "Payload:", payload);
+    await axios.put(actualApiUrl, payload, { headers: apiHeaders });
 
     modalMessage.value = `${isEpisode ? 'Episode' : 'Movie'} updated successfully!`;
 
-    // Update local list with the non-encrypted form data (UI should reflect what user typed)
-    // or re-fetch the item for absolute consistency.
-    // For now, updating with editForm.value (which has plain URLs).
+    // 4. Update local list with plain (non-encrypted) form data
     if (isEpisode) {
       const movieToUpdate = movies.value.find(m => m.id === itemCtx.movieId);
       if (movieToUpdate?.seasons) {
@@ -776,11 +717,7 @@ const submitForm = async () => {
         if (seasonToUpdate?.episodes) {
           const epIndex = seasonToUpdate.episodes.findIndex(e => e.id === itemCtx.id);
           if (epIndex !== -1) {
-            seasonToUpdate.episodes[epIndex] = {
-              ...seasonToUpdate.episodes[epIndex],
-              ...editForm.value, // Contains plain URLs from the form
-              txt: editForm.value.title || editForm.value.txt // Update display text
-            };
+            seasonToUpdate.episodes[epIndex] = { ...seasonToUpdate.episodes[epIndex], ...editForm.value, txt: editForm.value.title || editForm.value.txt };
           }
         }
       }
@@ -790,61 +727,76 @@ const submitForm = async () => {
         movies.value[movieIndex] = { ...movies.value[movieIndex], ...editForm.value };
       }
     }
-
-    // Optionally close modal after a delay
-    // setTimeout(closeEditModal, 2000);
-
+    // setTimeout(closeEditModal, 1500); // Optionally close modal
   } catch (err) {
-    let errorMsg = 'An unknown error occurred.';
+    console.error('Update submission failed:', err.config?.url, err.response || err);
+    let errorMsg = 'An unknown error occurred during update.';
     if (err.response) {
-      errorMsg = err.response.data?.message || err.response.data?.error || 'Server error during update.';
-      console.error('Server response error:', err.response.data);
+      errorMsg = `API Error (${err.response.status}): ${JSON.stringify(err.response.data?.errors || err.response.data?.message || err.response.data || err.response.statusText)}`;
     } else if (err.request) {
-      errorMsg = 'No response from server during update.';
+      errorMsg = 'No response from server.';
     } else {
       errorMsg = err.message;
     }
-    modalMessage.value = `Update Failed: ${errorMsg}`;
-    // localError.value = errorMsg; // if using a separate error ref
+    modalMessage.value = `Update Failed: ${errorMsg.substring(0, 300)}`; // Truncate long messages
   } finally {
     modalLoading.value = false;
   }
 };
 
-const toggleMovie = async (movie) => { /* ... same ... */
+// Functions for expanding seasons/episodes (using local Firestore data)
+const toggleMovie = async (movie) => {
   if (expandedMovie.value === movie.id) {
     expandedMovie.value = null; return;
   }
   expandedMovie.value = movie.id;
+  // Fetch seasons from Firestore if movie.isSeason and seasons aren't loaded
   if (movie.isSeason && (!movie.seasons || movie.seasons.length === 0)) {
     try {
-      const qSnap = await getDocs(collection(db, `movie/${movie.id}/season`));
+      const qSnap = await getDocs(collection(db, `movie/${movie.id}/season`)); // Check Firestore path
       movie.seasons = qSnap.docs.map(d => ({
-        id: d.data().id || d.id, txt: d.data().txt || `Season ${d.id.toString().padStart(2, '0')}`,
-        episodes: [], showEpisodes: false
-      })).sort((a, b) => a.txt.localeCompare(b.txt, undefined, { numeric: true, sensitivity: 'base' }));
-    } catch (err) { console.error(`Error fetching seasons for movie ${movie.id}:`, err); movie.seasons = []; }
+        id: d.id, // Use Firestore doc ID for season
+        ...(d.data()), // Spread other season data from Firestore
+        txt: d.data().txt || d.data().title || `Season ${d.id.slice(-2)}`, // Prefer txt, then title
+        episodes: [],
+        showEpisodes: false
+      })).sort((a, b) => (a.txt || '').localeCompare(b.txt || '', undefined, { numeric: true }));
+    } catch (err) {
+      console.error(`Error fetching seasons for movie ${movie.id}:`, err);
+      movie.seasons = [];
+    }
   }
 };
-const toggleSeasonEpisodes = async (movie, season) => { /* ... same ... */
+
+const toggleSeasonEpisodes = async (movie, season) => {
   season.showEpisodes = !season.showEpisodes;
+  // Fetch episodes for this season (from your proxy/API, not Firestore here based on original code)
   if (season.showEpisodes && (!season.episodes || season.episodes.length === 0)) {
     try {
-      const resp = await axios.get(route("proxy.get", { id: season.id, endpoint: "episodes" }));
+      // This `id` should be the season's ID that your `proxy.get` endpoint expects
+      const resp = await axios.get(route("proxy.get", { id: season.id, endpoint: "episodes", is_enable: false}));
       if (Array.isArray(resp.data)) {
         season.episodes = resp.data
           .filter(ep => ep && ep.id != null && String(ep.id).trim() !== '')
-          .map(ep => ({ ...ep, id: String(ep.id).trim(), txt: ep.txt || ep.title || `Episode ${String(ep.id).trim()}` })) // Use ep.title if txt is not present
+          .map(ep => ({
+            ...ep, // Spread all properties from API response for the episode
+            id: String(ep.id).trim(),
+            txt: ep.txt || ep.title || ep.name || `Episode ${String(ep.id).trim()}` // Robust title/identifier
+          }))
           .sort((a, b) => {
             const numA = parseInt(String(a.txt).match(/\d+/)?.[0] || String(a.id));
             const numB = parseInt(String(b.txt).match(/\d+/)?.[0] || String(b.id));
             if (!isNaN(numA) && !isNaN(numB)) return numA - numB;
-            return String(a.txt).localeCompare(String(b.txt), undefined, { numeric: true, sensitivity: 'base' });
+            return (a.txt || '').localeCompare(b.txt || '', undefined, { numeric: true });
           });
       } else { season.episodes = []; }
-    } catch (err) { console.error(`Failed to fetch episodes for season ${season.id}:`, err); season.episodes = []; }
+    } catch (err) {
+      console.error(`Failed to fetch episodes for season ${season.id}:`, err);
+      season.episodes = [];
+    }
   }
 };
+
 </script>
 
 <style scoped>
