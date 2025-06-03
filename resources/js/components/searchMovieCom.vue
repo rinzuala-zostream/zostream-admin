@@ -603,7 +603,7 @@ const editMovie = async (itemFromList, pMovieId = null, pSeasonId = null) => {
           // 'Authorization': `Bearer ${ZOS_API_KEY}`
         }
       });
-      itemDetails = response.data;
+      itemDetails = response.data.episode;
       console.log(itemDetails);
     } else {
       // Fetching movie details via your proxy (assuming proxy handles its own auth if needed)
