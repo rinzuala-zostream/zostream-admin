@@ -1,7 +1,8 @@
 <template>
   <div
     class="form-container bg-white dark:bg-gray-950 text-gray-800 dark:text-gray-100 p-6 sm:p-8 md:p-10 rounded-xl shadow-2xl w-full">
-    <h2 class="text-2xl sm:text-3xl font-bold mb-8 text-center sm:text-left text-gray-900 dark:text-white tracking-tight">
+    <h2
+      class="text-2xl sm:text-3xl font-bold mb-8 text-center sm:text-left text-gray-900 dark:text-white tracking-tight">
       Add New Movie
     </h2>
 
@@ -20,15 +21,26 @@
 
         <!-- Title -->
         <div class="form-group sm:col-span-2 lg:col-span-3">
-          <label for="title" class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">Episode Title</label>
+          <label for="title" class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">Episode
+            Title</label>
           <input id="title" v-model="form.title" type="text"
             class="block w-full rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900"
             placeholder="Enter movie title">
         </div>
 
+        <!-- Description -->
+        <div class="form-group sm:col-span-2 lg:col-span-3">
+          <label for="description"
+            class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">Description</label>
+          <textarea id="description" v-model="form.description"
+            class="block w-full min-h-[8rem] rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900"
+            rows="4" placeholder="Provide a compelling movie description..."></textarea>
+        </div>
+
         <!-- Genre -->
         <div class="form-group">
-          <label for="genre" class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">Genre</label>
+          <label for="genre"
+            class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">Genre</label>
           <input id="genre" v-model="form.genre" type="text"
             class="block w-full rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900"
             placeholder="e.g., Action, Comedy">
@@ -36,7 +48,8 @@
 
         <!-- Director -->
         <div class="form-group">
-          <label for="director" class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">Director</label>
+          <label for="director"
+            class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">Director</label>
           <input id="director" v-model="form.director" type="text"
             class="block w-full rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900"
             placeholder="Director's Name">
@@ -44,30 +57,45 @@
 
         <!-- Duration -->
         <div class="form-group">
-          <label for="duration" class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">Duration</label>
+          <label for="duration"
+            class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">Duration</label>
           <input id="duration" v-model="form.duration" type="text"
             class="block w-full rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900"
             placeholder="e.g., 2h 30m">
         </div>
 
         <div class="form-group">
-          <label for="ppv_amount" class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">PPV rate</label>
+          <label for="ppv_amount"
+            class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">PPV rate</label>
           <input id="ppv_amount" v-model="form.ppv_amount" type="text"
             class="block w-full rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900"
             placeholder="e.g., 200 or Free">
         </div>
 
-        <!-- Description -->
-        <div class="form-group sm:col-span-2 lg:col-span-3">
-          <label for="description" class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">Description</label>
-          <textarea id="description" v-model="form.description"
-            class="block w-full min-h-[8rem] rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900"
-            rows="4" placeholder="Provide a compelling movie description..."></textarea>
+        <div class="form-group">
+          <label for="status" class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">
+            Status
+          </label>
+          <select id="status" v-model="form.status"
+            class="block w-full rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900">
+            <option disabled value="">Select status</option>
+            <option value="Scheduled">Scheduled</option>
+            <option value="Published">Published</option>
+            <option value="Draft">Draft</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="upload_date"
+            class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">Create Date</label>
+          <input id="upload_date" v-model="form.create_date" type="date"
+            class="block w-full rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900">
         </div>
 
         <!-- Poster URL -->
         <div class="form-group">
-          <label for="poster" class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">Poster URL</label>
+          <label for="poster" class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">Poster
+            URL</label>
           <input id="poster" v-model="form.poster" type="url"
             class="block w-full rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900"
             placeholder="https://example.com/poster.jpg">
@@ -75,7 +103,8 @@
 
         <!-- Cover Image URL -->
         <div class="form-group">
-          <label for="cover_img" class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">Cover Image URL</label>
+          <label for="cover_img"
+            class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">Cover Image URL</label>
           <input id="cover_img" v-model="form.cover_img" type="url"
             class="block w-full rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900"
             placeholder="https://example.com/cover.jpg">
@@ -83,15 +112,18 @@
 
         <!-- Release Date -->
         <div class="form-group">
-          <label for="release_on" class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">Release Date</label>
+          <label for="release_on"
+            class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">Movie Release
+            Date</label>
           <input id="release_on" v-model="form.release_on" type="date"
             class="block w-full rounded-lg border-0 py-2 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900 dark:[color-scheme:dark]">
-            <!-- Added dark:[color-scheme:dark] for better date picker in dark mode -->
+          <!-- Added dark:[color-scheme:dark] for better date picker in dark mode -->
         </div>
 
         <!-- Movie URL -->
         <div class="form-group">
-          <label for="url" class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">Movie URL</label>
+          <label for="url" class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">Movie
+            URL</label>
           <input id="url" v-model="form.url" type="url"
             class="block w-full rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900"
             placeholder="https://example.com/movie.mp4">
@@ -99,7 +131,8 @@
 
         <!-- Dash URL -->
         <div class="form-group">
-          <label for="dash_url" class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">Dash URL</label>
+          <label for="dash_url" class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">Dash
+            URL</label>
           <input id="dash_url" v-model="form.dash_url" type="url"
             class="block w-full rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900"
             placeholder="https://example.com/movie.mpd">
@@ -107,7 +140,8 @@
 
         <!-- HLS URL -->
         <div class="form-group">
-          <label for="hls_url" class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">HLS URL</label>
+          <label for="hls_url" class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">HLS
+            URL</label>
           <input id="hls_url" v-model="form.hls_url" type="url"
             class="block w-full rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900"
             placeholder="https://example.com/movie.m3u8">
@@ -128,12 +162,13 @@
                        dark:peer-checked:bg-blue-500 dark:peer-checked:border-blue-500
                        peer-focus-visible:ring-2 peer-focus-visible:ring-offset-2 peer-focus-visible:ring-blue-500 dark:peer-focus-visible:ring-offset-gray-950
                        transition-all duration-150 ease-in-out">
-              <svg class="w-3.5 h-3.5 text-white opacity-0 peer-checked:opacity-100 transition-opacity duration-150" fill="none" stroke="currentColor"
-                viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <svg class="w-3.5 h-3.5 text-white opacity-0 peer-checked:opacity-100 transition-opacity duration-150"
+                fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3.5" d="M5 13l4 4L19 7"></path>
               </svg>
             </span>
-            <span class="text-sm font-medium text-gray-700 dark:text-gray-300 select-none group-hover:text-gray-900 dark:group-hover:text-white transition-colors">
+            <span
+              class="text-sm font-medium text-gray-700 dark:text-gray-300 select-none group-hover:text-gray-900 dark:group-hover:text-white transition-colors">
               {{ label }}
             </span>
           </label>
@@ -153,9 +188,9 @@
 
       <!-- Success/Error Message -->
       <div v-if="message" class="message mt-6 p-4 rounded-lg text-sm font-medium text-center" :class="{
-        'bg-green-50 dark:bg-green-700/20 text-green-700 dark:text-green-300 border border-green-300 dark:border-green-600/50': !message.startsWith('Failed'),
-        'bg-red-50 dark:bg-red-700/20 text-red-700 dark:text-red-300 border border-red-300 dark:border-red-600/50': message.startsWith('Failed')
-      }">
+      'bg-green-50 dark:bg-green-700/20 text-green-700 dark:text-green-300 border border-green-300 dark:border-green-600/50': !message.startsWith('Failed'),
+      'bg-red-50 dark:bg-red-700/20 text-red-700 dark:text-red-300 border border-red-300 dark:border-red-600/50': message.startsWith('Failed')
+    }">
         {{ message }}
       </div>
     </form>
@@ -169,7 +204,7 @@ import axios from 'axios'
 const getInitialFormState = () => ({
   title: '', genre: '', director: '', duration: '', description: '', ppv_amount: '',
   poster: '', cover_img: '', url: '', dash_url: '', hls_url: '', trailer: '',
-  release_on: '',
+  release_on: '', create_date: '', status: '',
   isProtected: false, isBollywood: false, isCompleted: false, isDocumentary: false,
   isAgeRestricted: false, isDubbed: false, isEnable: true, isHollywood: false,
   isKorean: false, isMizo: false, isPayPerView: false, isPremium: false,

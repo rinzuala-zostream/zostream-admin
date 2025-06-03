@@ -40,6 +40,13 @@
                     placeholder="Enter user ID" />
             </div>
 
+            <div class="flex justify-center mb-6">
+                <button @click="insertUidFromCache"
+                    class="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-sm rounded-xl hover:bg-gray-300 dark:hover:bg-gray-600">
+                    Insert UID from Cache
+                </button>
+            </div>
+
             <!-- Device Type -->
             <div class="mb-4">
                 <label class="block mb-1 font-medium">Device Type</label>
@@ -62,8 +69,8 @@
                 Submit Add Subscription
             </button>
             <div v-if="successMessage" class="text-center text-green-600 font-medium mt-4">
-    {{ successMessage }}
-</div>
+                {{ successMessage }}
+            </div>
 
         </div>
 
@@ -164,6 +171,18 @@ const fetchPeriod = async () => {
     }
 }
 
+const insertUidFromCache = () => {
+    const cachedUid = sessionStorage.getItem('searchedUserUid')
+    if (cachedUid) {
+        form.value.id = cachedUid
+        successMessage.value = 'UID inserted from cache.'
+        error.value = ''
+    } else {
+        error.value = 'No cached UID found.'
+        successMessage.value = ''
+    }
+}
+
 const addSubscription = async () => {
     response.value = null
     error.value = ''
@@ -193,6 +212,7 @@ const addSubscription = async () => {
 const getSubscription = async () => {
     response.value = null
     error.value = ''
+    successMessage.value = ''
     loading.value = true
 
     try {

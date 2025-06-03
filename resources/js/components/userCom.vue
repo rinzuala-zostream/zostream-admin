@@ -4,22 +4,13 @@
 
     <!-- Toggle Buttons -->
     <div class="flex justify-center gap-3 mb-6">
-      <button
-        @click="activeTab = 'search'"
-        :class="buttonClass('search')"
-      >
+      <button @click="activeTab = 'search'" :class="buttonClass('search')">
         Search User
       </button>
-      <button
-        @click="activeTab = 'register'"
-        :class="buttonClass('register')"
-      >
+      <button @click="activeTab = 'register'" :class="buttonClass('register')">
         Register User
       </button>
-      <button
-        @click="activeTab = 'update'"
-        :class="buttonClass('update')"
-      >
+      <button @click="activeTab = 'update'" :class="buttonClass('update')">
         Update DOB
       </button>
     </div>
@@ -27,17 +18,10 @@
     <!-- Search Section -->
     <div v-if="activeTab === 'search'">
       <div class="flex items-center gap-3 mb-4">
-        <input
-          v-model="input"
-          type="text"
-          placeholder="Enter email or UID"
-          class="flex-1 px-4 py-2 border rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-        <button
-          @click="fetchUser"
-          :disabled="loading || !input"
-          class="px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 disabled:opacity-50"
-        >
+        <input v-model="input" type="text" placeholder="Enter email or UID"
+          class="flex-1 px-4 py-2 border rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        <button @click="fetchUser" :disabled="loading || !input"
+          class="px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 disabled:opacity-50">
           Search
         </button>
       </div>
@@ -50,41 +34,29 @@
       <div v-if="user" class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
         <h2 class="text-xl font-bold mb-4 text-center">User Details</h2>
         <ul class="text-gray-800 dark:text-gray-100 space-y-2">
-          <li
-            v-for="(value, key) in user"
-            :key="key"
-            class="flex justify-between border-b pb-1"
-          >
+          <li v-for="(value, key) in user" :key="key" class="flex justify-between border-b pb-1 gap-4">
             <span class="font-medium capitalize">{{ key.replace(/_/g, ' ') }}:</span>
-            <span class="text-right">{{ value || 'N/A' }}</span>
+            <span class="text-right break-words whitespace-pre-wrap max-w-full">
+              {{ value || 'N/A' }}
+            </span>
           </li>
         </ul>
         <div v-if="user" class="text-center mt-4">
-  <button
-    @click="openEditModal"
-    class="px-4 py-2 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700"
-  >
-    Edit Profile
-  </button>
-</div>
+          <button @click="openEditModal" class="px-4 py-2 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700">
+            Edit Profile
+          </button>
+        </div>
       </div>
     </div>
 
     <!-- Register Section -->
     <div v-if="activeTab === 'register'" class="mt-4">
       <div class="mb-4">
-        <input
-          v-model="registerEmail"
-          type="email"
-          placeholder="Enter email"
-          class="w-full px-4 py-2 border rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500"
-        />
+        <input v-model="registerEmail" type="email" placeholder="Enter email"
+          class="w-full px-4 py-2 border rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500" />
       </div>
-      <button
-        @click="registerUser"
-        :disabled="loading || !registerEmail"
-        class="w-full px-4 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700 disabled:opacity-50"
-      >
+      <button @click="registerUser" :disabled="loading || !registerEmail"
+        class="w-full px-4 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700 disabled:opacity-50">
         Register
       </button>
 
@@ -97,25 +69,15 @@
     <!-- Update DOB Section -->
     <div v-if="activeTab === 'update'" class="mt-4">
       <div class="mb-4">
-        <input
-          v-model="updateUid"
-          type="text"
-          placeholder="Enter UID"
-          class="w-full px-4 py-2 border rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-500"
-        />
+        <input v-model="updateUid" type="text" placeholder="Enter UID"
+          class="w-full px-4 py-2 border rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-500" />
       </div>
       <div class="mb-4">
-        <input
-          v-model="newDob"
-          type="date"
-          class="w-full px-4 py-2 border rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-500"
-        />
+        <input v-model="newDob" type="date"
+          class="w-full px-4 py-2 border rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-500" />
       </div>
-      <button
-        @click="updateDOB"
-        :disabled="loading || !newDob"
-        class="w-full px-4 py-2 bg-yellow-500 text-white rounded-xl hover:bg-yellow-600 disabled:opacity-50"
-      >
+      <button @click="updateDOB" :disabled="loading || !newDob"
+        class="w-full px-4 py-2 bg-yellow-500 text-white rounded-xl hover:bg-yellow-600 disabled:opacity-50">
         Update DOB
       </button>
 
@@ -127,96 +89,58 @@
   </div>
 
   <!-- Modal -->
-<div
-  v-if="showEditModal"
-  class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
->
-  <div class="bg-white dark:bg-gray-800 w-full max-w-md p-6 rounded-xl shadow-xl">
-    <h3 class="text-lg font-semibold mb-4 text-center">Edit User Profile</h3>
+  <div v-if="showEditModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white dark:bg-gray-800 w-full max-w-md p-6 rounded-xl shadow-xl">
+      <h3 class="text-lg font-semibold mb-4 text-center">Edit User Profile</h3>
 
-    <div class="space-y-3">
-      <div>
-        <label class="block text-sm font-medium">UID</label>
-        <input
-          v-model="editForm.uid"
-          type="text"
-          disabled
-          class="w-full px-3 py-2 border rounded-md bg-gray-100 text-gray-600"
-        />
+      <div class="space-y-3">
+        <div>
+          <label class="block text-sm font-medium">UID</label>
+          <input v-model="editForm.uid" type="text" disabled
+            class="w-full px-3 py-2 border rounded-md bg-gray-100 text-gray-600" />
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium">Name</label>
+          <input v-model="editForm.name" type="text" class="w-full px-3 py-2 border rounded-md" />
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium">Veng</label>
+          <input v-model="editForm.veng" type="text" class="w-full px-3 py-2 border rounded-md" />
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium">Khua</label>
+          <input v-model="editForm.khua" type="text" class="w-full px-3 py-2 border rounded-md" />
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium">Call</label>
+          <input v-model="editForm.call" type="text" class="w-full px-3 py-2 border rounded-md" />
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium">Edit Date</label>
+          <input v-model="editForm.edit_date" type="date" class="w-full px-3 py-2 border rounded-md" />
+        </div>
+
+        <div class="flex items-center space-x-2">
+          <input type="checkbox" v-model="editForm.isAccountComplete" id="isAccountComplete" class="rounded" />
+          <label for="isAccountComplete" class="text-sm">Is Account Complete?</label>
+        </div>
       </div>
 
-      <div>
-        <label class="block text-sm font-medium">Name</label>
-        <input
-          v-model="editForm.name"
-          type="text"
-          class="w-full px-3 py-2 border rounded-md"
-        />
+      <div class="mt-6 flex justify-between">
+        <button @click="submitEditForm" class="px-4 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700">
+          Save
+        </button>
+        <button @click="showEditModal = false" class="px-4 py-2 bg-gray-400 text-white rounded-xl hover:bg-gray-500">
+          Cancel
+        </button>
       </div>
-
-      <div>
-        <label class="block text-sm font-medium">Veng</label>
-        <input
-          v-model="editForm.veng"
-          type="text"
-          class="w-full px-3 py-2 border rounded-md"
-        />
-      </div>
-
-      <div>
-        <label class="block text-sm font-medium">Khua</label>
-        <input
-          v-model="editForm.khua"
-          type="text"
-          class="w-full px-3 py-2 border rounded-md"
-        />
-      </div>
-
-      <div>
-        <label class="block text-sm font-medium">Call</label>
-        <input
-          v-model="editForm.call"
-          type="text"
-          class="w-full px-3 py-2 border rounded-md"
-        />
-      </div>
-
-      <div>
-        <label class="block text-sm font-medium">Edit Date</label>
-        <input
-          v-model="editForm.edit_date"
-          type="date"
-          class="w-full px-3 py-2 border rounded-md"
-        />
-      </div>
-
-      <div class="flex items-center space-x-2">
-        <input
-          type="checkbox"
-          v-model="editForm.isAccountComplete"
-          id="isAccountComplete"
-          class="rounded"
-        />
-        <label for="isAccountComplete" class="text-sm">Is Account Complete?</label>
-      </div>
-    </div>
-
-    <div class="mt-6 flex justify-between">
-      <button
-        @click="submitEditForm"
-        class="px-4 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700"
-      >
-        Save
-      </button>
-      <button
-        @click="showEditModal = false"
-        class="px-4 py-2 bg-gray-400 text-white rounded-xl hover:bg-gray-500"
-      >
-        Cancel
-      </button>
     </div>
   </div>
-</div>
 </template>
 
 <script setup>
@@ -268,8 +192,17 @@ const fetchUser = async () => {
     }
 
     user.value = res.data
+
+    // ✅ Store Uid in sessionStorage
+    if (res.data.uid) {
+      sessionStorage.setItem('searchedUserUid', res.data.uid)
+    } else {
+      sessionStorage.removeItem('searchedUserUid')
+    }
+
   } catch (err) {
     error.value = err.response?.data?.message || err.message
+    sessionStorage.removeItem('searchedUserUid') // 🔁 Clear on error
   } finally {
     loading.value = false
   }
@@ -354,10 +287,9 @@ const updateDOB = async () => {
 }
 
 const buttonClass = (tab) => {
-  return `px-4 py-2 rounded-xl font-medium ${
-    activeTab.value === tab
-      ? 'bg-blue-600 text-white'
-      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-  }`
+  return `px-4 py-2 rounded-xl font-medium ${activeTab.value === tab
+    ? 'bg-blue-600 text-white'
+    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+    }`
 }
 </script>

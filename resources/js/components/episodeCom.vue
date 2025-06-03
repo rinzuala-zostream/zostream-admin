@@ -91,6 +91,26 @@
         </div>
       </div>
 
+      <div class="form-group">
+          <label for="status" class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">
+            Status
+          </label>
+          <select id="status" v-model="form.status"
+            class="block w-full rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900">
+            <option disabled value="">Select status</option>
+            <option value="Scheduled">Scheduled</option>
+            <option value="Published">Published</option>
+            <option value="Draft">Draft</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="upload_date"
+            class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">Create Date</label>
+          <input id="upload_date" v-model="form.create_date" type="date"
+            class="block w-full rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900">
+        </div>
+
       <!-- Boolean Options -->
       <div class="attributes-section pt-8 border-t border-gray-200 dark:border-gray-800">
         <h3 class="text-xl font-semibold mb-6 text-gray-900 dark:text-white">Episode Attributes</h3>
@@ -154,6 +174,8 @@ const getInitialFormState = () => ({
   url: '',
   dash_url: '',
   hls_url: '',
+  create_date: '', 
+  status: '',
   isProtected: false,
   isEnable: true,
   isPPV: false,
