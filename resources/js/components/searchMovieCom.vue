@@ -526,7 +526,7 @@ const fetchMovies = async (query = '') => {
   loading.value = true;
   movies.value = [];
   try {
-    const response = await axios.get(route('proxy.get', { endpoint: 'search', q: query, age_restriction: true, is_enable: true }));
+    const response = await axios.get(route('proxy.get', { endpoint: 'search', q: query, age_restriction: true, is_enable: false }));
     movies.value = Array.isArray(response.data) ? response.data : [];
   } catch (error) {
     console.error('Failed to fetch movies:', error);
@@ -683,27 +683,20 @@ const submitForm = async () => {
     // 2. Prepare payload
     const payload = { ...currentFormState, ...encryptedUrlsMap };
 
+
     // Ensure boolean fields are correctly set
     const booleanFieldsConfig = isEpisode ? episodeBooleanFields.value : movieBooleanFields.value;
     for (const boolKey in booleanFieldsConfig) {
       payload[boolKey] = !!payload[boolKey]; // Coerce to boolean, handles if key was missing (becomes false)
     }
-
+    const episodeUrl = 'movies';
     // Add necessary IDs for API
     if (isEpisode) {
       payload.season_id = itemCtx.seasonId; // Ensure season_id is in payload if API needs it
-      // payload.id = itemCtx.id; // The episode ID is itemCtx.id, already part of URL usually
-      // payload.txt might not be needed by update API if it's for display only
-      // delete payload.txt; // if txt is only for display/form and not for API
+     episodeUrl= 'episode';
     }
-    // Remove fields not meant for API if any (e.g. form-specific like 'desc' vs 'description')
-    // Example: if API expects 'description' for episode, but form has 'desc':
-    // if (isEpisode && payload.desc) { payload.description = payload.desc; delete payload.desc; }
 
-
-    // 3. Make direct API call for update (assuming Zostream for both)
-    // The ID in the URL is itemCtx.id (which is movie ID or episode ID)
-    const actualApiUrl = `${ZOS_BASE_URL}/movies/${itemCtx.id}`; // Assuming this endpoint updates both movies and episodes
+    const actualApiUrl = `${ZOS_BASE_URL}/${episodeUrl}/${itemCtx.id}`; // Assuming this endpoint updates both movies and episodes
     const apiHeaders = {
       'Content-Type': 'application/json',
       'X-Api-Key': ZOS_API_KEY,
