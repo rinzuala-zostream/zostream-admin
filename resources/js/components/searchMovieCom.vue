@@ -656,47 +656,43 @@ const submitForm = async () => {
     const currentFormState = JSON.parse(JSON.stringify(editForm.value));
     const itemCtx = editingItem.value;
     if (!itemCtx || !itemCtx.id) throw new Error("Editing context is invalid.");
+
     const isEpisode = !!itemCtx.seasonId;
 
     // 1. Encrypt URLs
-    let urlsToEncrypt = {};
-    if (isEpisode) {
-      urlsToEncrypt = { // Fields from getInitialEpisodeForm that are URLs
-        url: currentFormState.url,
-        dash_url: currentFormState.dash_url,
-        hls_url: currentFormState.hls_url,
-      };
-    } else { // Movie fields from getInitialMovieForm that are URLs
-      urlsToEncrypt = {
-        url: currentFormState.url,
-        dash_url: currentFormState.dash_url,
-        hls_url: currentFormState.hls_url,
-      };
-    }
+    const urlFields = ['url', 'dash_url', 'hls_url'];
+    const urlsToEncrypt = Object.fromEntries(
+      urlFields.map((key) => [key, currentFormState[key]])
+    );
+
     const encryptionPromises = Object.entries(urlsToEncrypt).map(async ([key, plainUrl]) =>
-      (plainUrl && typeof plainUrl === 'string' && plainUrl.trim())
+      plainUrl && typeof plainUrl === 'string' && plainUrl.trim()
         ? [key, (await encryptViaProxy(plainUrl)) || plainUrl]
         : [key, '']
     );
+
     const encryptedUrlsMap = Object.fromEntries(await Promise.all(encryptionPromises));
 
     // 2. Prepare payload
-    const payload = { ...currentFormState, ...encryptedUrlsMap };
+    const payload = {
+      ...currentFormState,
+      ...encryptedUrlsMap,
+    };
 
-
-    // Ensure boolean fields are correctly set
+    // 3. Normalize booleans
     const booleanFieldsConfig = isEpisode ? episodeBooleanFields.value : movieBooleanFields.value;
     for (const boolKey in booleanFieldsConfig) {
-      payload[boolKey] = !!payload[boolKey]; // Coerce to boolean, handles if key was missing (becomes false)
-    }
-    const episodeUrl = 'movies';
-    // Add necessary IDs for API
-    if (isEpisode) {
-      payload.season_id = itemCtx.seasonId; // Ensure season_id is in payload if API needs it
-     episodeUrl= 'episode';
+      payload[boolKey] = !!payload[boolKey];
     }
 
-    const actualApiUrl = `${ZOS_BASE_URL}/${episodeUrl}/${itemCtx.id}`; // Assuming this endpoint updates both movies and episodes
+    // 4. Set endpoint and additional fields
+    let apiSegment = 'movies';
+    if (isEpisode) {
+      payload.season_id = itemCtx.seasonId;
+      apiSegment = 'episode';
+    }
+
+    const actualApiUrl = `${ZOS_BASE_URL}/${apiSegment}/${itemCtx.id}`;
     const apiHeaders = {
       'Content-Type': 'application/json',
       'X-Api-Key': ZOS_API_KEY,
@@ -707,25 +703,31 @@ const submitForm = async () => {
 
     modalMessage.value = `${isEpisode ? 'Episode' : 'Movie'} updated successfully!`;
 
-    // 4. Update local list with plain (non-encrypted) form data
+    // 5. Update local list
     if (isEpisode) {
       const movieToUpdate = movies.value.find(m => m.id === itemCtx.movieId);
-      if (movieToUpdate?.seasons) {
-        const seasonToUpdate = movieToUpdate.seasons.find(s => s.id === itemCtx.seasonId);
-        if (seasonToUpdate?.episodes) {
-          const epIndex = seasonToUpdate.episodes.findIndex(e => e.id === itemCtx.id);
-          if (epIndex !== -1) {
-            seasonToUpdate.episodes[epIndex] = { ...seasonToUpdate.episodes[epIndex], ...editForm.value, txt: editForm.value.title || editForm.value.txt };
-          }
-        }
+      const seasonToUpdate = movieToUpdate?.seasons?.find(s => s.id === itemCtx.seasonId);
+      const epIndex = seasonToUpdate?.episodes?.findIndex(e => e.id === itemCtx.id);
+
+      if (epIndex !== undefined && epIndex !== -1) {
+        seasonToUpdate.episodes[epIndex] = {
+          ...seasonToUpdate.episodes[epIndex],
+          ...editForm.value,
+          txt: editForm.value.title || editForm.value.txt,
+        };
       }
     } else {
       const movieIndex = movies.value.findIndex(m => m.id === itemCtx.id);
       if (movieIndex !== -1) {
-        movies.value[movieIndex] = { ...movies.value[movieIndex], ...editForm.value };
+        movies.value[movieIndex] = {
+          ...movies.value[movieIndex],
+          ...editForm.value,
+        };
       }
     }
-    // setTimeout(closeEditModal, 1500); // Optionally close modal
+
+    // Optional: Automatically close modal
+    // setTimeout(closeEditModal, 1500);
   } catch (err) {
     console.error('Update submission failed:', err.config?.url, err.response || err);
     let errorMsg = 'An unknown error occurred during update.';
@@ -736,7 +738,7 @@ const submitForm = async () => {
     } else {
       errorMsg = err.message;
     }
-    modalMessage.value = `Update Failed: ${errorMsg.substring(0, 300)}`; // Truncate long messages
+    modalMessage.value = `Update Failed: ${errorMsg.substring(0, 300)}`;
   } finally {
     modalLoading.value = false;
   }
