@@ -587,39 +587,40 @@ const editMovie = async (itemFromList, pMovieId = null, pSeasonId = null) => {
   const isEpisode = !!pSeasonId;
   editForm.value = isEpisode ? getInitialEpisodeForm() : getInitialMovieForm();
 
+  const ZOS_API_KEY = 'ljkfdnakadsfthbretmjsavbigruw3niadghr67errh8'; // Your API Key
+
   try {
-    const itemIdToFetch = itemFromList.id; // movie.id for movie, ep.id for episode
-    let fetchParams;
+    const itemIdToFetch = itemFromList.id;
+    let itemDetails;
 
     if (isEpisode) {
-      fetchParams = {
-        endpoint: "movies", // Using the unified endpoint
-        id: itemIdToFetch,       // This is the episode's own ID
-        category_type: "episode"
-      };
-      // console.log(`Fetching details for EPISODE (ID: ${itemIdToFetch}) via 'movies' endpoint`);
+      const episodeDetailUrl = `https://apis.zostream.in/api/episode/${itemIdToFetch}`;
+      // console.log(`Fetching episode details directly from: ${episodeDetailUrl} with API Key`);
+      const response = await axios.get(episodeDetailUrl, {
+        headers: {
+          'X-Api-Key': ZOS_API_KEY // Replace 'X-Api-Key' if the header name is different
+          // If it's a Bearer token:
+          // 'Authorization': `Bearer ${ZOS_API_KEY}`
+        }
+      });
+      itemDetails = response.data;
     } else {
-      // Fetching movie details
-      fetchParams = {
-        endpoint: "movies", // Using the unified endpoint
-        id: itemIdToFetch,       // This is the movie's ID
+      // Fetching movie details via your proxy (assuming proxy handles its own auth if needed)
+      const fetchParams = {
+        endpoint: "movies",
+        id: itemIdToFetch,
         category_type: "movie"
       };
-      // console.log(`Fetching details for MOVIE (ID: ${itemIdToFetch}) via 'movies' endpoint`);
+      const response = await axios.get(route("proxy.get", fetchParams));
+      itemDetails = response.data;
     }
 
-    const response = await axios.get(route("proxy.get", fetchParams));
-    const itemDetails = response.data; // This should be the detailed data for the specific movie OR episode
-
-    if (!itemDetails || typeof itemDetails !== 'object' || (Array.isArray(itemDetails) && itemDetails.length > 1)) {
+    // --- The rest of the data processing and form population logic remains the same ---
+    if (!itemDetails || typeof itemDetails !== 'object' || (Array.isArray(itemDetails) && itemDetails.length > 1) ) {
       if (Array.isArray(itemDetails) && itemDetails.length === 1 && itemDetails[0] && typeof itemDetails[0] === 'object') {
-        // If API consistently returns single item in an array for this endpoint
-        // itemDetails = itemDetails[0]; // Uncomment if your single item endpoint returns [item]
-        console.warn("Received single item in an array, using the first element. Consider adjusting API to return an object directly.", itemDetails);
-        // For now, let's proceed assuming itemDetails[0] is what we want IF it's a single-element array.
-        // But it's better if the API returns a direct object for single item fetch.
-        // Sticking to strict check for now:
-        throw new Error(`Invalid item data received. Expected a single object, but got ${Array.isArray(itemDetails) ? 'an array' : typeof itemDetails}.`);
+         console.warn("Received single item in an array, using the first element. Consider adjusting API to return an object directly for single item fetches.", itemDetails);
+         // itemDetails = itemDetails[0]; // Uncomment cautiously
+         throw new Error(`Invalid item data received. Expected a single object for single item fetch.`);
       } else {
         console.error("Invalid item data received. Expected a single object, got:", itemDetails);
         throw new Error(`Invalid item data received. Expected a single object, but got ${Array.isArray(itemDetails) ? 'an array' : typeof itemDetails}.`);
@@ -627,52 +628,59 @@ const editMovie = async (itemFromList, pMovieId = null, pSeasonId = null) => {
     }
 
     const form = editForm.value;
-
-    // Populate Episode Form
     if (isEpisode) {
-      form.title = itemDetails.title || itemDetails.name || '';
-      form.desc = itemDetails.desc || itemDetails.description || '';
-      form.txt = itemDetails.txt || '';
-      form.season_id = pSeasonId || itemDetails.season_id || '';
-      form.ppv_amount = itemDetails.ppv_amount || '';
-      form.status = itemDetails.status || '';
-      form.create_date = formatDateForInput(itemDetails.create_date || itemDetails.upload_date);
-
-      const epUrlFields = { img: 'img', url: 'url', dash_url: 'dash_url', hls_url: 'hls_url' };
-      for (const [formKey, detailKey] of Object.entries(epUrlFields)) {
-        if (itemDetails[detailKey]) form[formKey] = await decryptUrl(itemDetails[detailKey]);
-        else form[formKey] = '';
-      }
-      for (const key in episodeBooleanFields.value) form[key] = !!itemDetails[key];
-    } else { // Populate Movie Form
-      form.title = itemDetails.title || '';
-      form.description = itemDetails.description || '';
-      form.genre = itemDetails.genre || '';
-      form.director = itemDetails.director || '';
-      form.duration = itemDetails.duration || '';
-      form.ppv_amount = itemDetails.ppv_amount || '';
-      form.status = itemDetails.status || '';
-      form.create_date = formatDateForInput(itemDetails.create_date || itemDetails.upload_date);
-      form.release_on = formatDateForInput(itemDetails.release_on);
-
-      const movieUrlFields = { poster: 'poster', cover_img: 'cover_img', url: 'url', dash_url: 'dash_url', hls_url: 'hls_url' };
-      for (const [formKey, detailKey] of Object.entries(movieUrlFields)) {
-        if (itemDetails[detailKey]) form[formKey] = await decryptUrl(itemDetails[detailKey]);
-        else form[formKey] = '';
-      }
-      for (const key in movieBooleanFields.value) form[key] = !!itemDetails[key];
+        form.title = itemDetails.title || itemDetails.name || '';
+        form.desc = itemDetails.desc || itemDetails.description || '';
+        form.txt = itemDetails.txt || '';
+        form.season_id = pSeasonId || itemDetails.season_id || '';
+        form.ppv_amount = itemDetails.ppv_amount || '';
+        form.status = itemDetails.status || '';
+        form.create_date = formatDateForInput(itemDetails.create_date || itemDetails.upload_date);
+        const epUrlFields = { img: 'img', url: 'url', dash_url: 'dash_url', hls_url: 'hls_url' };
+        for (const [formKey, detailKey] of Object.entries(epUrlFields)) {
+            form[formKey] = itemDetails[detailKey] ? await decryptUrl(itemDetails[detailKey]) : '';
+        }
+        for (const key in episodeBooleanFields.value) form[key] = !!itemDetails[key];
+    } else { // Movie
+        form.title = itemDetails.title || '';
+        form.description = itemDetails.description || '';
+        form.genre = itemDetails.genre || '';
+        form.director = itemDetails.director || '';
+        form.duration = itemDetails.duration || '';
+        form.ppv_amount = itemDetails.ppv_amount || '';
+        form.status = itemDetails.status || '';
+        form.create_date = formatDateForInput(itemDetails.create_date || itemDetails.upload_date);
+        form.release_on = formatDateForInput(itemDetails.release_on);
+        const movieUrlFields = { poster: 'poster', cover_img: 'cover_img', url: 'url', dash_url: 'dash_url', hls_url: 'hls_url' };
+        for (const [formKey, detailKey] of Object.entries(movieUrlFields)) {
+             form[formKey] = itemDetails[detailKey] ? await decryptUrl(itemDetails[detailKey]) : '';
+        }
+        for (const key in movieBooleanFields.value) form[key] = !!itemDetails[key];
     }
 
-    editingItem.value = {
-      id: itemIdToFetch,
-      ...(pMovieId && { movieId: pMovieId }),
-      ...(pSeasonId && { seasonId: pSeasonId })
+    editingItem.value = { 
+        id: itemIdToFetch,
+        ...(pMovieId && { movieId: pMovieId }),
+        ...(pSeasonId && { seasonId: pSeasonId })
     };
     showEditModal.value = true;
 
   } catch (error) {
     console.error('Failed to prepare item for editing:', error);
-    const errorMessage = error.response?.data?.message || error.message || 'Unknown error';
+    let errorMessage = 'Unknown error';
+    if (error.response) {
+        // Specifically log if it's a 401 or 403, which often indicates auth issues
+        if (error.response.status === 401 || error.response.status === 403) {
+            console.error(`Authentication/Authorization error for ${error.config.url}: ${error.response.status}`, error.response.data);
+            errorMessage = `Access denied. Check API Key or permissions. (Status: ${error.response.status})`;
+        } else {
+            errorMessage = error.response.data?.message || error.response.statusText || 'Server error';
+        }
+    } else if (error.request) {
+        errorMessage = 'No response from server.';
+    } else {
+        errorMessage = error.message;
+    }
     alert(`Error loading details: ${errorMessage}`);
   } finally {
     isFetchingEditItemDetails.value = false;

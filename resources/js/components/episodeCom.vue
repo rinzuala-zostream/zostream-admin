@@ -275,7 +275,6 @@ const sortOrder = ref('asc');
 
 const validateForm = () => {
   if (!form.title.trim()) throw new Error('Episode title is required.')
-  if (!form.desc.trim()) throw new Error('Episode description is required.')
   if (!form.season_id.toString().trim()) throw new Error('Season ID is required. Please search and select a show/season, or enter manually.')
   if (!form.movie_id.toString().trim()) throw new Error('Movie ID is required. Please search and select a show/season to populate it.') // Added validation for movie_id
   if (!form.txt.trim()) throw new Error('Episode Identifier (e.g., S1 E1) is required.')
@@ -390,8 +389,6 @@ const submitForm = async () => {
       dash_url: encryptedDash,
       hls_url: encryptedHls,
     };
-    
-    console.log("Submitting payload:", payload);
 
     const res = await axios.post(route('proxy.post'), payload, {
       params: { endpoint: 'episode-insert' },
