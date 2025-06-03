@@ -400,75 +400,107 @@ const encryptViaProxy = async (plainUrl) => {
   }
 };
 
-
 const editMovie = async (itemFromList, pMovieId = null, pSeasonId = null) => {
-if (isFetchingEditItemDetails.value) return;
+  if (isFetchingEditItemDetails.value) return;
 
-isFetchingEditItemDetails.value = true;
-editingItemContext.value = { id: itemFromList.id, seasonId: ep.id || undefined };
-modalMessage.value = '';
+  isFetchingEditItemDetails.value = true;
+  editingItemContext.value = { id: itemFromList.id, seasonId: pSeasonId || undefined };
+  modalMessage.value = '';
 
-const isEpisode = !!pSeasonId;
-editForm.value = isEpisode ? getInitialEpisodeForm() : getInitialMovieForm();
+  const isEpisode = !!pSeasonId;
+  editForm.value = isEpisode ? getInitialEpisodeForm() : getInitialMovieForm();
 
-try {
-  const itemId = itemFromList.id;
-  const fetchParams = {endpoint: isEpisode ? "episodes" : "movies", id: itemId };
-  
-  const response = await axios.get(route("proxy.get", fetchParams));
-  const itemDetails = response.data;
+  try {
+    const itemIdToFetch = itemFromList.id; // movie.id for movie, ep.id for episode
+    let fetchParams;
 
-  if (!itemDetails || typeof itemDetails !== 'object') throw new Error("Invalid item data received.");
-  
-  const form = editForm.value;
+    if (isEpisode) {
+      fetchParams = {
+        endpoint: "movies", // Using the unified endpoint
+        id: itemIdToFetch,       // This is the episode's own ID
+        category_type: "episode"
+      };
+      // console.log(`Fetching details for EPISODE (ID: ${itemIdToFetch}) via 'movies' endpoint`);
+    } else {
+      // Fetching movie details
+      fetchParams = {
+        endpoint: "movies", // Using the unified endpoint
+        id: itemIdToFetch,       // This is the movie's ID
+        category_type: "movie"
+      };
+      // console.log(`Fetching details for MOVIE (ID: ${itemIdToFetch}) via 'movies' endpoint`);
+    }
 
-  if (isEpisode) {
-      // Populate Episode Form
-      form.title = itemDetails.title || itemDetails.name || ''; // API might use 'name' or 'title' for episode
-      form.desc = itemDetails.desc || itemDetails.description || '';
-      form.txt = itemDetails.txt || ''; // The S1 E1 identifier
-      form.season_id = pSeasonId || itemDetails.season_id || ''; // Pre-fill season_id
-      form.ppv_amount = itemDetails.ppv_amount || '';
-      form.status = itemDetails.status || '';
-      form.create_date = formatDateForInput(itemDetails.create_date || itemDetails.upload_date);
+    const response = await axios.get(route("proxy.get", fetchParams));
+    const itemDetails = response.data; // This should be the detailed data for the specific movie OR episode
 
-      const epUrlFields = { img: 'img', url: 'url', dash_url: 'dash_url', hls_url: 'hls_url' };
-      for (const [formKey, detailKey] of Object.entries(epUrlFields)) {
-          if (itemDetails[detailKey]) form[formKey] = await decryptUrl(itemDetails[detailKey]);
-          else form[formKey] = '';
+    if (!itemDetails || typeof itemDetails !== 'object' || (Array.isArray(itemDetails) && itemDetails.length > 1) ) {
+      if (Array.isArray(itemDetails) && itemDetails.length === 1 && itemDetails[0] && typeof itemDetails[0] === 'object') {
+        // If API consistently returns single item in an array for this endpoint
+        // itemDetails = itemDetails[0]; // Uncomment if your single item endpoint returns [item]
+         console.warn("Received single item in an array, using the first element. Consider adjusting API to return an object directly.", itemDetails);
+        // For now, let's proceed assuming itemDetails[0] is what we want IF it's a single-element array.
+        // But it's better if the API returns a direct object for single item fetch.
+        // Sticking to strict check for now:
+        throw new Error(`Invalid item data received. Expected a single object, but got ${Array.isArray(itemDetails) ? 'an array' : typeof itemDetails}.`);
+      } else {
+        console.error("Invalid item data received. Expected a single object, got:", itemDetails);
+        throw new Error(`Invalid item data received. Expected a single object, but got ${Array.isArray(itemDetails) ? 'an array' : typeof itemDetails}.`);
       }
-      for (const key in episodeBooleanFields.value) form[key] = !!itemDetails[key];
+    }
+    
+    const form = editForm.value;
 
-  } else {
-      // Populate Movie Form
-      form.title = itemDetails.title || '';
-      form.description = itemDetails.description || '';
-      form.genre = itemDetails.genre || '';
-      form.director = itemDetails.director || '';
-      form.duration = itemDetails.duration || '';
-      form.ppv_amount = itemDetails.ppv_amount || '';
-      form.status = itemDetails.status || '';
-      form.create_date = formatDateForInput(itemDetails.create_date || itemDetails.upload_date);
-      form.release_on = formatDateForInput(itemDetails.release_on);
+    // Populate Episode Form
+    if (isEpisode) {
+        form.title = itemDetails.title || itemDetails.name || '';
+        form.desc = itemDetails.desc || itemDetails.description || '';
+        form.txt = itemDetails.txt || '';
+        form.season_id = pSeasonId || itemDetails.season_id || '';
+        form.ppv_amount = itemDetails.ppv_amount || '';
+        form.status = itemDetails.status || '';
+        form.create_date = formatDateForInput(itemDetails.create_date || itemDetails.upload_date);
 
-      const movieUrlFields = { poster: 'poster', cover_img: 'cover_img', url: 'url', dash_url: 'dash_url', hls_url: 'hls_url' };
-      for (const [formKey, detailKey] of Object.entries(movieUrlFields)) {
-           if (itemDetails[detailKey]) form[formKey] = await decryptUrl(itemDetails[detailKey]);
-           else form[formKey] = '';
-      }
-      for (const key in movieBooleanFields.value) form[key] = !!itemDetails[key];
+        const epUrlFields = { img: 'img', url: 'url', dash_url: 'dash_url', hls_url: 'hls_url' };
+        for (const [formKey, detailKey] of Object.entries(epUrlFields)) {
+            if (itemDetails[detailKey]) form[formKey] = await decryptUrl(itemDetails[detailKey]);
+            else form[formKey] = '';
+        }
+        for (const key in episodeBooleanFields.value) form[key] = !!itemDetails[key];
+    } else { // Populate Movie Form
+        form.title = itemDetails.title || '';
+        form.description = itemDetails.description || '';
+        form.genre = itemDetails.genre || '';
+        form.director = itemDetails.director || '';
+        form.duration = itemDetails.duration || '';
+        form.ppv_amount = itemDetails.ppv_amount || '';
+        form.status = itemDetails.status || '';
+        form.create_date = formatDateForInput(itemDetails.create_date || itemDetails.upload_date);
+        form.release_on = formatDateForInput(itemDetails.release_on);
+
+        const movieUrlFields = { poster: 'poster', cover_img: 'cover_img', url: 'url', dash_url: 'dash_url', hls_url: 'hls_url' };
+        for (const [formKey, detailKey] of Object.entries(movieUrlFields)) {
+             if (itemDetails[detailKey]) form[formKey] = await decryptUrl(itemDetails[detailKey]);
+             else form[formKey] = '';
+        }
+        for (const key in movieBooleanFields.value) form[key] = !!itemDetails[key];
+    }
+
+    editingItem.value = { 
+        id: itemIdToFetch,
+        ...(pMovieId && { movieId: pMovieId }),
+        ...(pSeasonId && { seasonId: pSeasonId })
+    };
+    showEditModal.value = true;
+
+  } catch (error) {
+    console.error('Failed to prepare item for editing:', error);
+    const errorMessage = error.response?.data?.message || error.message || 'Unknown error';
+    alert(`Error loading details: ${errorMessage}`);
+  } finally {
+    isFetchingEditItemDetails.value = false;
+    editingItemContext.value = null;
   }
-
-  editingItem.value = { id: itemId, ...(pMovieId && { movieId: pMovieId }), ...(pSeasonId && { seasonId: pSeasonId }) };
-  showEditModal.value = true;
-
-} catch (error) {
-  console.error('Failed to prepare item for editing:', error);
-  alert(`Error loading details: ${error.response?.data?.message || error.message || 'Unknown error'}`);
-} finally {
-  isFetchingEditItemDetails.value = false;
-  editingItemContext.value = null;
-}
 };
 
 const closeEditModal = () => { /* ... same ... */

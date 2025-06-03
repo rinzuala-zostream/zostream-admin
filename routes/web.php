@@ -15,6 +15,10 @@ Route::get('episode', function () {
     return Inertia::render('Episode');
 })->middleware(['auth', 'verified'])->name('episode');
 
+Route::get('update', function () {
+    return Inertia::render('Update');
+})->middleware(['auth', 'verified'])->name('update');
+
 Route::get('user', function () {
     return Inertia::render('User');
 })->middleware(['auth', 'verified'])->name('user');

@@ -98,6 +98,12 @@ const mainNavItems: NavItem[] = [
         icon: Tv,
         active: route().current('episode*')
     },
+    {
+        title: 'Update',
+        href: '/update',
+        icon: Tv,
+        active: route().current('update*')
+    },
 ];
 
 const managementItems: NavItem[] = [
