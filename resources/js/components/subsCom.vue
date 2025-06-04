@@ -83,6 +83,13 @@
                     placeholder="Enter user ID" />
             </div>
 
+            <div class="flex justify-center mb-6">
+                <button @click="insertUidFromCache"
+                    class="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-sm rounded-xl hover:bg-gray-300 dark:hover:bg-gray-600">
+                    Insert UID from Cache
+                </button>
+            </div>
+
             <button @click="getSubscription" :disabled="!form.id"
                 class="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-xl">
                 Fetch Subscription

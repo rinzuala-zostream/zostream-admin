@@ -13,9 +13,6 @@
       <button @click="activeTab = 'update'" :class="buttonClass('update')">
         Update DOB
       </button>
-      <button @click="activeTab = 'profile'" :class="buttonClass('profile')">
-        Update Profile
-      </button>
     </div>
 
     <!-- Search Section -->
@@ -75,6 +72,14 @@
         <input v-model="updateUid" type="text" placeholder="Enter UID"
           class="w-full px-4 py-2 border rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-500" />
       </div>
+      <div class="flex justify-center mb-6">
+      <button
+        @click="insertUidFromCache"
+        class="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-sm rounded-xl hover:bg-gray-300 dark:hover:bg-gray-600"
+      >
+        Insert UID from Cache
+      </button>
+    </div>
       <div class="mb-4">
         <input v-model="newDob" type="date"
           class="w-full px-4 py-2 border rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-500" />
@@ -92,15 +97,15 @@
   </div>
 
   <!-- Modal -->
-  <div v-if="activeTab === 'profile'" class="mt-4">
+  <div v-if="showEditModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
     <div class="bg-white dark:bg-gray-800 w-full max-w-md p-6 rounded-xl shadow-xl">
       <h3 class="text-lg font-semibold mb-4 text-center">Edit User Profile</h3>
 
       <div class="space-y-3">
         <div>
           <label class="block text-sm font-medium">UID</label>
-          <input v-model="editForm.uid" type="text"
-          class="w-full px-3 py-2 border rounded-md"  />
+          <input v-model="editForm.uid" type="text" disabled
+            class="w-full px-3 py-2 border rounded-md bg-gray-100 text-gray-600" />
         </div>
 
         <div>
@@ -194,11 +199,13 @@ const fetchUser = async () => {
       throw new Error(res.data.message || 'User not found.')
     }
 
-    user.value = res.data
+    // ❌ Exclude 'token' from response
+    const { token, ...filteredUser } = res.data
+    user.value = filteredUser
 
     // ✅ Store Uid in sessionStorage
-    if (res.data.uid) {
-      sessionStorage.setItem('searchedUserUid', res.data.uid)
+    if (filteredUser.uid) {
+      sessionStorage.setItem('searchedUserUid', filteredUser.uid)
     } else {
       sessionStorage.removeItem('searchedUserUid')
     }
@@ -210,6 +217,7 @@ const fetchUser = async () => {
     loading.value = false
   }
 }
+
 
 const openEditModal = () => {
   if (!user.value) return
@@ -294,5 +302,15 @@ const buttonClass = (tab) => {
     ? 'bg-blue-600 text-white'
     : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
     }`
+}
+
+const insertUidFromCache = () => {
+  const cachedUid = sessionStorage.getItem('searchedUserUid')
+  if (cachedUid) {
+    updateUid.value= cachedUid
+  } else {
+    message.value = 'No cached UID found.'
+    error.value = true
+  }
 }
 </script>
