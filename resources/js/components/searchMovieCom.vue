@@ -521,12 +521,16 @@ const encryptViaProxy = async (plainUrl) => {
   }
 };
 
-// --- Core Logic Functions ---
 const fetchMovies = async (query = '') => {
   loading.value = true;
   movies.value = [];
   try {
-    const response = await axios.get(route('proxy.get', { endpoint: 'search', q: query, age_restriction: true, is_enable: false }));
+    const response = await axios.get(route('proxy.get', {
+      endpoint: 'search',
+      q: query,
+      age_restriction: String(true),
+      is_enable: String(false),
+    }));
     movies.value = Array.isArray(response.data) ? response.data : [];
   } catch (error) {
     console.error('Failed to fetch movies:', error);
@@ -568,8 +572,7 @@ const editMovie = async (itemFromList, pMovieId = null, pSeasonId = null) => {
     if (isEpisode) {
       const episodeDetailUrl = `${ZOS_BASE_URL}/episode/${itemIdToFetch}`;
       const response = await axios.get(episodeDetailUrl, { headers: { 'X-Api-Key': ZOS_API_KEY } });
-      // Assuming Zostream API for single episode returns { ..., "episode": { actual_episode_data } }
-      // If it returns episode data at root, use: itemDetails = response.data;
+
       itemDetails = response.data.episode;
       if (!itemDetails) throw new Error("Episode data not found in Zostream API response.");
       console.log("Fetched Zostream Episode Details:", itemDetails);
