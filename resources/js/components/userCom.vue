@@ -13,6 +13,9 @@
       <button @click="activeTab = 'update'" :class="buttonClass('update')">
         Update DOB
       </button>
+      <button @click="activeTab = 'profile'" :class="buttonClass('profile')">
+        Update Profile
+      </button>
     </div>
 
     <!-- Search Section -->
@@ -89,15 +92,15 @@
   </div>
 
   <!-- Modal -->
-  <div v-if="showEditModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+  <div v-if="activeTab === 'profile'" class="mt-4">
     <div class="bg-white dark:bg-gray-800 w-full max-w-md p-6 rounded-xl shadow-xl">
       <h3 class="text-lg font-semibold mb-4 text-center">Edit User Profile</h3>
 
       <div class="space-y-3">
         <div>
           <label class="block text-sm font-medium">UID</label>
-          <input v-model="editForm.uid" type="text" disabled
-            class="w-full px-3 py-2 border rounded-md bg-gray-100 text-gray-600" />
+          <input v-model="editForm.uid" type="text"
+          class="w-full px-3 py-2 border rounded-md"  />
         </div>
 
         <div>
