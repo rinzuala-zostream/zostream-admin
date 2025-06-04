@@ -577,7 +577,7 @@ const editMovie = async (itemFromList, pMovieId = null, pSeasonId = null) => {
       if (!itemDetails) throw new Error("Episode data not found in Zostream API response.");
       console.log("Fetched Zostream Episode Details:", itemDetails);
     } else { // Fetching movie details (assumed via your proxy)
-      const response = await axios.get(route("proxy.get", { endpoint: "movies", id: itemIdToFetch, category_type: "movie" }));
+      const response = await axios.get(route("proxy.get", { endpoint: "movies", id: itemIdToFetch, category_type: "movie", is_enable: false }));
       itemDetails = response.data; // Assuming proxy returns movie data directly
       if (!itemDetails) throw new Error("Movie data not found in proxy response.");
       console.log("Fetched Proxied Movie Details:", itemDetails);
