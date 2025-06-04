@@ -16,33 +16,7 @@
             <!-- Main navigation -->
             <NavMain :items="mainNavItems" />
 
-            <!-- Management section -->
-            <SidebarMenu class="mt-4">
-                <Collapsible defaultOpen class="group/collapsible">
-                    <SidebarMenuItem>
-                        <CollapsibleTrigger asChild>
-                            <SidebarMenuButton>
-                                <Settings class="w-4 h-4 mr-2" />
-                                <span class="truncate">Management</span>
-                                <ChevronDown class="w-4 h-4 ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-180" />
-                            </SidebarMenuButton>
-                        </CollapsibleTrigger>
-                        <CollapsibleContent class="mt-1">
-                            <SidebarMenuSub>
-                                <SidebarMenuSubItem v-for="item in managementItems" :key="item.title">
-                                    <Link
-                                        class="flex items-center px-4 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent rounded-md transition-colors"
-                                        :href="item.href"
-                                    >
-                                        <component :is="item.icon" class="w-4 h-4 mr-2" />
-                                        {{ item.title }}
-                                    </Link>
-                                </SidebarMenuSubItem>
-                            </SidebarMenuSub>
-                        </CollapsibleContent>
-                    </SidebarMenuItem>
-                </Collapsible>
-            </SidebarMenu>
+           
         </SidebarContent>
 
         <SidebarFooter class="border-t pt-2">
@@ -82,7 +56,8 @@ import {
     Users, 
     Smartphone, 
     ChevronDown,
-    Crown
+    Crown,
+Edit
 } from 'lucide-vue-next';
 
 const mainNavItems: NavItem[] = [
@@ -101,12 +76,9 @@ const mainNavItems: NavItem[] = [
     {
         title: 'Update',
         href: '/update',
-        icon: Tv,
+        icon: Edit,
         active: route().current('update*')
     },
-];
-
-const managementItems: NavItem[] = [
     { 
         title: 'Users', 
         href: '/user', 
@@ -126,6 +98,7 @@ const managementItems: NavItem[] = [
         active: route().current('subscribe*')
     },
 ];
+
 
 const footerNavItems: NavItem[] = [
     {

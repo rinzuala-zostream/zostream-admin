@@ -412,15 +412,12 @@
 import { ref, reactive, computed, onMounted } from 'vue'
 import axios from 'axios'
 
-// Assuming route() is globally available (e.g., from Ziggy in Laravel)
-// declare function route(name: string, params?: any): string;
-
 const getInitialFormState = () => ({
   title: '',
   desc: '',
   ppv_amount: '',
   season_id: '', 
-  movie_id: '', // To store movie.num, no direct input field
+  movie_id: '', 
   txt: '',
   img: '',
   url: '',
