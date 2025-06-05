@@ -843,28 +843,23 @@ const confirmDeleteItem = async () => {
 
   isDeleting.value = true;
   deleteModalMessage.value = '';
-  const itemCtx = itemToDelete.value;
+  const itemCtx = itemToDelete.value; // { id, type: 'movie' | 'episode', ... }
 
   try {
-    let apiDeletePath = 'movies'; // Zostream specific: uses /movies for both
+    // Determine the correct API path segment based on the item type
+    let apiDeleteSegment = 'movies'; // Default for movies
     if (itemCtx.type === 'episode') {
-      // If your API differentiates delete paths, adjust here.
-      // For Zostream, it seems /movies/{id} is used for both movie and episode DELETE
-      // where {id} is the episodeId if type is 'episode'.
-      // No change needed for apiDeletePath if it's universal.
+      apiDeleteSegment = 'episode'; // Change to 'episode' for episodes
     }
 
-    const actualApiUrl = `${ZOS_BASE_URL}/${apiDeletePath}/${itemCtx.id}`;
+    const actualApiUrl = `${ZOS_BASE_URL}/${apiDeleteSegment}/${itemCtx.id}`;
     const apiHeaders = {
-      'Content-Type': 'application/json', // Usually not strictly needed for DELETE without body
+      // 'Content-Type': 'application/json', // Usually not strictly needed for DELETE without body
       'X-Api-Key': ZOS_API_KEY,
     };
 
     console.log(`Attempting to DELETE: ${itemCtx.type} with ID ${itemCtx.id} from URL: ${actualApiUrl}`);
 
-    // axios.delete doesn't typically send a body.
-    // If your API requires a body for DELETE (uncommon), use:
-    // await axios.delete(actualApiUrl, { data: payload, headers: apiHeaders });
     await axios.delete(actualApiUrl, { headers: apiHeaders });
 
     deleteModalMessage.value = `${itemCtx.type.charAt(0).toUpperCase() + itemCtx.type.slice(1)} deleted successfully!`;
@@ -882,13 +877,11 @@ const confirmDeleteItem = async () => {
       movies.value = movies.value.filter(m => m.id !== itemCtx.id);
     }
 
-    setTimeout(() => { // Give user time to see success message
+    setTimeout(() => {
       closeDeleteConfirmation();
-      // Also clear the main modal message if a general one is shown after delete
       modalMessage.value = `${itemCtx.type.charAt(0).toUpperCase() + itemCtx.type.slice(1)} "${itemCtx.titleOrTxt}" was deleted.`;
       setTimeout(() => modalMessage.value = '', 3000);
     }, 1500);
-
 
   } catch (err) {
     console.error(`Failed to delete ${itemCtx.type}:`, err.config?.url, err.response || err);
