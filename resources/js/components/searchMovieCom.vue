@@ -22,7 +22,10 @@
         <div class="flex justify-center">
           <button @click="performSearch" :disabled="loading"
             class="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors duration-200 flex items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto">
-            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
             <span>Search</span>
           </button>
         </div>
@@ -36,14 +39,21 @@
         <!-- ... (initial prompt, no results - same) ... -->
         <div v-if="!hasSearchedAtLeastOnce" class="text-center py-12">
           <div class="mx-auto w-24 h-24 text-gray-400 dark:text-gray-500 mb-4">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-24 w-24" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /><path stroke-linecap="round" stroke-linejoin="round" d="M10 7v3m0 0v3m0-3h3m-3 0H7" /></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-24 w-24" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor" stroke-width="1">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              <path stroke-linecap="round" stroke-linejoin="round" d="M10 7v3m0 0v3m0-3h3m-3 0H7" />
+            </svg>
           </div>
           <h3 class="text-lg font-medium text-gray-700 dark:text-gray-300">Find Your Favorite Movies</h3>
           <p class="text-gray-500 dark:text-gray-400 mt-1">Enter a movie title and click the search button to begin.</p>
         </div>
         <div v-else-if="hasSearchedAtLeastOnce && filteredMovies.length === 0" class="text-center py-12">
           <div class="mx-auto w-24 h-24 text-gray-400 dark:text-gray-500 mb-4">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
           </div>
           <h3 class="text-lg font-medium text-gray-700 dark:text-gray-300">No movies found</h3>
           <p class="text-gray-500 dark:text-gray-400 mt-1">Try adjusting your search query or check for typos.</p>
@@ -52,56 +62,122 @@
           <li v-for="movie in filteredMovies" :key="movie.id"
             class="bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden border border-gray-200 dark:border-gray-700">
             <div class="flex items-center justify-between p-4">
-              <div class="flex items-center space-x-3 min-w-0 cursor-pointer" @click="toggleMovie(movie)">
-                <div class="w-10 h-10 flex-shrink-0 rounded-lg bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center">
-                  <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z"></path></svg>
+              <!-- Left side: Icon and Title (clickable to expand) -->
+              <div class="flex items-center space-x-3 min-w-0 flex-grow cursor-pointer" @click="toggleMovie(movie)">
+                <div
+                  class="w-10 h-10 flex-shrink-0 rounded-lg bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center">
+                  <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor"
+                    viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z">
+                    </path>
+                  </svg>
                 </div>
                 <span class="font-medium truncate">{{ movie.title }}</span>
               </div>
+
+              <!-- Middle: Status Badge (add this section) -->
+              <div class="flex-shrink-0 mx-4" v-if="movie.status">
+                <span :class="getStatusClass(movie.status)"
+                  class="px-2.5 py-1 inline-flex text-xs leading-5 font-semibold rounded-full capitalize">
+                  {{ movie.status }}
+                </span>
+              </div>
+
+              <!-- Right side: Action Buttons -->
               <div class="flex space-x-2 flex-shrink-0">
                 <button
                   class="px-3 py-1.5 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors duration-200 flex items-center space-x-1 disabled:opacity-70 disabled:cursor-wait"
                   @click.stop="editMovie(movie)"
                   :disabled="isFetchingEditItemDetails && editingItemContext?.id === movie.id && !editingItemContext?.seasonId">
-                  <svg v-if="isFetchingEditItemDetails && editingItemContext?.id === movie.id && !editingItemContext?.seasonId" class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                  <svg v-else class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                  <!-- Edit SVG and text -->
+                  <svg
+                    v-if="isFetchingEditItemDetails && editingItemContext?.id === movie.id && !editingItemContext?.seasonId"
+                    class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
+                    viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                    </path>
+                  </svg>
+                  <svg v-else class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
+                    </path>
+                  </svg>
                   <span>Edit</span>
                 </button>
                 <button
                   class="px-3 py-1.5 text-sm bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors duration-200 flex items-center space-x-1"
                   @click.stop="openDeleteConfirmation(movie)">
-                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                  <!-- Delete SVG and text -->
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                    </path>
+                  </svg>
                   <span>Delete</span>
                 </button>
               </div>
             </div>
-            <div v-if="expandedMovie === movie.id && movie.isSeason" class="border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/30 transition-all duration-200">
+
+            <div v-if="expandedMovie === movie.id && movie.isSeason"
+              class="border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/30 transition-all duration-200">
               <div v-for="season in movie.seasons || []" :key="season.id" class="px-4 py-3">
                 <div class="flex items-center justify-between font-medium text-sm">
-                    <div class="flex items-center space-x-2 cursor-pointer hover:text-blue-500 dark:hover:text-blue-400 transition-colors duration-150" @click="toggleSeasonEpisodes(movie, season)">
-                        <svg class="w-4 h-4 transform transition-transform duration-200" :class="{ 'rotate-90': season.showEpisodes }" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-                        <span>{{ season.txt }}</span>
-                    </div>
-                    <span class="text-xs text-gray-500 dark:text-gray-400">{{ season.episodes.length }} episode{{ season.episodes.length !== 1 ? 's' : '' }}</span>
+                  <div
+                    class="flex items-center space-x-2 cursor-pointer hover:text-blue-500 dark:hover:text-blue-400 transition-colors duration-150"
+                    @click="toggleSeasonEpisodes(movie, season)">
+                    <svg class="w-4 h-4 transform transition-transform duration-200"
+                      :class="{ 'rotate-90': season.showEpisodes }" fill="none" stroke="currentColor"
+                      viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                    <span>{{ season.txt }}</span>
+                  </div>
+                  <span class="text-xs text-gray-500 dark:text-gray-400">{{ season.episodes.length }} episode{{
+              season.episodes.length !== 1 ? 's' : '' }}</span>
                 </div>
                 <ul v-if="season.showEpisodes" class="ml-6 mt-2 space-y-2 animate-fadeIn">
-                  <li v-for="ep in season.episodes" :key="ep.id" class="flex items-center justify-between py-2 px-3 -mx-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors duration-150">
+                  <li v-for="ep in season.episodes" :key="ep.id"
+                    class="flex items-center justify-between py-2 px-3 -mx-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors duration-150">
                     <span class="text-sm">{{ ep.txt || 'Untitled Episode' }}</span>
                     <div class="flex space-x-2 flex-shrink-0">
-                        <button
+                      <button
                         class="px-2 py-1 text-xs bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors duration-200 flex items-center space-x-1 disabled:opacity-70 disabled:cursor-wait"
                         @click.stop="editMovie(ep, movie.id, season.id)"
                         :disabled="isFetchingEditItemDetails && editingItemContext?.id === ep.id && editingItemContext?.seasonId === season.id">
-                            <svg v-if="isFetchingEditItemDetails && editingItemContext?.id === ep.id && editingItemContext?.seasonId === season.id" class="animate-spin h-3 w-3 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                            <svg v-else class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
-                            <span>Edit</span>
-                        </button>
-                        <button
+                        <svg
+                          v-if="isFetchingEditItemDetails && editingItemContext?.id === ep.id && editingItemContext?.seasonId === season.id"
+                          class="animate-spin h-3 w-3 text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
+                          viewBox="0 0 24 24">
+                          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                          </circle>
+                          <path class="opacity-75" fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                          </path>
+                        </svg>
+                        <svg v-else class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                          xmlns="http://www.w3.org/2000/svg">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
+                          </path>
+                        </svg>
+                        <span>Edit</span>
+                      </button>
+                      <button
                         class="px-2 py-1 text-xs bg-red-600 hover:bg-red-700 text-white rounded transition-colors duration-200 flex items-center space-x-1"
                         @click.stop="openDeleteConfirmation(ep, movie.id, season.id)">
-                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                            <span>Delete</span>
-                        </button>
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                          xmlns="http://www.w3.org/2000/svg">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                          </path>
+                        </svg>
+                        <span>Delete</span>
+                      </button>
                     </div>
                   </li>
                 </ul>
@@ -113,102 +189,246 @@
     </div>
 
     <!-- Edit Modal (remains the same, with v-if="showEditModal") -->
-    <div v-if="showEditModal" 
-        class="fixed inset-0 bg-gray-600 bg-opacity-75 dark:bg-gray-900 dark:bg-opacity-75 transition-opacity duration-300 ease-in-out flex items-center justify-center p-4 z-[100]"
-        @click.self="closeEditModal">
-        <!-- Movie Edit Form -->
-        <div v-if="editingItem && !editingItem.seasonId" class="form-container bg-white dark:bg-gray-950 text-gray-800 dark:text-gray-100 p-6 sm:p-8 md:p-10 rounded-xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto">
-            <!-- ... Movie form content ... -->
-             <h2 class="text-2xl sm:text-3xl font-bold mb-8 text-center sm:text-left text-gray-900 dark:text-white tracking-tight">Update Movie</h2>
-             <form @submit.prevent="submitForm" class="space-y-8">
-                <!-- Movie fields here -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-6">
-                  <div class="form-group sm:col-span-2 lg:col-span-3"><label for="movie-title" class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">Movie Title</label><input id="movie-title" v-model="editForm.title" type="text" class="block w-full rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900" placeholder="Enter movie title"></div>
-                  <div class="form-group sm:col-span-2 lg:col-span-3"><label for="movie-description" class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">Description</label><textarea id="movie-description" v-model="editForm.description" class="block w-full min-h-[8rem] rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900" rows="4" placeholder="Provide a compelling movie description..."></textarea></div>
-                  <div class="form-group"><label for="movie-genre" class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">Genre</label><input id="movie-genre" v-model="editForm.genre" type="text" class="block w-full rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900" placeholder="e.g., Action, Comedy"></div>
-                  <div class="form-group"><label for="movie-director" class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">Director</label><input id="movie-director" v-model="editForm.director" type="text" class="block w-full rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900" placeholder="Director's Name"></div>
-                  <div class="form-group"><label for="movie-duration" class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">Duration</label><input id="movie-duration" v-model="editForm.duration" type="text" class="block w-full rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900" placeholder="e.g., 2h 30m"></div>
-                  <div class="form-group"><label for="movie-ppv_amount" class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">PPV rate</label><input id="movie-ppv_amount" v-model="editForm.ppv_amount" type="text" class="block w-full rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900" placeholder="e.g., 200 or Free"></div>
-                  <div class="form-group"><label for="movie-status" class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">Status</label><select id="movie-status" v-model="editForm.status" class="block w-full rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900"><option disabled value="">Select status</option><option value="Scheduled">Scheduled</option><option value="Published">Published</option><option value="Draft">Draft</option></select></div>
-                  <div class="form-group"><label for="movie-upload_date" class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">Create Date</label><input id="movie-upload_date" v-model="editForm.create_date" type="date" class="block w-full rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900 dark:[color-scheme:dark]"></div>
-                  <div class="form-group"><label for="movie-poster" class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">Poster URL</label><input id="movie-poster" v-model="editForm.poster" type="url" class="block w-full rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900" placeholder="https://example.com/poster.jpg"></div>
-                  <div class="form-group"><label for="movie-cover_img" class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">Cover Image URL</label><input id="movie-cover_img" v-model="editForm.cover_img" type="url" class="block w-full rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900" placeholder="https://example.com/cover.jpg"></div>
-                  <div class="form-group"><label for="movie-release_on" class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">Release Date</label><input id="movie-release_on" v-model="editForm.release_on" type="date" class="block w-full rounded-lg border-0 py-2 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900 dark:[color-scheme:dark]"></div>
-                  <div class="form-group"><label for="movie-url" class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">Movie URL</label><input id="movie-url" v-model="editForm.url" type="url" class="block w-full rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900" placeholder="https://example.com/movie.mp4"></div>
-                  <div class="form-group"><label for="movie-dash_url" class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">Dash URL</label><input id="movie-dash_url" v-model="editForm.dash_url" type="url" class="block w-full rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900" placeholder="https://example.com/movie.mpd"></div>
-                  <div class="form-group"><label for="movie-hls_url" class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">HLS URL</label><input id="movie-hls_url" v-model="editForm.hls_url" type="url" class="block w-full rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900" placeholder="https://example.com/movie.m3u8"></div>
-                </div>
-                <div class="attributes-section pt-8 border-t border-gray-200 dark:border-gray-800">
-                    <h3 class="text-xl font-semibold mb-6 text-gray-900 dark:text-white">Movie Attributes</h3>
-                    <div class="checkboxes-grid grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-5">
-                        <label v-for="(label, key) in movieBooleanFields" :key="key" class="checkbox-label flex items-center space-x-3 cursor-pointer group">
-                            <input type="checkbox" :id="`movie-checkbox-${key}`" v-model="editForm[key]" class="sr-only peer">
-                            <span class="custom-checkbox w-5 h-5 rounded-md border flex items-center justify-center border-gray-400 dark:border-gray-600 bg-white dark:bg-gray-800 group-hover:border-gray-500 dark:group-hover:border-gray-500 peer-checked:bg-blue-600 peer-checked:border-blue-600 dark:peer-checked:bg-blue-500 dark:peer-checked:border-blue-500 peer-focus-visible:ring-2 peer-focus-visible:ring-offset-2 peer-focus-visible:ring-blue-500 dark:peer-focus-visible:ring-offset-gray-950 transition-all duration-150 ease-in-out"><svg class="w-3.5 h-3.5 text-white opacity-0 peer-checked:opacity-100 transition-opacity duration-150" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3.5" d="M5 13l4 4L19 7"></path></svg></span>
-                            <span class="text-sm font-medium text-gray-700 dark:text-gray-300 select-none group-hover:text-gray-900 dark:group-hover:text-white transition-colors">{{ label }}</span>
-                        </label>
-                    </div>
-                </div>
-                 <div class="pt-8 flex flex-col sm:flex-row justify-end space-y-3 sm:space-y-0 sm:space-x-4">
-                    <button type="button" @click="closeEditModal" class="cancel-button w-full sm:w-auto py-3 px-8 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 font-semibold rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400 dark:focus:ring-offset-gray-950 transition-all duration-150 ease-in-out">Cancel</button>
-                    <button type="submit" class="submit-button w-full sm:w-auto py-3 px-8 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white font-semibold rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-offset-gray-950 disabled:opacity-60 disabled:cursor-not-allowed transition-all duration-150 ease-in-out flex justify-center items-center" :disabled="modalLoading">
-                        <span v-if="!modalLoading">Update Movie</span>
-                        <span v-else class="loading-spinner w-5 h-5 border-2 border-white/40 border-t-white rounded-full animate-spin"></span>
-                    </button>
-                </div>
-                <div v-if="modalMessage" class="message mt-6 p-4 rounded-lg text-sm font-medium text-center" :class="{ 'bg-green-50 dark:bg-green-700/20 text-green-700 dark:text-green-300 border border-green-300 dark:border-green-600/50': !modalMessage.startsWith('Failed'), 'bg-red-50 dark:bg-red-700/20 text-red-700 dark:text-red-300 border border-red-300 dark:border-red-600/50': modalMessage.startsWith('Failed') }">{{ modalMessage }}</div>
-            </form>
-        </div>
+    <div v-if="showEditModal"
+      class="fixed inset-0 bg-gray-600 bg-opacity-75 dark:bg-gray-900 dark:bg-opacity-75 transition-opacity duration-300 ease-in-out flex items-center justify-center p-4 z-[100]"
+      @click.self="closeEditModal">
+      <!-- Movie Edit Form -->
+      <div v-if="editingItem && !editingItem.seasonId"
+        class="form-container bg-white dark:bg-gray-950 text-gray-800 dark:text-gray-100 p-6 sm:p-8 md:p-10 rounded-xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto">
+        <!-- ... Movie form content ... -->
+        <h2
+          class="text-2xl sm:text-3xl font-bold mb-8 text-center sm:text-left text-gray-900 dark:text-white tracking-tight">
+          Update Movie</h2>
+        <form @submit.prevent="submitForm" class="space-y-8">
+          <!-- Movie fields here -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-6">
+            <div class="form-group sm:col-span-2 lg:col-span-3"><label for="movie-title"
+                class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">Movie
+                Title</label><input id="movie-title" v-model="editForm.title" type="text"
+                class="block w-full rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900"
+                placeholder="Enter movie title"></div>
+            <div class="form-group sm:col-span-2 lg:col-span-3"><label for="movie-description"
+                class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">Description</label><textarea
+                id="movie-description" v-model="editForm.description"
+                class="block w-full min-h-[8rem] rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900"
+                rows="4" placeholder="Provide a compelling movie description..."></textarea></div>
+            <div class="form-group"><label for="movie-genre"
+                class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">Genre</label><input
+                id="movie-genre" v-model="editForm.genre" type="text"
+                class="block w-full rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900"
+                placeholder="e.g., Action, Comedy"></div>
+            <div class="form-group"><label for="movie-director"
+                class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">Director</label><input
+                id="movie-director" v-model="editForm.director" type="text"
+                class="block w-full rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900"
+                placeholder="Director's Name"></div>
+            <div class="form-group"><label for="movie-duration"
+                class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">Duration</label><input
+                id="movie-duration" v-model="editForm.duration" type="text"
+                class="block w-full rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900"
+                placeholder="e.g., 2h 30m"></div>
+            <div class="form-group"><label for="movie-ppv_amount"
+                class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">PPV
+                rate</label><input id="movie-ppv_amount" v-model="editForm.ppv_amount" type="text"
+                class="block w-full rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900"
+                placeholder="e.g., 200 or Free"></div>
+            <div class="form-group"><label for="movie-status"
+                class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">Status</label><select
+                id="movie-status" v-model="editForm.status"
+                class="block w-full rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900">
+                <option disabled value="">Select status</option>
+                <option value="Scheduled">Scheduled</option>
+                <option value="Published">Published</option>
+                <option value="Draft">Draft</option>
+              </select></div>
+            <div class="form-group"><label for="movie-upload_date"
+                class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">Create
+                Date</label><input id="movie-upload_date" v-model="editForm.create_date" type="date"
+                class="block w-full rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900 dark:[color-scheme:dark]">
+            </div>
+            <div class="form-group"><label for="movie-poster"
+                class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">Poster
+                URL</label><input id="movie-poster" v-model="editForm.poster" type="url"
+                class="block w-full rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900"
+                placeholder="https://example.com/poster.jpg"></div>
+            <div class="form-group"><label for="movie-cover_img"
+                class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">Cover Image
+                URL</label><input id="movie-cover_img" v-model="editForm.cover_img" type="url"
+                class="block w-full rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900"
+                placeholder="https://example.com/cover.jpg"></div>
+            <div class="form-group"><label for="movie-release_on"
+                class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">Release
+                Date</label><input id="movie-release_on" v-model="editForm.release_on" type="date"
+                class="block w-full rounded-lg border-0 py-2 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900 dark:[color-scheme:dark]">
+            </div>
+            <div class="form-group"><label for="movie-url"
+                class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">Movie
+                URL</label><input id="movie-url" v-model="editForm.url" type="url"
+                class="block w-full rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900"
+                placeholder="https://example.com/movie.mp4"></div>
+            <div class="form-group"><label for="movie-dash_url"
+                class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">Dash
+                URL</label><input id="movie-dash_url" v-model="editForm.dash_url" type="url"
+                class="block w-full rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900"
+                placeholder="https://example.com/movie.mpd"></div>
+            <div class="form-group"><label for="movie-hls_url"
+                class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">HLS
+                URL</label><input id="movie-hls_url" v-model="editForm.hls_url" type="url"
+                class="block w-full rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900"
+                placeholder="https://example.com/movie.m3u8"></div>
+          </div>
+          <div class="attributes-section pt-8 border-t border-gray-200 dark:border-gray-800">
+            <h3 class="text-xl font-semibold mb-6 text-gray-900 dark:text-white">Movie Attributes</h3>
+            <div class="checkboxes-grid grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-5">
+              <label v-for="(label, key) in movieBooleanFields" :key="key"
+                class="checkbox-label flex items-center space-x-3 cursor-pointer group">
+                <input type="checkbox" :id="`movie-checkbox-${key}`" v-model="editForm[key]" class="sr-only peer">
+                <span
+                  class="custom-checkbox w-5 h-5 rounded-md border flex items-center justify-center border-gray-400 dark:border-gray-600 bg-white dark:bg-gray-800 group-hover:border-gray-500 dark:group-hover:border-gray-500 peer-checked:bg-blue-600 peer-checked:border-blue-600 dark:peer-checked:bg-blue-500 dark:peer-checked:border-blue-500 peer-focus-visible:ring-2 peer-focus-visible:ring-offset-2 peer-focus-visible:ring-blue-500 dark:peer-focus-visible:ring-offset-gray-950 transition-all duration-150 ease-in-out"><svg
+                    class="w-3.5 h-3.5 text-white opacity-0 peer-checked:opacity-100 transition-opacity duration-150"
+                    fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3.5" d="M5 13l4 4L19 7"></path>
+                  </svg></span>
+                <span
+                  class="text-sm font-medium text-gray-700 dark:text-gray-300 select-none group-hover:text-gray-900 dark:group-hover:text-white transition-colors">{{
+              label }}</span>
+              </label>
+            </div>
+          </div>
+          <div class="pt-8 flex flex-col sm:flex-row justify-end space-y-3 sm:space-y-0 sm:space-x-4">
+            <button type="button" @click="closeEditModal"
+              class="cancel-button w-full sm:w-auto py-3 px-8 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 font-semibold rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400 dark:focus:ring-offset-gray-950 transition-all duration-150 ease-in-out">Cancel</button>
+            <button type="submit"
+              class="submit-button w-full sm:w-auto py-3 px-8 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white font-semibold rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-offset-gray-950 disabled:opacity-60 disabled:cursor-not-allowed transition-all duration-150 ease-in-out flex justify-center items-center"
+              :disabled="modalLoading">
+              <span v-if="!modalLoading">Update Movie</span>
+              <span v-else
+                class="loading-spinner w-5 h-5 border-2 border-white/40 border-t-white rounded-full animate-spin"></span>
+            </button>
+          </div>
+          <div v-if="modalMessage" class="message mt-6 p-4 rounded-lg text-sm font-medium text-center"
+            :class="{ 'bg-green-50 dark:bg-green-700/20 text-green-700 dark:text-green-300 border border-green-300 dark:border-green-600/50': !modalMessage.startsWith('Failed'), 'bg-red-50 dark:bg-red-700/20 text-red-700 dark:text-red-300 border border-red-300 dark:border-red-600/50': modalMessage.startsWith('Failed') }">
+            {{ modalMessage }}</div>
+        </form>
+      </div>
 
-        <!-- Episode Edit Form -->
-        <div v-if="editingItem && editingItem.seasonId" class="form-container bg-white dark:bg-gray-950 text-gray-800 dark:text-gray-100 p-6 sm:p-8 md:p-10 rounded-xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto">
-            <!-- ... Episode form content ... -->
-            <h2 class="text-2xl sm:text-3xl font-bold mb-8 text-center sm:text-left text-gray-900 dark:text-white tracking-tight">Update Episode</h2>
-            <form @submit.prevent="submitForm" class="space-y-8">
-                <!-- Episode fields here -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-6">
-                    <div class="form-group"><label for="ep-title" class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">Episode Title</label><input id="ep-title" v-model="editForm.title" type="text" class="block w-full rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900" placeholder="Enter episode title"></div>
-                    <div class="form-group sm:col-span-2 lg:col-span-3"><label for="ep-desc" class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">Episode Description</label><textarea id="ep-desc" v-model="editForm.desc" class="block w-full min-h-[8rem] rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900" rows="4" placeholder="Provide episode details..."></textarea></div>
-                    <div class="form-group"><label for="ep-txt" class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">Episode Identifier (e.g., S1 E1)</label><input id="ep-txt" v-model="editForm.txt" type="text" class="block w-full rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900" placeholder="S1 E1"></div>
-                    <div class="form-group"><label for="ep-season_id" class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">Season ID</label><input id="ep-season_id" v-model="editForm.season_id" type="text" class="block w-full rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900" placeholder="Enter Season ID" readonly></div>
-                    <div class="form-group"><label for="ep-ppv_amount" class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">PPV Rate</label><input id="ep-ppv_amount" v-model="editForm.ppv_amount" type="text" class="block w-full rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900" placeholder="e.g., 200 or Free"></div>
-                    <div class="form-group"><label for="ep-img" class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">Cover Image URL</label><input id="ep-img" v-model="editForm.img" type="url" class="block w-full rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900" placeholder="https://example.com/image.jpg"></div>
-                    <div class="form-group"><label for="ep-url" class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">Video URL</label><input id="ep-url" v-model="editForm.url" type="url" class="block w-full rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900" placeholder="https://example.com/episode.mp4"></div>
-                    <div class="form-group"><label for="ep-dash_url" class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">DASH URL</label><input id="ep-dash_url" v-model="editForm.dash_url" type="url" class="block w-full rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900" placeholder="https://example.com/episode.mpd"></div>
-                    <div class="form-group"><label for="ep-hls_url" class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">HLS URL</label><input id="ep-hls_url" v-model="editForm.hls_url" type="url" class="block w-full rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900" placeholder="https://example.com/episode.m3u8"></div>
-                    <div class="form-group"><label for="ep-status" class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">Status</label><select id="ep-status" v-model="editForm.status" class="block w-full rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900"><option disabled value="">Select status</option><option value="Scheduled">Scheduled</option><option value="Published">Published</option><option value="Draft">Draft</option></select></div>
-                    <div class="form-group"><label for="ep-upload_date" class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">Create Date</label><input id="ep-upload_date" v-model="editForm.create_date" type="date" class="block w-full rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900 dark:[color-scheme:dark]"></div>
-                </div>
-                <div class="attributes-section pt-8 border-t border-gray-200 dark:border-gray-800">
-                    <h3 class="text-xl font-semibold mb-6 text-gray-900 dark:text-white">Episode Attributes</h3>
-                    <div class="checkboxes-grid grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-5">
-                        <label v-for="(label, key) in episodeBooleanFields" :key="key" class="checkbox-label flex items-center space-x-3 cursor-pointer group">
-                            <input type="checkbox" :id="`ep-checkbox-${key}`" v-model="editForm[key]" class="sr-only peer">
-                            <span class="custom-checkbox w-5 h-5 rounded-md border flex items-center justify-center border-gray-400 dark:border-gray-600 bg-white dark:bg-gray-800 group-hover:border-gray-500 dark:group-hover:border-gray-500 peer-checked:bg-blue-600 peer-checked:border-blue-600 dark:peer-checked:bg-blue-500 dark:peer-checked:border-blue-500 peer-focus-visible:ring-2 peer-focus-visible:ring-offset-2 peer-focus-visible:ring-blue-500 dark:peer-focus-visible:ring-offset-gray-950 transition-all duration-150 ease-in-out"><svg class="w-3.5 h-3.5 text-white opacity-0 peer-checked:opacity-100 transition-opacity duration-150" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3.5" d="M5 13l4 4L19 7"></path></svg></span>
-                            <span class="text-sm font-medium text-gray-700 dark:text-gray-300 select-none group-hover:text-gray-900 dark:group-hover:text-white transition-colors">{{ label }}</span>
-                        </label>
-                    </div>
-                </div>
-                 <div class="pt-8 flex flex-col sm:flex-row justify-end space-y-3 sm:space-y-0 sm:space-x-4">
-                    <button type="button" @click="closeEditModal" class="cancel-button w-full sm:w-auto py-3 px-8 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 font-semibold rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400 dark:focus:ring-offset-gray-950 transition-all duration-150 ease-in-out">Cancel</button>
-                    <button type="submit" class="submit-button w-full sm:w-auto py-3 px-8 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white font-semibold rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-offset-gray-950 disabled:opacity-60 disabled:cursor-not-allowed transition-all duration-150 ease-in-out flex justify-center items-center" :disabled="modalLoading">
-                        <span v-if="!modalLoading">Update Episode</span>
-                        <span v-else class="loading-spinner w-5 h-5 border-2 border-white/40 border-t-white rounded-full animate-spin"></span>
-                    </button>
-                </div>
-                <div v-if="modalMessage" class="message mt-6 p-4 rounded-lg text-sm font-medium text-center" :class="{ 'bg-green-50 dark:bg-green-700/20 text-green-700 dark:text-green-300 border border-green-300 dark:border-green-600/50': !modalMessage.startsWith('Failed'), 'bg-red-50 dark:bg-red-700/20 text-red-700 dark:text-red-300 border border-red-300 dark:border-red-600/50': modalMessage.startsWith('Failed') }">{{ modalMessage }}</div>
-            </form>
-        </div>
+      <!-- Episode Edit Form -->
+      <div v-if="editingItem && editingItem.seasonId"
+        class="form-container bg-white dark:bg-gray-950 text-gray-800 dark:text-gray-100 p-6 sm:p-8 md:p-10 rounded-xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto">
+        <!-- ... Episode form content ... -->
+        <h2
+          class="text-2xl sm:text-3xl font-bold mb-8 text-center sm:text-left text-gray-900 dark:text-white tracking-tight">
+          Update Episode</h2>
+        <form @submit.prevent="submitForm" class="space-y-8">
+          <!-- Episode fields here -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-6">
+            <div class="form-group"><label for="ep-title"
+                class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">Episode
+                Title</label><input id="ep-title" v-model="editForm.title" type="text"
+                class="block w-full rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900"
+                placeholder="Enter episode title"></div>
+            <div class="form-group sm:col-span-2 lg:col-span-3"><label for="ep-desc"
+                class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">Episode
+                Description</label><textarea id="ep-desc" v-model="editForm.desc"
+                class="block w-full min-h-[8rem] rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900"
+                rows="4" placeholder="Provide episode details..."></textarea></div>
+            <div class="form-group"><label for="ep-txt"
+                class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">Episode Identifier
+                (e.g., S1 E1)</label><input id="ep-txt" v-model="editForm.txt" type="text"
+                class="block w-full rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900"
+                placeholder="S1 E1"></div>
+            <div class="form-group"><label for="ep-season_id"
+                class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">Season
+                ID</label><input id="ep-season_id" v-model="editForm.season_id" type="text"
+                class="block w-full rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900"
+                placeholder="Enter Season ID" readonly></div>
+            <div class="form-group"><label for="ep-ppv_amount"
+                class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">PPV
+                Rate</label><input id="ep-ppv_amount" v-model="editForm.ppv_amount" type="text"
+                class="block w-full rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900"
+                placeholder="e.g., 200 or Free"></div>
+            <div class="form-group"><label for="ep-img"
+                class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">Cover Image
+                URL</label><input id="ep-img" v-model="editForm.img" type="url"
+                class="block w-full rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900"
+                placeholder="https://example.com/image.jpg"></div>
+            <div class="form-group"><label for="ep-url"
+                class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">Video
+                URL</label><input id="ep-url" v-model="editForm.url" type="url"
+                class="block w-full rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900"
+                placeholder="https://example.com/episode.mp4"></div>
+            <div class="form-group"><label for="ep-dash_url"
+                class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">DASH
+                URL</label><input id="ep-dash_url" v-model="editForm.dash_url" type="url"
+                class="block w-full rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900"
+                placeholder="https://example.com/episode.mpd"></div>
+            <div class="form-group"><label for="ep-hls_url"
+                class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">HLS
+                URL</label><input id="ep-hls_url" v-model="editForm.hls_url" type="url"
+                class="block w-full rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900"
+                placeholder="https://example.com/episode.m3u8"></div>
+            <div class="form-group"><label for="ep-status"
+                class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">Status</label><select
+                id="ep-status" v-model="editForm.status"
+                class="block w-full rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900">
+                <option disabled value="">Select status</option>
+                <option value="Scheduled">Scheduled</option>
+                <option value="Published">Published</option>
+                <option value="Draft">Draft</option>
+              </select></div>
+            <div class="form-group"><label for="ep-upload_date"
+                class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">Create
+                Date</label><input id="ep-upload_date" v-model="editForm.create_date" type="date"
+                class="block w-full rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900 dark:[color-scheme:dark]">
+            </div>
+          </div>
+          <div class="attributes-section pt-8 border-t border-gray-200 dark:border-gray-800">
+            <h3 class="text-xl font-semibold mb-6 text-gray-900 dark:text-white">Episode Attributes</h3>
+            <div class="checkboxes-grid grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-5">
+              <label v-for="(label, key) in episodeBooleanFields" :key="key"
+                class="checkbox-label flex items-center space-x-3 cursor-pointer group">
+                <input type="checkbox" :id="`ep-checkbox-${key}`" v-model="editForm[key]" class="sr-only peer">
+                <span
+                  class="custom-checkbox w-5 h-5 rounded-md border flex items-center justify-center border-gray-400 dark:border-gray-600 bg-white dark:bg-gray-800 group-hover:border-gray-500 dark:group-hover:border-gray-500 peer-checked:bg-blue-600 peer-checked:border-blue-600 dark:peer-checked:bg-blue-500 dark:peer-checked:border-blue-500 peer-focus-visible:ring-2 peer-focus-visible:ring-offset-2 peer-focus-visible:ring-blue-500 dark:peer-focus-visible:ring-offset-gray-950 transition-all duration-150 ease-in-out"><svg
+                    class="w-3.5 h-3.5 text-white opacity-0 peer-checked:opacity-100 transition-opacity duration-150"
+                    fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3.5" d="M5 13l4 4L19 7"></path>
+                  </svg></span>
+                <span
+                  class="text-sm font-medium text-gray-700 dark:text-gray-300 select-none group-hover:text-gray-900 dark:group-hover:text-white transition-colors">{{
+              label }}</span>
+              </label>
+            </div>
+          </div>
+          <div class="pt-8 flex flex-col sm:flex-row justify-end space-y-3 sm:space-y-0 sm:space-x-4">
+            <button type="button" @click="closeEditModal"
+              class="cancel-button w-full sm:w-auto py-3 px-8 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 font-semibold rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400 dark:focus:ring-offset-gray-950 transition-all duration-150 ease-in-out">Cancel</button>
+            <button type="submit"
+              class="submit-button w-full sm:w-auto py-3 px-8 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white font-semibold rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-offset-gray-950 disabled:opacity-60 disabled:cursor-not-allowed transition-all duration-150 ease-in-out flex justify-center items-center"
+              :disabled="modalLoading">
+              <span v-if="!modalLoading">Update Episode</span>
+              <span v-else
+                class="loading-spinner w-5 h-5 border-2 border-white/40 border-t-white rounded-full animate-spin"></span>
+            </button>
+          </div>
+          <div v-if="modalMessage" class="message mt-6 p-4 rounded-lg text-sm font-medium text-center"
+            :class="{ 'bg-green-50 dark:bg-green-700/20 text-green-700 dark:text-green-300 border border-green-300 dark:border-green-600/50': !modalMessage.startsWith('Failed'), 'bg-red-50 dark:bg-red-700/20 text-red-700 dark:text-red-300 border border-red-300 dark:border-red-600/50': modalMessage.startsWith('Failed') }">
+            {{ modalMessage }}</div>
+        </form>
+      </div>
     </div>
 
     <!-- Delete Confirmation Modal -->
     <div v-if="showDeleteConfirmModal"
-        class="fixed inset-0 bg-gray-800 bg-opacity-75 transition-opacity duration-300 ease-in-out flex items-center justify-center p-4 z-[110]"
-        @click.self="closeDeleteConfirmation">
+      class="fixed inset-0 bg-gray-800 bg-opacity-75 transition-opacity duration-300 ease-in-out flex items-center justify-center p-4 z-[110]"
+      @click.self="closeDeleteConfirmation">
       <div class="bg-white dark:bg-gray-900 rounded-lg shadow-xl p-6 sm:p-8 w-full max-w-md transform transition-all">
         <div class="text-center">
-          <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 dark:bg-red-900/30 mb-4">
+          <div
+            class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 dark:bg-red-900/30 mb-4">
             <svg class="h-6 w-6 text-red-600 dark:text-red-400" stroke="currentColor" fill="none" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
             </svg>
           </div>
           <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-white" id="modal-title">
@@ -220,26 +440,29 @@
             </p>
           </div>
         </div>
-         <div v-if="deleteModalMessage" class="mt-4 p-3 rounded-md text-sm text-center" :class="{
-            'bg-green-50 dark:bg-green-700/20 text-green-700 dark:text-green-300 border border-green-300 dark:border-green-600/50': !deleteModalMessage.startsWith('Failed'),
-            'bg-red-50 dark:bg-red-700/20 text-red-700 dark:text-red-300 border border-red-300 dark:border-red-600/50': deleteModalMessage.startsWith('Failed')
-          }">
+        <div v-if="deleteModalMessage" class="mt-4 p-3 rounded-md text-sm text-center" :class="{
+              'bg-green-50 dark:bg-green-700/20 text-green-700 dark:text-green-300 border border-green-300 dark:border-green-600/50': !deleteModalMessage.startsWith('Failed'),
+              'bg-red-50 dark:bg-red-700/20 text-red-700 dark:text-red-300 border border-red-300 dark:border-red-600/50': deleteModalMessage.startsWith('Failed')
+            }">
           {{ deleteModalMessage }}
         </div>
         <div class="mt-5 sm:mt-6 sm:grid sm:grid-cols-2 sm:gap-3 sm:grid-flow-row-dense">
           <button @click="confirmDeleteItem" :disabled="isDeleting"
-                  class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 dark:focus:ring-offset-gray-900 sm:col-start-2 sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed">
+            class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 dark:focus:ring-offset-gray-900 sm:col-start-2 sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed">
             <span v-if="!isDeleting">Confirm Delete</span>
             <span v-else class="flex items-center">
-              <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
+                viewBox="0 0 24 24">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                <path class="opacity-75" fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                </path>
               </svg>
               Deleting...
             </span>
           </button>
           <button @click="closeDeleteConfirmation" :disabled="isDeleting"
-                  class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 dark:border-gray-600 shadow-sm px-4 py-2 bg-white dark:bg-gray-700 text-base font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-900 sm:mt-0 sm:col-start-1 sm:text-sm disabled:opacity-50">
+            class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 dark:border-gray-600 shadow-sm px-4 py-2 bg-white dark:bg-gray-700 text-base font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-900 sm:mt-0 sm:col-start-1 sm:text-sm disabled:opacity-50">
             Cancel
           </button>
         </div>
@@ -387,6 +610,21 @@ const filteredMovies = computed(() => {
   });
 });
 
+const getStatusClass = (status) => {
+  if (!status) return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'; // Default/Unknown
+  status = status.toLowerCase();
+  switch (status) {
+    case 'published':
+      return 'bg-green-100 text-green-800 dark:bg-green-700/30 dark:text-green-300';
+    case 'draft':
+      return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-700/30 dark:text-yellow-400'; // Yellow for draft
+    case 'scheduled':
+      return 'bg-blue-100 text-blue-800 dark:bg-blue-700/30 dark:text-blue-400';
+    default:
+      return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300';
+  }
+};
+
 const editMovie = async (itemFromList, pMovieId = null, pSeasonId = null) => {
   if (isFetchingEditItemDetails.value) return;
 
@@ -416,7 +654,7 @@ const editMovie = async (itemFromList, pMovieId = null, pSeasonId = null) => {
 
     // Standardize itemDetails structure check
     if (typeof itemDetails !== 'object' || Array.isArray(itemDetails)) {
-        throw new Error(`Invalid item data structure. Expected a single object, got ${typeof itemDetails}.`);
+      throw new Error(`Invalid item data structure. Expected a single object, got ${typeof itemDetails}.`);
     }
 
     const form = editForm.value;
@@ -623,7 +861,7 @@ const confirmDeleteItem = async () => {
     };
 
     console.log(`Attempting to DELETE: ${itemCtx.type} with ID ${itemCtx.id} from URL: ${actualApiUrl}`);
-    
+
     // axios.delete doesn't typically send a body.
     // If your API requires a body for DELETE (uncommon), use:
     // await axios.delete(actualApiUrl, { data: payload, headers: apiHeaders });
@@ -645,10 +883,10 @@ const confirmDeleteItem = async () => {
     }
 
     setTimeout(() => { // Give user time to see success message
-        closeDeleteConfirmation();
-         // Also clear the main modal message if a general one is shown after delete
-        modalMessage.value = `${itemCtx.type.charAt(0).toUpperCase() + itemCtx.type.slice(1)} "${itemCtx.titleOrTxt}" was deleted.`;
-        setTimeout(() => modalMessage.value = '', 3000);
+      closeDeleteConfirmation();
+      // Also clear the main modal message if a general one is shown after delete
+      modalMessage.value = `${itemCtx.type.charAt(0).toUpperCase() + itemCtx.type.slice(1)} "${itemCtx.titleOrTxt}" was deleted.`;
+      setTimeout(() => modalMessage.value = '', 3000);
     }, 1500);
 
 
@@ -698,7 +936,7 @@ const toggleSeasonEpisodes = async (movie, season) => {
   if (season.showEpisodes && (!season.episodes || season.episodes.length === 0)) {
     try {
       // This `id` should be the season's ID that your `proxy.get` endpoint expects
-      const resp = await axios.get(route("proxy.get", { id: season.id, endpoint: "episodes", is_enable: false}));
+      const resp = await axios.get(route("proxy.get", { id: season.id, endpoint: "episodes", is_enable: false }));
       if (Array.isArray(resp.data)) {
         season.episodes = resp.data
           .filter(ep => ep && ep.id != null && String(ep.id).trim() !== '')
