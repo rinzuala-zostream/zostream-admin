@@ -42,6 +42,7 @@
         @routes
         @vite(['resources/js/app.ts', "resources/js/pages/{$page['component']}.vue"])
         @inertiaHead
+        <link rel="icon" href="{{ asset('images/logo_zostream.ico') }}" type="image/x-icon">
     </head>
     <body class="font-sans antialiased">
         @inertia
