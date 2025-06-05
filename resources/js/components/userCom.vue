@@ -283,7 +283,7 @@ const updateDOB = async () => {
   loading.value = true
 
   try {
-    const res = await axios.post(route('proxy.post'), {
+    const res = await axios.get(route('proxy.get'), {
       endpoint: 'update-dob',
       uid: updateUid.value,
       dob: newDob.value,
