@@ -21,7 +21,6 @@
 
         <SidebarFooter class="border-t pt-2">
             <NavUser />
-            <NavFooter :items="footerNavItems" />
         </SidebarFooter>
     </Sidebar>
     <slot />
@@ -99,21 +98,6 @@ const mainNavItems: NavItem[] = [
     },
 ];
 
-
-const footerNavItems: NavItem[] = [
-    {
-        title: 'GitHub',
-        href: 'https://github.com/laravel/vue-starter-kit',
-        icon: Github,
-        external: true
-    },
-    {
-        title: 'Documentation',
-        href: 'https://laravel.com/docs/starter-kits#vue',
-        icon: BookOpen,
-        external: true
-    },
-];
 </script>
 
 <style scoped>
