@@ -72,31 +72,28 @@
         </div>
 
         <!-- Movie Results -->
-        <ul v-else class="space-y-2">
+        <ul v-else-if="hasSearchedAtLeastOnce && filteredMovies.length > 0" class="space-y-2">
           <li v-for="movie in filteredMovies" :key="movie.id"
             class="bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden border border-gray-200 dark:border-gray-700">
-
-            <!-- Movie Header -->
             <div class="flex items-center justify-between p-4">
+              <!-- Left side: Icon and Title (clickable to expand) -->
               <div class="flex items-center space-x-3 min-w-0 flex-grow cursor-pointer" @click="toggleMovie(movie)">
                 <div
                   class="w-10 h-10 flex-shrink-0 rounded-lg bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center">
                   <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor"
                     viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z" />
+                      d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z">
+                    </path>
                   </svg>
                 </div>
                 <span class="font-medium truncate">{{ movie.title }}</span>
               </div>
-
-              <!-- Movie ID -->
-              <span
-                class="px-2 py-0.5 bg-gray-200 dark:bg-gray-700 text-xs text-gray-700 dark:text-gray-300 rounded font-mono mx-2">
+              <div class="text-sm text-gray-500 dark:text-gray-400 font-mono mx-2">
                 {{ movie.id }}
-              </span>
+              </div>
 
-              <!-- Movie Status -->
+              <!-- Middle: Status Badge (add this section) -->
               <div class="flex-shrink-0 mx-4" v-if="movie.status">
                 <span :class="getStatusClass(movie.status)"
                   class="px-2.5 py-1 inline-flex text-xs leading-5 font-semibold rounded-full capitalize">
@@ -104,115 +101,110 @@
                 </span>
               </div>
 
-              <!-- Action Buttons -->
+              <!-- Right side: Action Buttons -->
               <div class="flex space-x-2 flex-shrink-0">
                 <button
                   class="px-3 py-1.5 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors duration-200 flex items-center space-x-1 disabled:opacity-70 disabled:cursor-wait"
                   @click.stop="editMovie(movie)"
                   :disabled="isFetchingEditItemDetails && editingItemContext?.id === movie.id && !editingItemContext?.seasonId">
+                  <!-- Edit SVG and text -->
                   <svg
                     v-if="isFetchingEditItemDetails && editingItemContext?.id === movie.id && !editingItemContext?.seasonId"
                     class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
                     viewBox="0 0 24 24">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                     <path class="opacity-75" fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291..." />
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                    </path>
                   </svg>
                   <svg v-else class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
                     xmlns="http://www.w3.org/2000/svg">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5..." />
+                      d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
+                    </path>
                   </svg>
                   <span>Edit</span>
                 </button>
-
                 <button
                   class="px-3 py-1.5 text-sm bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors duration-200 flex items-center space-x-1"
                   @click.stop="openDeleteConfirmation(movie)">
+                  <!-- Delete SVG and text -->
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
                     xmlns="http://www.w3.org/2000/svg">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2..." />
+                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                    </path>
                   </svg>
                   <span>Delete</span>
                 </button>
               </div>
             </div>
 
-            <!-- Seasons -->
-            <transition name="fade">
-              <div v-if="expandedMovie === movie.id && movie.isSeason"
-                class="border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/30 transition-all duration-200">
-                <div v-for="season in movie.seasons || []" :key="season.id" class="px-4 py-3">
-                  <div class="flex items-center justify-between font-medium text-sm">
-                    <div @click="toggleSeasonEpisodes(movie, season)"
-                      class="flex items-center space-x-2 cursor-pointer hover:text-blue-500 dark:hover:text-blue-400 transition-colors duration-150">
-                      <svg class="w-4 h-4 transform transition-transform duration-200"
-                        :class="{ 'rotate-90': season.showEpisodes }" fill="none" stroke="currentColor"
-                        viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                      </svg>
-                      <div class="flex items-center gap-2">
-                        <span>{{ season.txt }}</span>
-                        <span class="text-xs text-gray-500 dark:text-gray-400 font-mono">{{ season.id }}</span>
-                      </div>
-                    </div>
-                    <span class="text-xs text-gray-500 dark:text-gray-400">
-                      {{ season.episodes.length }} episode{{ season.episodes.length !== 1 ? 's' : '' }}
-                    </span>
+            <div v-if="expandedMovie === movie.id && movie.isSeason"
+              class="border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/30 transition-all duration-200">
+              <div v-for="season in movie.seasons || []" :key="season.id" class="px-4 py-3">
+                <div class="flex items-center justify-between font-medium text-sm">
+                  <div
+                    class="flex items-center space-x-2 cursor-pointer hover:text-blue-500 dark:hover:text-blue-400 transition-colors duration-150"
+                    @click="toggleSeasonEpisodes(movie, season)">
+                    <svg class="w-4 h-4 transform transition-transform duration-200"
+                      :class="{ 'rotate-90': season.showEpisodes }" fill="none" stroke="currentColor"
+                      viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                    <span>{{ season.txt }}</span>
+                    <span class="text-xs text-gray-500 dark:text-gray-400 font-mono">{{ season.id }}</span>
                   </div>
-
-                  <!-- Episodes -->
-                  <transition name="fade">
-                    <ul v-if="season.showEpisodes" class="ml-6 mt-2 space-y-2 animate-fadeIn">
-                      <li v-for="ep in season.episodes" :key="ep.id"
-                        class="flex items-center justify-between py-2 px-3 -mx-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors duration-150">
-                        <div class="flex items-center space-x-3">
-                          <span class="text-sm">{{ ep.txt || 'Untitled Episode' }}</span>
-                          <span class="text-xs text-gray-500 dark:text-gray-400 font-mono">{{ ep.id }}</span>
-                        </div>
-                        <!-- Add your episode buttons here -->
-                        <!-- Episode Actions -->
-                        <div class="flex space-x-2 flex-shrink-0">
-                          <button
-                            class="px-2 py-1 text-xs bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors duration-200 flex items-center space-x-1 disabled:opacity-70 disabled:cursor-wait"
-                            @click.stop="editMovie(ep, movie.id, season.id)"
-                            :disabled="isFetchingEditItemDetails && editingItemContext?.id === ep.id && editingItemContext?.seasonId === season.id">
-                            <svg
-                              v-if="isFetchingEditItemDetails && editingItemContext?.id === ep.id && editingItemContext?.seasonId === season.id"
-                              class="animate-spin h-3 w-3 text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
-                              viewBox="0 0 24 24">
-                              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
-                                stroke-width="4" />
-                              <path class="opacity-75" fill="currentColor"
-                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                            </svg>
-                            <svg v-else class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                              xmlns="http://www.w3.org/2000/svg">
-                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                            </svg>
-                            <span>Edit</span>
-                          </button>
-                          <button
-                            class="px-2 py-1 text-xs bg-red-600 hover:bg-red-700 text-white rounded transition-colors duration-200 flex items-center space-x-1"
-                            @click.stop="openDeleteConfirmation(ep, movie.id, season.id)">
-                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                              xmlns="http://www.w3.org/2000/svg">
-                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                            </svg>
-                            <span>Delete</span>
-                          </button>
-                        </div>
-                      </li>
-                    </ul>
-                  </transition>
+                  <span class="text-xs text-gray-500 dark:text-gray-400">{{ season.episodes.length }} episode{{
+              season.episodes.length !== 1 ? 's' : '' }}</span>
                 </div>
+                <ul v-if="season.showEpisodes" class="ml-6 mt-2 space-y-2 animate-fadeIn">
+                  <li v-for="ep in season.episodes" :key="ep.id"
+                    class="flex items-center justify-between py-2 px-3 -mx-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors duration-150">
+                    <span class="text-sm">{{ ep.txt || 'Untitled Episode' }}</span>
+                    <span class="text-xs text-gray-500 dark:text-gray-400 font-mono ml-4">{{ ep.id }}</span>
+                    <div class="flex space-x-2 flex-shrink-0">
+                      <button
+                        class="px-2 py-1 text-xs bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors duration-200 flex items-center space-x-1 disabled:opacity-70 disabled:cursor-wait"
+                        @click.stop="editMovie(ep, movie.id, season.id)"
+                        :disabled="isFetchingEditItemDetails && editingItemContext?.id === ep.id && editingItemContext?.seasonId === season.id">
+                        <svg
+                          v-if="isFetchingEditItemDetails && editingItemContext?.id === ep.id && editingItemContext?.seasonId === season.id"
+                          class="animate-spin h-3 w-3 text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
+                          viewBox="0 0 24 24">
+                          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                          </circle>
+                          <path class="opacity-75" fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                          </path>
+                        </svg>
+                        <svg v-else class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                          xmlns="http://www.w3.org/2000/svg">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
+                          </path>
+                        </svg>
+                        <span>Edit</span>
+                      </button>
+                      <button
+                        class="px-2 py-1 text-xs bg-red-600 hover:bg-red-700 text-white rounded transition-colors duration-200 flex items-center space-x-1"
+                        @click.stop="openDeleteConfirmation(ep, movie.id, season.id)">
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                          xmlns="http://www.w3.org/2000/svg">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                          </path>
+                        </svg>
+                        <span>Delete</span>
+                      </button>
+                    </div>
+                  </li>
+                </ul>
               </div>
-            </transition>
+            </div>
           </li>
         </ul>
+
       </div>
     </div>
   </div>
