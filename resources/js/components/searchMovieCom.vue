@@ -1,6 +1,6 @@
 <template>
   <div class="p-4 min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
-    <div class="max-w-4xl mx-auto">
+    <div class="overflow-x-auto sm:overflow-visible">
       <!-- ... (header and search controls - same) ... -->
       <div class="flex items-center justify-between mb-6">
         <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Movie Collection</h1>
@@ -59,7 +59,7 @@
           <p class="text-gray-500 dark:text-gray-400 mt-1">Try adjusting your search query or check for typos.</p>
         </div>
         <!-- Movie Results -->
-        <ul v-else-if="hasSearchedAtLeastOnce && filteredMovies.length > 0" class="space-y-2">
+        <ul v-else-if="hasSearchedAtLeastOnce && filteredMovies.length > 0" class="space-y-2 min-w-[320px] sm:min-w-0">
           <li v-for="movie in filteredMovies" :key="movie.id"
             class="bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden border border-gray-200 dark:border-gray-700">
             <div class="flex items-center justify-between p-4">
