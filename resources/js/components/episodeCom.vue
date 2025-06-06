@@ -467,7 +467,7 @@ const fetchMovies = async (query = '') => {
   try {
     // Ensure your proxy.get route is correctly defined and working
     const response = await axios.get(route('proxy.get'), { 
-      params: { endpoint:'search', q: query, age_restriction: true, is_enable: true }
+      params: { endpoint:'search', q: query, age_restriction: true, is_enable: false }
     });
     // Adjust based on your API response structure for movie list
     // Assuming response.data is the array or response.data.data is the array
