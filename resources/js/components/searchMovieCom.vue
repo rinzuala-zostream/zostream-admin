@@ -58,7 +58,6 @@
           <h3 class="text-lg font-medium text-gray-700 dark:text-gray-300">No movies found</h3>
           <p class="text-gray-500 dark:text-gray-400 mt-1">Try adjusting your search query or check for typos.</p>
         </div>
-        <!-- Movie Results -->
         <ul v-else-if="hasSearchedAtLeastOnce && filteredMovies.length > 0" class="space-y-2 min-w-[320px] sm:min-w-0">
           <li v-for="movie in filteredMovies" :key="movie.id"
             class="bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden border border-gray-200 dark:border-gray-700">
@@ -150,6 +149,13 @@
                     class="flex items-center justify-between py-2 px-3 -mx-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors duration-150">
                     <span class="text-sm">{{ ep.txt || 'Untitled Episode' }}</span>
                     <span class="text-xs text-gray-500 dark:text-gray-400 font-mono ml-4">{{ ep.id }}</span>
+                    <!-- Middle: Status Badge (add this section) -->
+                    <div class="flex-shrink-0 mx-4" v-if="ep.status">
+                      <span :class="getStatusClass(ep.status)"
+                        class="px-2.5 py-1 inline-flex text-xs leading-5 font-semibold rounded-full capitalize">
+                        {{ ep.status }}
+                      </span>
+                    </div>
                     <div class="flex space-x-2 flex-shrink-0">
                       <button
                         class="px-2 py-1 text-xs bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors duration-200 flex items-center space-x-1 disabled:opacity-70 disabled:cursor-wait"
