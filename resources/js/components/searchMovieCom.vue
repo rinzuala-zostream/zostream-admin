@@ -1,28 +1,27 @@
 <template>
   <div class="p-4 min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
     <div class="overflow-x-auto sm:overflow-visible">
-      <!-- ... (header and search controls - same) ... -->
       <div class="flex items-center justify-between mb-6">
-        <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Movie Collection</h1>
+        <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">Movie Collection</h1>
       </div>
 
       <div class="mb-6">
-        <div class="flex flex-col sm:flex-row gap-4 mb-3">
+        <div class="flex flex-col sm:flex-row gap-3 mb-3">
           <div class="relative flex-grow">
             <input type="text" v-model="search" placeholder="Enter movie title..." @keyup.enter="performSearch"
-              class="w-full pl-4 pr-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-600 dark:focus:border-blue-600 transition-all duration-200" />
+              class="w-full pl-4 pr-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-600 dark:focus:border-blue-600 transition-all duration-200 text-sm sm:text-base" />
           </div>
 
           <select v-model="sortOrder"
-            class="px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-600 dark:focus:border-blue-600 transition-all duration-200 sm:w-auto w-full">
+            class="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-600 dark:focus:border-blue-600 transition-all duration-200 sm:w-auto w-full text-sm sm:text-base">
             <option value="asc">A-Z</option>
             <option value="desc">Z-A</option>
           </select>
         </div>
         <div class="flex justify-center">
           <button @click="performSearch" :disabled="loading"
-            class="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors duration-200 flex items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto">
-            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            class="px-4 sm:px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors duration-200 flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto text-sm sm:text-base">
+            <svg class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
@@ -36,74 +35,79 @@
       </div>
 
       <div v-else-if="!showEditModal && !showDeleteConfirmModal">
-        <!-- ... (initial prompt, no results - same) ... -->
         <div v-if="!hasSearchedAtLeastOnce" class="text-center py-12">
-          <div class="mx-auto w-24 h-24 text-gray-400 dark:text-gray-500 mb-4">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-24 w-24" fill="none" viewBox="0 0 24 24"
+          <div class="mx-auto w-20 h-20 sm:w-24 sm:h-24 text-gray-400 dark:text-gray-500 mb-4">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-full w-full" fill="none" viewBox="0 0 24 24"
               stroke="currentColor" stroke-width="1">
               <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               <path stroke-linecap="round" stroke-linejoin="round" d="M10 7v3m0 0v3m0-3h3m-3 0H7" />
             </svg>
           </div>
-          <h3 class="text-lg font-medium text-gray-700 dark:text-gray-300">Find Your Favorite Movies</h3>
-          <p class="text-gray-500 dark:text-gray-400 mt-1">Enter a movie title and click the search button to begin.</p>
+          <h3 class="text-base sm:text-lg font-medium text-gray-700 dark:text-gray-300">Find Your Favorite Movies</h3>
+          <p class="text-sm sm:text-base text-gray-500 dark:text-gray-400 mt-1">Enter a movie title and click the search
+            button to begin.</p>
         </div>
         <div v-else-if="hasSearchedAtLeastOnce && filteredMovies.length === 0" class="text-center py-12">
-          <div class="mx-auto w-24 h-24 text-gray-400 dark:text-gray-500 mb-4">
+          <div class="mx-auto w-20 h-20 sm:w-24 sm:h-24 text-gray-400 dark:text-gray-500 mb-4">
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                 d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
             </svg>
           </div>
-          <h3 class="text-lg font-medium text-gray-700 dark:text-gray-300">No movies found</h3>
-          <p class="text-gray-500 dark:text-gray-400 mt-1">Try adjusting your search query or check for typos.</p>
+          <h3 class="text-base sm:text-lg font-medium text-gray-700 dark:text-gray-300">No movies found</h3>
+          <p class="text-sm sm:text-base text-gray-500 dark:text-gray-400 mt-1">Try adjusting your search query or check
+            for typos.</p>
         </div>
-        <ul v-else-if="hasSearchedAtLeastOnce && filteredMovies.length > 0" class="space-y-2 min-w-[320px] sm:min-w-0">
+        <ul v-else-if="hasSearchedAtLeastOnce && filteredMovies.length > 0" class="space-y-2 min-w-0">
           <li v-for="movie in filteredMovies" :key="movie.id"
-            class="bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden border border-gray-200 dark:border-gray-700">
-            <div class="flex items-center justify-between p-4">
+            class="bg-white dark:bg-gray-800 rounded-lg sm:rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden border border-gray-200 dark:border-gray-700">
+            <div
+              class="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 sm:p-4 gap-2 sm:gap-0">
               <!-- Left side: Icon and Title (clickable to expand) -->
               <div class="flex items-center space-x-3 min-w-0 flex-grow cursor-pointer" @click="toggleMovie(movie)">
                 <div
-                  class="w-10 h-10 flex-shrink-0 rounded-lg bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center">
-                  <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor"
+                  class="w-8 h-8 sm:w-10 sm:h-10 flex-shrink-0 rounded-lg bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center">
+                  <svg class="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor"
                     viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                       d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z">
                     </path>
                   </svg>
                 </div>
-                <span class="font-medium truncate">{{ movie.title }}</span>
+                <div class="min-w-0">
+                  <p class="font-medium truncate text-sm sm:text-base">{{ movie.title }}</p>
+                  <p class="text-xs text-gray-500 dark:text-gray-400 font-mono truncate sm:hidden">{{ movie.id }}</p>
+                </div>
               </div>
-              <div class="text-sm text-gray-500 dark:text-gray-400 font-mono mx-2">
+
+              <div class="hidden sm:block text-sm text-gray-500 dark:text-gray-400 font-mono mx-2 truncate">
                 {{ movie.id }}
               </div>
 
-              <!-- Middle: Status Badge (add this section) -->
-              <div class="flex-shrink-0 mx-4" v-if="movie.status">
+              <!-- Middle: Status Badge -->
+              <div class="flex-shrink-0 sm:mx-2" v-if="movie.status">
                 <span :class="getStatusClass(movie.status)"
-                  class="px-2.5 py-1 inline-flex text-xs leading-5 font-semibold rounded-full capitalize">
+                  class="px-2 py-0.5 sm:px-2.5 sm:py-1 inline-flex text-xs leading-5 font-semibold rounded-full capitalize">
                   {{ movie.status }}
                 </span>
               </div>
 
               <!-- Right side: Action Buttons -->
-              <div class="flex space-x-2 flex-shrink-0">
+              <div class="flex space-x-2 flex-shrink-0 w-full sm:w-auto justify-end sm:justify-normal">
                 <button
-                  class="px-3 py-1.5 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors duration-200 flex items-center space-x-1 disabled:opacity-70 disabled:cursor-wait"
+                  class="px-2 py-1 sm:px-3 sm:py-1.5 text-xs sm:text-sm bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors duration-200 flex items-center space-x-1 disabled:opacity-70 disabled:cursor-wait"
                   @click.stop="editMovie(movie)"
                   :disabled="isFetchingEditItemDetails && editingItemContext?.id === movie.id && !editingItemContext?.seasonId">
-                  <!-- Edit SVG and text -->
                   <svg
                     v-if="isFetchingEditItemDetails && editingItemContext?.id === movie.id && !editingItemContext?.seasonId"
-                    class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
+                    class="animate-spin h-3 w-3 sm:h-4 sm:w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
                     viewBox="0 0 24 24">
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                     <path class="opacity-75" fill="currentColor"
                       d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
                     </path>
                   </svg>
-                  <svg v-else class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                  <svg v-else class="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
                     xmlns="http://www.w3.org/2000/svg">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                       d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
@@ -112,10 +116,9 @@
                   <span>Edit</span>
                 </button>
                 <button
-                  class="px-3 py-1.5 text-sm bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors duration-200 flex items-center space-x-1"
+                  class="px-2 py-1 sm:px-3 sm:py-1.5 text-xs sm:text-sm bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors duration-200 flex items-center space-x-1"
                   @click.stop="openDeleteConfirmation(movie)">
-                  <!-- Delete SVG and text -->
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                  <svg class="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
                     xmlns="http://www.w3.org/2000/svg">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                       d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
@@ -128,67 +131,69 @@
 
             <div v-if="expandedMovie === movie.id && movie.isSeason"
               class="border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/30 transition-all duration-200">
-              <div v-for="season in movie.seasons || []" :key="season.id" class="px-4 py-3">
-                <div class="flex items-center justify-between font-medium text-sm">
+              <div v-for="season in movie.seasons || []" :key="season.id" class="px-3 sm:px-4 py-2 sm:py-3">
+                <div class="flex items-center justify-between font-medium text-xs sm:text-sm">
                   <div
                     class="flex items-center space-x-2 cursor-pointer hover:text-blue-500 dark:hover:text-blue-400 transition-colors duration-150"
                     @click="toggleSeasonEpisodes(movie, season)">
-                    <svg class="w-4 h-4 transform transition-transform duration-200"
+                    <svg class="w-3 h-3 sm:w-4 sm:h-4 transform transition-transform duration-200"
                       :class="{ 'rotate-90': season.showEpisodes }" fill="none" stroke="currentColor"
                       viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                     </svg>
-                    <span>{{ season.txt }}</span>
-                    <span class="text-xs text-gray-500 dark:text-gray-400 font-mono">{{ season.id }}</span>
+                    <span class="truncate max-w-[120px] sm:max-w-none">{{ season.txt }}</span>
+                    <span class="text-xs text-gray-500 dark:text-gray-400 font-mono hidden sm:inline">{{ season.id
+                      }}</span>
                   </div>
                   <span class="text-xs text-gray-500 dark:text-gray-400">{{ season.episodes.length }} episode{{
               season.episodes.length !== 1 ? 's' : '' }}</span>
                 </div>
-                <ul v-if="season.showEpisodes" class="ml-6 mt-2 space-y-2 animate-fadeIn">
+                <ul v-if="season.showEpisodes" class="ml-4 sm:ml-6 mt-1 sm:mt-2 space-y-1 sm:space-y-2 animate-fadeIn">
                   <li v-for="ep in season.episodes" :key="ep.id"
-                    class="flex items-center justify-between py-2 px-3 -mx-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors duration-150">
-                    <span class="text-sm">{{ ep.txt || 'Untitled Episode' }}</span>
-                    <span class="text-xs text-gray-500 dark:text-gray-400 font-mono ml-4">{{ ep.id }}</span>
-                    <!-- Middle: Status Badge (add this section) -->
-                    <div class="flex-shrink-0 mx-4" v-if="ep.status">
+                    class="flex items-center justify-between py-1 sm:py-2 px-2 sm:px-3 -mx-2 sm:-mx-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors duration-150">
+                    <span class="text-xs sm:text-sm truncate max-w-[100px] sm:max-w-none">{{ ep.txt || 'Untitled Episode' }}</span>
+                    <span class="text-xs text-gray-500 dark:text-gray-400 font-mono ml-2 sm:ml-4 hidden sm:inline">{{
+                ep.id }}</span>
+                    <!-- Middle: Status Badge -->
+                    <div class="flex-shrink-0 mx-1 sm:mx-2" v-if="ep.status">
                       <span :class="getStatusClass(ep.status)"
-                        class="px-2.5 py-1 inline-flex text-xs leading-5 font-semibold rounded-full capitalize">
+                        class="px-1.5 py-0.5 sm:px-2.5 sm:py-1 inline-flex text-xs leading-5 font-semibold rounded-full capitalize">
                         {{ ep.status }}
                       </span>
                     </div>
-                    <div class="flex space-x-2 flex-shrink-0">
+                    <div class="flex space-x-1 sm:space-x-2 flex-shrink-0">
                       <button
-                        class="px-2 py-1 text-xs bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors duration-200 flex items-center space-x-1 disabled:opacity-70 disabled:cursor-wait"
+                        class="px-1.5 py-0.5 sm:px-2 sm:py-1 text-xs bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors duration-200 flex items-center space-x-1 disabled:opacity-70 disabled:cursor-wait"
                         @click.stop="editMovie(ep, movie.id, season.id)"
                         :disabled="isFetchingEditItemDetails && editingItemContext?.id === ep.id && editingItemContext?.seasonId === season.id">
                         <svg
                           v-if="isFetchingEditItemDetails && editingItemContext?.id === ep.id && editingItemContext?.seasonId === season.id"
-                          class="animate-spin h-3 w-3 text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
-                          viewBox="0 0 24 24">
+                          class="animate-spin h-2.5 w-2.5 sm:h-3 sm:w-3 text-white" xmlns="http://www.w3.org/2000/svg"
+                          fill="none" viewBox="0 0 24 24">
                           <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
                           </circle>
                           <path class="opacity-75" fill="currentColor"
                             d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
                           </path>
                         </svg>
-                        <svg v-else class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                          xmlns="http://www.w3.org/2000/svg">
+                        <svg v-else class="w-2.5 h-2.5 sm:w-3 sm:h-3" fill="none" stroke="currentColor"
+                          viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
                           </path>
                         </svg>
-                        <span>Edit</span>
+                        <span class="hidden sm:inline">Edit</span>
                       </button>
                       <button
-                        class="px-2 py-1 text-xs bg-red-600 hover:bg-red-700 text-white rounded transition-colors duration-200 flex items-center space-x-1"
+                        class="px-1.5 py-0.5 sm:px-2 sm:py-1 text-xs bg-red-600 hover:bg-red-700 text-white rounded transition-colors duration-200 flex items-center space-x-1"
                         @click.stop="openDeleteConfirmation(ep, movie.id, season.id)">
-                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                        <svg class="w-2.5 h-2.5 sm:w-3 sm:h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"
                           xmlns="http://www.w3.org/2000/svg">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
                           </path>
                         </svg>
-                        <span>Delete</span>
+                        <span class="hidden sm:inline">Delete</span>
                       </button>
                     </div>
                   </li>
@@ -552,15 +557,77 @@ const getInitialEpisodeForm = () => ({
 // --- Utility Functions ---
 const formatDateForInput = (dateStringOrTimestamp) => {
   if (!dateStringOrTimestamp) return '';
+
   try {
-    const date = new Date(
-      typeof dateStringOrTimestamp === 'object' && dateStringOrTimestamp.seconds
-        ? dateStringOrTimestamp.seconds * 1000
-        : dateStringOrTimestamp
-    );
-    if (isNaN(date.valueOf())) return '';
-    return date.toISOString().split('T')[0];
-  } catch (e) { return ''; }
+    let year, month, day; // Target: year (number), month (1-12), day (number)
+
+    if (typeof dateStringOrTimestamp === 'object' && dateStringOrTimestamp.seconds !== undefined && dateStringOrTimestamp.nanoseconds !== undefined) {
+      // Firestore Timestamp (represents a point in time, UTC)
+      const d = new Date(dateStringOrTimestamp.seconds * 1000);
+      year = d.getUTCFullYear();
+      month = d.getUTCMonth() + 1; // getUTCMonth is 0-indexed
+      day = d.getUTCDate();
+    } else if (typeof dateStringOrTimestamp === 'string') {
+      // Attempt to parse "DD Month YYYY" format, e.g., "15 May 2025"
+      const ddmmyyyyParts = dateStringOrTimestamp.match(/^(\d{1,2})\s+([A-Za-z]+)\s+(\d{4})$/);
+      if (ddmmyyyyParts) {
+        day = parseInt(ddmmyyyyParts[1], 10);
+        const monthName = ddmmyyyyParts[2];
+        year = parseInt(ddmmyyyyParts[3], 10);
+        // Convert month name to 1-indexed number. Date.parse is good for this.
+        // Create a temporary date like "May 1, 2000" to reliably get the month index.
+        const tempMonthDate = new Date(Date.parse(monthName + " 1, 2000"));
+        if (isNaN(tempMonthDate.valueOf())) throw new Error(`Invalid month name: ${monthName}`);
+        month = tempMonthDate.getMonth() + 1; // getMonth is 0-indexed
+
+        if (isNaN(day) || isNaN(month) || isNaN(year)) {
+          throw new Error(`Failed to parse DD Month YYYY: ${dateStringOrTimestamp}`);
+        }
+      } else {
+        // Handle other string formats like "YYYY-MM-DD" or full ISO strings.
+        const d = new Date(dateStringOrTimestamp);
+        if (isNaN(d.valueOf())) {
+          throw new Error(`Invalid date string for new Date(): ${dateStringOrTimestamp}`);
+        }
+
+        // If the string was "YYYY-MM-DD" (date-only form), new Date() parses it as UTC midnight.
+        // To preserve that specific date, use UTC getters.
+        if (dateStringOrTimestamp.match(/^\d{4}-\d{2}-\d{2}$/)) {
+          year = d.getUTCFullYear();
+          month = d.getUTCMonth() + 1;
+          day = d.getUTCDate();
+        } else {
+          // For other valid date strings (e.g., full ISO with time, or other formats new Date understands),
+          // they might represent local time or specific UTC time.
+          // We'll take the date components as they are interpreted by the Date object.
+          // If it's a full ISO string with 'Z' or offset, it's UTC. If no offset, it's local.
+          // For display in a date input, typically the local date part is desired.
+          year = d.getFullYear();
+          month = d.getMonth() + 1;
+          day = d.getDate();
+        }
+      }
+    } else if (typeof dateStringOrTimestamp === 'number') {
+      // Assume it's a Unix timestamp in milliseconds (UTC)
+      const d = new Date(dateStringOrTimestamp);
+      year = d.getUTCFullYear();
+      month = d.getUTCMonth() + 1;
+      day = d.getUTCDate();
+    } else {
+      throw new Error(`Unsupported date input type: ${typeof dateStringOrTimestamp}`);
+    }
+
+    if (year === undefined || month === undefined || day === undefined) {
+      throw new Error(`Date components not successfully parsed from: ${dateStringOrTimestamp}`);
+    }
+
+    // Format to YYYY-MM-DD
+    return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+
+  } catch (e) {
+    console.error("Error in formatDateForInput with '", dateStringOrTimestamp, "':", e.message);
+    return ''; // Return empty string on error, so the input field is blank.
+  }
 };
 
 const decryptUrl = async (urlToDecrypt) => {
@@ -680,7 +747,7 @@ const editMovie = async (itemFromList, pMovieId = null, pSeasonId = null) => {
       form.season_id = pSeasonId || itemDetails.season_id || ''; // API should provide season_id for an episode
       form.ppv_amount = itemDetails.ppv_amount || itemDetails.ppvAmount || ''; // Check API field name
       form.status = itemDetails.status || '';
-      form.create_date = formatDateForInput(itemDetails.create_date || itemDetails.upload_date || itemDetails.createdAt);
+      form.create_date = formatDateForInput(itemDetails.create_date);
 
       const epUrlFields = { img: 'img', url: 'url', dash_url: 'dash_url', hls_url: 'hls_url' };
       for (const [formKey, detailKey] of Object.entries(epUrlFields)) {
