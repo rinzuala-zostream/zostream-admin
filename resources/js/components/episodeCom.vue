@@ -420,8 +420,8 @@ const getInitialFormState = () => ({
   movie_id: '', 
   txt: '',
   img: '',
-  url: '',
-  dash_url: '',
+  url: 'https://zostream.blob.core.windows.net/',  // Prefilled Movie URL
+  dash_url: 'https://zostream.blob.core.windows.net/',  // Prefilled Dash URL
   hls_url: '',
   create_date: '', 
   status: '', 

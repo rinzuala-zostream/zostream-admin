@@ -383,7 +383,10 @@ import axios from 'axios'
 
 const getInitialFormState = () => ({
   title: '', genre: '', director: '', duration: '', description: '', ppv_amount: '',
-  poster: '', cover_img: '', url: '', dash_url: '', hls_url: '', trailer: '',
+  poster: '', cover_img: '', 
+  url: 'https://zostream.blob.core.windows.net/',  // Prefilled Movie URL
+  dash_url: 'https://zostream.blob.core.windows.net/',  // Prefilled Dash URL
+  hls_url: '', trailer: '',
   release_on: '', create_date: '', status: '',
   isProtected: false, isBollywood: false, isCompleted: false, isDocumentary: false,
   isAgeRestricted: false, isDubbed: false, isEnable: true, isHollywood: false,
