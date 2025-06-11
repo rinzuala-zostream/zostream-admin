@@ -1,4 +1,5 @@
 <template>
+  <Head title="Season ID Panel" />
     <div class="wrapper bg-[#F4F5FF] dark:bg-[#121212] text-[#1b1b18] dark:text-[#EDEDEC]">
       <!-- Content -->
       <div class="content">
@@ -33,8 +34,16 @@
     </div>
   </template>
   
-  <script setup>
-  import { Link } from '@inertiajs/vue3'
+  <script setup lang="ts">
+  import { Link, Head } from '@inertiajs/vue3'
+  import { type BreadcrumbItem } from '@/types';
+
+  const breadcrumbs: BreadcrumbItem[] = [
+    {
+        title: 'Welcome',
+        href: '/',
+    },
+];
   </script>
   
   <style scoped>

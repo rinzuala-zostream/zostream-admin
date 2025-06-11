@@ -26,6 +26,15 @@
         </button>
       </div>
 
+      <div class="flex justify-center mb-6">
+      <button
+        @click="insertUidFromCache"
+        class="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-sm rounded-xl hover:bg-gray-300 dark:hover:bg-gray-600"
+      >
+        Insert UID from Cache
+      </button>
+    </div>
+
       <div v-if="loading" class="text-center text-gray-500">Loading...</div>
       <div v-if="error" class="text-red-600 text-center mb-4">{{ error }}</div>
 
@@ -50,21 +59,39 @@
     </div>
 
     <!-- Register Section -->
-    <div v-if="activeTab === 'register'" class="mt-4">
-      <div class="mb-4">
-        <input v-model="registerEmail" type="email" placeholder="Enter email"
-          class="w-full px-4 py-2 border rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500" />
-      </div>
-      <button @click="registerUser" :disabled="loading || !registerEmail"
-        class="w-full px-4 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700 disabled:opacity-50">
-        Register
-      </button>
+<div v-if="activeTab === 'register'" class="mt-4 space-y-4">
+  <input v-model="form.name" type="text" placeholder="Name"
+    class="w-full px-4 py-2 border rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500" />
 
-      <hr class="my-6 border-t border-gray-300 dark:border-gray-700" />
+  <input v-model="form.email" type="email" placeholder="Email"
+    class="w-full px-4 py-2 border rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500" />
 
-      <div v-if="registerResult" class="mt-4 text-center text-green-600">{{ registerResult }}</div>
-      <div v-if="registerError" class="mt-4 text-center text-red-600">{{ registerError }}</div>
-    </div>
+  <div class="relative">
+    <input :type="showPassword ? 'text' : 'password'" v-model="form.password" placeholder="Password"
+      class="w-full px-4 py-2 border rounded-xl shadow-sm pr-12 focus:outline-none focus:ring-2 focus:ring-green-500" />
+    <span @click="showPassword = !showPassword" class="absolute right-4 top-3 cursor-pointer text-gray-600">
+      {{ showPassword ? '🙈' : '👁️' }}
+    </span>
+  </div>
+
+  <div class="relative">
+    <input :type="showConfirmPassword ? 'text' : 'password'" v-model="form.confirmPassword" placeholder="Confirm Password"
+      class="w-full px-4 py-2 border rounded-xl shadow-sm pr-12 focus:outline-none focus:ring-2 focus:ring-green-500" />
+    <span @click="showConfirmPassword = !showConfirmPassword" class="absolute right-4 top-3 cursor-pointer text-gray-600">
+      {{ showConfirmPassword ? '🙈' : '👁️' }}
+    </span>
+  </div>
+
+  <button @click="registerUser" :disabled="loading || !form.email || !form.password"
+    class="w-full px-4 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700 disabled:opacity-50">
+    Register
+  </button>
+
+  <hr class="my-6 border-t border-gray-300 dark:border-gray-700" />
+
+  <div v-if="registerResult" class="mt-4 text-center text-green-600">{{ registerResult }}</div>
+  <div v-if="registerError" class="mt-4 text-center text-red-600">{{ registerError }}</div>
+</div>
 
     <!-- Update DOB Section -->
     <div v-if="activeTab === 'update'" class="mt-4">
@@ -154,6 +181,17 @@
 <script setup>
 import { ref } from 'vue'
 import axios from 'axios'
+import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth'
+
+const form = ref({
+  name: '',
+  email: '',
+  password: '',
+  confirmPassword: ''
+})
+
+const showPassword = ref(false)
+const showConfirmPassword = ref(false)
 
 const activeTab = ref('search')
 
@@ -263,15 +301,60 @@ const registerUser = async () => {
   registerError.value = ''
   loading.value = true
 
+  if (form.value.password !== form.value.confirmPassword) {
+    registerError.value = 'Passwords do not match.'
+    loading.value = false
+    return
+  }
+
   try {
-    const res = await axios.post(route('proxy.post'), {
-      endpoint: 'user/register',
-      mail: registerEmail.value,
-    })
+    const auth = getAuth()
+    const userCredential = await createUserWithEmailAndPassword(auth, form.value.email, form.value.password)
+    const user = userCredential.user
+    sessionStorage.setItem('searchedUserUid', user.uid)
+    const idToken = await user.getIdToken()
+
+    // Get device name (you can adjust `info` logic as needed)
+    const info = {
+      deviceName: navigator.userAgent
+    }
+
+    // Format current date
+    const getFormattedDateTime = () => {
+      const now = new Date()
+      return now.toISOString()
+    }
+
+    await axios.post(
+      route('proxy.post'),
+      {
+        call: '',
+        created_date: getFormattedDateTime(),
+        device_id: '',
+        dob: '',
+        edit_date: getFormattedDateTime(),
+        img: '',
+        isACActive: true,
+        isAccountComplete: false,
+        khua: '',
+        lastLogin: getFormattedDateTime(),
+        mail: user.email || '',
+        name: form.value.name,
+        uid: user.uid,
+        veng: '',
+        device_name: info.deviceName || '',
+        token: idToken,
+      },
+      {
+        params: {
+          endpoint: 'register',
+        },
+      }
+    )
 
     registerResult.value = 'User registered successfully.'
   } catch (err) {
-    registerError.value = err.response?.data?.message || err.message
+    registerError.value = err.message || 'Registration failed.'
   } finally {
     loading.value = false
   }
@@ -283,15 +366,29 @@ const updateDOB = async () => {
   loading.value = true
 
   try {
+    const rawDate = new Date(newDob.value)
+    const formattedDob = rawDate.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    }) // "May 11, 1999"
+
+    // ✅ Make sure you send `formattedDob`, not `newDob`
     const res = await axios.get(route('proxy.get'), {
-      endpoint: 'update-dob',
-      uid: updateUid.value,
-      dob: newDob.value,
+      params: {
+        endpoint: 'update-dob',
+        uid: updateUid.value,
+        dob: formattedDob,
+      },
     })
 
     updateResult.value = 'DOB updated successfully.'
+    console.log("Uid:", updateUid.value)
+    console.log("dob:", newDob.value) 
   } catch (err) {
     updateError.value = err.response?.data?.message || err.message
+    console.log("Uid:", updateUid.value)
+    console.log("dob:", newDob.value) // 👈 still logs raw date
   } finally {
     loading.value = false
   }
@@ -308,6 +405,7 @@ const insertUidFromCache = () => {
   const cachedUid = sessionStorage.getItem('searchedUserUid')
   if (cachedUid) {
     updateUid.value= cachedUid
+    input.value= cachedUid
   } else {
     message.value = 'No cached UID found.'
     error.value = true

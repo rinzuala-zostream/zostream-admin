@@ -31,5 +31,9 @@ Route::get('subscribe', function () {
     return Inertia::render('Subscription');
 })->middleware(['auth', 'verified'])->name('subscribe');
 
+Route::get('season', function () {
+    return Inertia::render('Season');
+})->middleware(['auth', 'verified'])->name('season');
+
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';

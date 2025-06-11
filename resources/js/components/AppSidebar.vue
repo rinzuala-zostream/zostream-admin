@@ -56,8 +56,10 @@ import {
     Smartphone, 
     ChevronDown,
     Crown,
-Edit
+Edit,
+IdCard
 } from 'lucide-vue-next';
+import { identity } from '@vueuse/core';
 
 const mainNavItems: NavItem[] = [
     {
@@ -95,6 +97,12 @@ const mainNavItems: NavItem[] = [
         href: '/subscribe', 
         icon: Crown,
         active: route().current('subscribe*')
+    },
+    { 
+        title: 'Season ID', 
+        href: '/season', 
+        icon: IdCard,
+        active: route().current('season*')
     },
 ];
 
