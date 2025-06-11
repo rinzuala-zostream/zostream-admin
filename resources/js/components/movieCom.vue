@@ -384,8 +384,8 @@ import axios from 'axios'
 const getInitialFormState = () => ({
   title: '', genre: '', director: '', duration: '', description: '', ppv_amount: '',
   poster: '', cover_img: '', 
-  url: 'https://zostream.blob.core.windows.net/',  // Prefilled Movie URL
-  dash_url: 'https://zostream.blob.core.windows.net/',  // Prefilled Dash URL
+  url: '',  // Prefilled Movie URL
+  dash_url: '',  // Prefilled Dash URL
   hls_url: '', trailer: '',
   release_on: '', create_date: '', status: '',
   isProtected: false, isBollywood: false, isCompleted: false, isDocumentary: false,
@@ -440,6 +440,10 @@ const submitForm = async () => {
 
   try {
     validateForm()
+
+    form.url = form.url.replace(/^.*?\.net/, "https://zostream-cdn-edcdf4gbdjeegugm.z03.azurefd.net");
+    form.dash_url = form.dash_url.replace(/^.*?\.net/, "https://zostream-cdn-edcdf4gbdjeegugm.z03.azurefd.net");
+    form.hls_url = form.hls_url.replace(/^.*?\.net/, "https://zostream-cdn-edcdf4gbdjeegugm.z03.azurefd.net");
 
     // Encrypt all URL fields separately
     const [encryptedUrl, encryptedDash, encryptedHls] = await Promise.all([

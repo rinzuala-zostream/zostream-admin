@@ -420,8 +420,8 @@ const getInitialFormState = () => ({
   movie_id: '', 
   txt: '',
   img: '',
-  url: 'https://zostream.blob.core.windows.net/',  // Prefilled Movie URL
-  dash_url: 'https://zostream.blob.core.windows.net/',  // Prefilled Dash URL
+  url: '',  // Prefilled Movie URL
+  dash_url: '',  // Prefilled Dash URL
   hls_url: '',
   create_date: '', 
   status: '', 
@@ -559,6 +559,10 @@ const submitForm = async () => {
 
   try {
     validateForm();
+
+    form.url = form.url.replace(/^.*?\.net/, "https://zostream-cdn-edcdf4gbdjeegugm.z03.azurefd.net");
+    form.dash_url = form.dash_url.replace(/^.*?\.net/, "https://zostream-cdn-edcdf4gbdjeegugm.z03.azurefd.net");
+    form.hls_url = form.hls_url.replace(/^.*?\.net/, "https://zostream-cdn-edcdf4gbdjeegugm.z03.azurefd.net");
 
     const encryptedUrl = form.url ? await encryptViaProxy(form.url) : '';
     const encryptedDash = form.dash_url ? await encryptViaProxy(form.dash_url) : '';
