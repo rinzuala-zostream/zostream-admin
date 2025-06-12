@@ -188,8 +188,91 @@
             </div>
           </div>
 
+          <!-- Search Section for Show/Season -->
+          <div class="search-section pt-8 border-t border-gray-200 dark:border-gray-800">
+            <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4 flex items-center">
+              <svg class="w-5 h-5 mr-2 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path></svg>
+              Associate with Show/Season
+            </h3>
+            
+            <div v-if="selectedItemInfoText" class="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800 flex justify-between items-center">
+              <div class="flex items-center">
+                <svg class="h-5 w-5 text-blue-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                <span class="text-sm text-blue-700 dark:text-blue-300">{{ selectedItemInfoText }}</span>
+              </div>
+              <button @click="clearSelectedItem" type="button" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200 text-xs font-medium p-1 rounded hover:bg-blue-100 dark:hover:bg-blue-800/30 transition-colors">
+                Clear
+              </button>
+            </div>
+            
+            <div class="mb-6">
+              <div class="flex flex-col sm:flex-row gap-4 mb-3">
+                <div class="relative flex-grow">
+                  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg></div>
+                  <input type="text" v-model="search" placeholder="Search by title to find Show..." @keyup.enter="performSearch"
+                    class="block w-full pl-10 pr-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-all duration-200"/>
+                </div>
+                <button @click="performSearch" :disabled="searchLoading" type="button"
+                  class="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white font-medium rounded-lg transition-colors duration-200 flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                  <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                  <span>Search</span>
+                </button>
+              </div>
+
+              <div v-if="searchLoading" class="flex justify-center items-center py-12">
+                <div class="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-blue-500"></div>
+              </div>
+
+              <div v-if="!searchLoading">
+                <div v-if="hasSearchedAtLeastOnce && movies.length === 0 && search.trim() !== ''" class="text-center py-4 text-gray-500 dark:text-gray-400">
+                  No items found matching "{{ search }}"
+                </div>
+                <!-- === MODIFIED: Search Results List with Season Drill-down === -->
+                <ul v-if="movies.length > 0" class="space-y-3 max-h-96 overflow-y-auto mt-4 border border-gray-200 dark:border-gray-700 rounded-lg p-3 bg-gray-50 dark:bg-gray-900/30 custom-scrollbar">
+                  <li v-for="movie in filteredMovies" :key="movie.id" class="bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden border border-gray-200 dark:border-gray-700 group">
+                    
+                    <!-- Movie/Show Title Row -->
+                    <button type="button" class="w-full text-left" @click="toggleSeasons(movie)">
+                      <div class="flex items-center justify-between p-3 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                        <div class="flex items-center space-x-3 min-w-0">
+                          <div class="w-10 h-10 flex-shrink-0 rounded-lg bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center">
+                            <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z"></path></svg>
+                          </div>
+                          <div class="min-w-0">
+                            <p class="font-medium truncate text-gray-800 dark:text-gray-100">{{ movie.title }}</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 truncate">Num: {{ movie.num }} • ID: {{ movie.id }}</p>
+                          </div>
+                        </div>
+                        <svg class="w-5 h-5 text-gray-400 dark:text-gray-500 transition-transform duration-300" :class="{'rotate-90': movie.showSeasons}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                          <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                        </svg>
+                      </div>
+                    </button>
+                    
+                    <!-- NEW: Collapsible Season List -->
+                    <div v-if="movie.showSeasons" class="bg-gray-50 dark:bg-gray-800/50 border-t border-gray-200 dark:border-gray-700">
+                      <div v-if="movie.seasonsLoading" class="text-center py-4 text-sm text-gray-500">Loading seasons...</div>
+                      <div v-else-if="!movie.seasons || movie.seasons.length === 0" class="text-center py-4 text-sm text-gray-500">No seasons found.</div>
+                      <ul v-else class="py-2 px-3 space-y-1">
+                        <li v-for="season in movie.seasons" :key="season.id">
+                          <button type="button" class="w-full text-left p-2 rounded-md hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors" @click="selectSeason(movie, season)">
+                            <div class="flex items-center space-x-2">
+                               <svg class="w-4 h-4 text-gray-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8"></path></svg>
+                               <span class="text-sm font-medium text-gray-700 dark:text-gray-200">{{ season.txt }}</span>
+                               <span class="text-xs text-gray-400 dark:text-gray-500">(ID: {{ season.id }})</span>
+                            </div>
+                          </button>
+                        </li>
+                      </ul>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
           <!-- Metadata Section -->
-          <div class="space-y-6">
+          <div class="space-y-6 pt-8 border-t border-gray-200 dark:border-gray-800">
             <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200 flex items-center">
               <svg class="w-5 h-5 mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01"></path>
@@ -198,15 +281,16 @@
             </h3>
             
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <!-- Season ID -->
-              <div class="space-y-2">
+              <!-- === MODIFIED: This entire block is now conditional === -->
+              <!-- It will only appear AFTER a season is selected from the search results. -->
+              <div v-if="form.season_id" class="space-y-2">
                 <label for="season_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                   Season ID <span class="text-red-500">*</span>
                 </label>
                 <div class="relative">
-                  <input id="season_id" v-model="form.season_id" type="text" required
-                    class="block w-full pl-4 pr-10 py-2.5 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-all duration-200"
-                    placeholder="Enter Season ID">
+                  <input id="season_id" v-model="form.season_id" type="text"
+                    class="block w-full pl-4 pr-10 py-2.5 rounded-lg border border-gray-300 dark:border-gray-700 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-all duration-200 cursor-not-allowed"
+                    placeholder="Select a Season to populate">
                   <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                     <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
@@ -250,91 +334,6 @@
                     </svg>
                   </div>
                 </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Search Section for Show/Season -->
-          <div class="search-section pt-8 border-t border-gray-200 dark:border-gray-800">
-            <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4 flex items-center">
-              <svg class="w-5 h-5 mr-2 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path>
-              </svg>
-              Associate with Show/Season
-            </h3>
-            
-            <div v-if="selectedItemInfoText" class="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800 flex justify-between items-center">
-              <div class="flex items-center">
-                <svg class="h-5 w-5 text-blue-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                </svg>
-                <span class="text-sm text-blue-700 dark:text-blue-300">{{ selectedItemInfoText }}</span>
-              </div>
-              <button @click="clearSelectedItem" type="button" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200 text-xs font-medium p-1 rounded hover:bg-blue-100 dark:hover:bg-blue-800/30 transition-colors">
-                Clear
-              </button>
-            </div>
-            
-            <div class="mb-6">
-              <div class="flex flex-col sm:flex-row gap-4 mb-3">
-                <div class="relative flex-grow">
-                  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                    </svg>
-                  </div>
-                  <input 
-                    type="text" 
-                    v-model="search" 
-                    placeholder="Search by title to find Show/Season..." 
-                    @keyup.enter="performSearch"
-                    class="block w-full pl-10 pr-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-all duration-200"
-                  />
-                </div>
-                <button
-                  @click="performSearch"
-                  :disabled="searchLoading" 
-                  type="button"
-                  class="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white font-medium rounded-lg transition-colors duration-200 flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                  </svg>
-                  <span>Search</span>
-                </button>
-              </div>
-
-              <div v-if="searchLoading" class="flex justify-center items-center py-12">
-                <div class="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-blue-500"></div>
-              </div>
-
-              <div v-if="!searchLoading">
-                <div v-if="hasSearchedAtLeastOnce && movies.length === 0 && search.trim() !== ''" class="text-center py-4 text-gray-500 dark:text-gray-400">
-                  No items found matching "{{ search }}"
-                </div>
-                <ul v-if="movies.length > 0" class="space-y-3 max-h-72 overflow-y-auto mt-4 border border-gray-200 dark:border-gray-700 rounded-lg p-3 bg-gray-50 dark:bg-gray-900/30 custom-scrollbar">
-                  <li v-for="movie in filteredMovies" :key="movie.id" 
-                      class="bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden border border-gray-200 dark:border-gray-700 group">
-                      <button type="button" class="w-full text-left" @click="selectMovie(movie)">
-                        <div class="flex items-center justify-between p-3 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
-                          <div class="flex items-center space-x-3 min-w-0">
-                            <div class="w-10 h-10 flex-shrink-0 rounded-lg bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center">
-                              <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z"></path>
-                              </svg>
-                            </div>
-                            <div class="min-w-0">
-                              <p class="font-medium truncate text-gray-800 dark:text-gray-100">{{ movie.title }}</p>
-                              <p class="text-xs text-gray-500 dark:text-gray-400 truncate">Num: {{ movie.num }} • ID: {{ movie.id }}</p>
-                            </div>
-                          </div>
-                          <svg class="w-5 h-5 text-gray-400 dark:text-gray-500 group-hover:text-blue-500 dark:group-hover:text-blue-400 transition-colors" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
-                          </svg>
-                        </div>
-                      </button>
-                  </li>
-                </ul>
               </div>
             </div>
           </div>
@@ -411,6 +410,8 @@
 <script setup>
 import { ref, reactive, computed, onMounted } from 'vue'
 import axios from 'axios'
+import { db } from '@/firebase'; // Make sure this path is correct for your project
+import { collection, getDocs } from 'firebase/firestore';
 
 const getInitialFormState = () => ({
   title: '',
@@ -448,43 +449,37 @@ const error = ref(null)
 // --- Search related reactive state ---
 const search = ref('');
 const movies = ref([]); 
-const searchLoading = ref(false); // Specific loading state for search
+const searchLoading = ref(false);
 const hasSearchedAtLeastOnce = ref(false);
-const selectedItemInfoText = ref(''); // Renamed from selectedSeasonInfoText for clarity
+const selectedItemInfoText = ref('');
 const sortOrder = ref('asc'); 
-// const showEditModal = ref(false); // Not used in this refined version directly, can be removed if not needed elsewhere
 
-const validateForm = () => {
-  if (!form.title.trim()) throw new Error('Episode title is required.')
-  if (!form.season_id.toString().trim()) throw new Error('Season ID is required. Please search and select a show/season, or enter manually.')
-  if (!form.movie_id.toString().trim()) throw new Error('Movie ID is required. Please search and select a show/season to populate it.') // Added validation for movie_id
-  if (!form.txt.trim()) throw new Error('Episode Identifier (e.g., S1 E1) is required.')
-}
-
+// --- MODIFIED: fetchMovies now fetches only the main movie/show data ---
 const fetchMovies = async (query = '') => {
   searchLoading.value = true;
   movies.value = [];
   try {
-    // Ensure your proxy.get route is correctly defined and working
     const response = await axios.get(route('proxy.get'), { 
       params: { endpoint:'search', q: query, age_restriction: true, is_enable: false }
     });
-    // Adjust based on your API response structure for movie list
-    // Assuming response.data is the array or response.data.data is the array
     const results = Array.isArray(response.data) 
       ? response.data 
       : (response.data?.data && Array.isArray(response.data.data) ? response.data.data : []);
     
-    // Ensure each movie item has 'id' and 'num' properties
-    movies.value = results.filter(movie => movie && typeof movie.id !== 'undefined' && typeof movie.num !== 'undefined');
-    if (results.length !== movies.value.length) {
-      console.warn("Some movie results were filtered out due to missing 'id' or 'num' properties.");
-    }
+    // Add properties needed for the UI (showSeasons, seasonsLoading)
+    movies.value = results
+      .filter(movie => movie && typeof movie.id !== 'undefined' && typeof movie.num !== 'undefined')
+      .map(movie => ({
+        ...movie,
+        seasons: [], // Initialize seasons array
+        showSeasons: false, // Control visibility of the season list
+        seasonsLoading: false, // Show a loading indicator for seasons
+      }));
 
   } catch (fetchError) {
     console.error('Failed to fetch movies:', fetchError);
     movies.value = []; 
-    message.value = `Search failed: ${fetchError.message || 'Network error'}`; // Show error to user
+    message.value = `Search failed: ${fetchError.message || 'Network error'}`;
   } finally {
     searchLoading.value = false;
   }
@@ -507,28 +502,57 @@ onMounted(() => {
 
 const filteredMovies = computed(() => {
   if (!Array.isArray(movies.value)) return [];
-  const moviesToSort = [...movies.value];
-  moviesToSort.sort((a, b) => {
+  return [...movies.value].sort((a, b) => {
     const titleA = String(a.title || '').toLowerCase();
     const titleB = String(b.title || '').toLowerCase();
     return sortOrder.value === 'asc' ? titleA.localeCompare(titleB) : titleB.localeCompare(titleA);
   });
-  return moviesToSort;
 });
 
-const selectMovie = (movie) => {
-  if (!movie || typeof movie.num === 'undefined') {
-    console.error('Selected movie item is invalid or missing id/num:', movie);
-    message.value = "Error: Selected item is invalid.";
+// --- NEW: Function to toggle season visibility and fetch data ---
+const toggleSeasons = async (movie) => {
+  // Toggle visibility
+  movie.showSeasons = !movie.showSeasons;
+
+  // Fetch seasons only if they haven't been fetched yet and the list is being opened
+  if (movie.showSeasons && movie.seasons.length === 0) {
+    movie.seasonsLoading = true;
+    try {
+      const qSnap = await getDocs(collection(db, `movie/${movie.id}/season`));
+      movie.seasons = qSnap.docs.map(d => ({
+        id: d.id,
+        ...(d.data()),
+        txt: d.data().txt || d.data().title || `Season ${d.id.slice(-2)}`,
+      })).sort((a, b) => (a.txt || '').localeCompare(b.txt || '', undefined, { numeric: true }));
+    } catch (err) {
+      console.error(`Error fetching seasons for movie ${movie.id}:`, err);
+      movie.seasons = []; // Ensure it's an empty array on error
+    } finally {
+      movie.seasonsLoading = false;
+    }
+  }
+};
+
+// --- MODIFIED: selectSeason now finalizes the selection ---
+const selectSeason = (movie, season) => {
+  if (!movie || !season) {
+    message.value = "Error: Invalid movie or season selected.";
     return;
   }
-  form.movie_id = movie.num;   // movie_id comes from item.num
   
-  selectedItemInfoText.value = `Associated with: ${movie.title} (Movie/Show Num: ${movie.num})`;
+  // Populate the form fields
+  form.movie_id = movie.num;
+  form.season_id = season.id;
   
+  // Update the feedback text
+  selectedItemInfoText.value = `Associated with: ${movie.title} / ${season.txt}`;
+  
+  // Clear the search results to clean up the UI
   movies.value = []; 
   hasSearchedAtLeastOnce.value = false; 
+  search.value = '';
 };
+
 
 const clearSelectedItem = () => {
   form.season_id = ''; 
@@ -558,7 +582,6 @@ const submitForm = async () => {
   error.value = null;
 
   try {
-    validateForm();
 
     form.url = form.url.replace(/^.*?\.net/, "https://zostream-cdn-edcdf4gbdjeegugm.z03.azurefd.net");
     form.dash_url = form.dash_url.replace(/^.*?\.net/, "https://zostream-cdn-edcdf4gbdjeegugm.z03.azurefd.net");
@@ -576,41 +599,67 @@ const submitForm = async () => {
     };
 
     const res = await axios.post(route('proxy.post'), payload, {
-      params: { endpoint: 'episode-insert' },
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Requested-With': 'XMLHttpRequest'
-      }
-    });
-
-    if(res.data.status === 'success'){
-    message.value = 'Episode added successfully!';
-    const preservedToken = form.token; 
-    Object.assign(form, getInitialFormState()); 
-    form.token = preservedToken; 
-    form.create_date = new Date().toISOString().split('T')[0];
-    clearSelectedItem(); // Also clear the selected item info
-    }
-    else{
-      error.value = res.data.message || 'Server processing error.';
-      console.error("Server Error:", err.response.data);
-    } 
-
-  } catch (err) {
-    if (err.response) {
-      
-    } else if (err.request) {
-      error.value = 'No response from server. Check network or server status.';
-      console.error("Network Error:", err.request);
-    } else {
-      error.value = err.message || 'An unexpected error occurred.';
-      console.error("Client-side/Validation Error:", err.message);
-    }
-    message.value = `Failed: ${error.value}`;
-  } finally {
-    formSubmitting.value = false;
+  params: { endpoint: 'episode-insert' },
+  headers: {
+    'Content-Type': 'application/json',
+    'X-Requested-With': 'XMLHttpRequest'
   }
-};
+});
+
+// Always log the payload that was sent
+console.log("Request payload:", JSON.stringify(payload, null, 2));
+
+if (res.data.status === 'success') {
+  message.value = 'Episode added successfully!';
+  console.log("Server response:", res.data);
+  
+  // Reset form while preserving token
+  const preservedToken = form.token;
+  Object.assign(form, getInitialFormState());
+  form.token = preservedToken;
+  form.create_date = new Date().toISOString().split('T')[0];
+  clearSelectedItem();
+} else {
+  error.value = res.data.message || 'Server processing error.';
+  console.error("Server Error:", {
+    status: res.status,
+    statusText: res.statusText,
+    data: res.data,
+    headers: res.headers,
+    request: res.request
+  });
+}
+
+} catch (err) {
+  if (err.response) {
+    // The request was made and the server responded with a status code
+    error.value = err.response.data.message || `Server error: ${err.response.status}`;
+    console.error("Server Response Error:", {
+      status: err.response.status,
+      statusText: err.response.statusText,
+      data: err.response.data,
+      config: err.response.config
+    });
+  } else if (err.request) {
+    // The request was made but no response was received
+    error.value = 'No response from server. Check network or server status.';
+    console.error("Network Error:", {
+      message: err.message,
+      request: err.request
+    });
+  } else {
+    // Something happened in setting up the request
+    error.value = err.message || 'An unexpected error occurred.';
+    console.error("Request Setup Error:", {
+      message: err.message,
+      stack: err.stack
+    });
+  }
+  message.value = `Failed: ${error.value}`;
+} finally {
+  formSubmitting.value = false;
+}
+}
 
 defineExpose({ submitForm });
 </script>
