@@ -371,6 +371,38 @@
             </div>
           </div>
 
+          <div class="attributes-section pt-8 border-t border-gray-200 dark:border-gray-800">
+            <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200 flex items-center">
+              <svg class="w-5 h-5 mr-2 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+              </svg>
+              Notification
+            </h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              <label 
+                class="checkbox-label flex items-start space-x-3 cursor-pointer p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                <div class="flex items-center h-5">
+                  <input type="checkbox" :id="checkbox" v-model="form.notification" class="sr-only peer">
+                  <span class="custom-checkbox w-5 h-5 rounded border flex items-center justify-center
+                               border-gray-400 dark:border-gray-600 bg-white dark:bg-gray-800
+                               group-hover:border-gray-500 dark:group-hover:border-gray-500
+                               peer-checked:bg-blue-600 peer-checked:border-blue-600
+                               dark:peer-checked:bg-blue-500 dark:peer-checked:border-blue-500
+                               peer-focus-visible:ring-2 peer-focus-visible:ring-offset-2 peer-focus-visible:ring-blue-500 dark:peer-focus-visible:ring-offset-gray-950
+                               transition-all duration-150 ease-in-out">
+                    <svg class="w-3.5 h-3.5 text-white opacity-0 peer-checked:opacity-100 transition-opacity duration-150"
+                      fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3.5" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                  </span>
+                </div>
+                <div class="text-sm font-medium text-gray-700 dark:text-gray-300 select-none group-hover:text-gray-900 dark:group-hover:text-white transition-colors">
+                  Notification
+                </div>
+              </label>
+            </div>
+          </div>
+
           <!-- Form Actions -->
           <div class="pt-8 flex flex-col sm:flex-row justify-end space-y-4 sm:space-y-0 sm:space-x-4">
             <button type="button" @click="resetForm"
@@ -427,6 +459,7 @@ const getInitialFormState = () => ({
   create_date: '', 
   status: '', 
   token: '',
+  notification: true,
   isProtected: false,
   isEnable: true,
   isPPV: false,
