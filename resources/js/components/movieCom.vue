@@ -473,10 +473,6 @@ const submitForm = async () => {
   try {
     validateForm()
 
-    form.url = form.url.replace(/^.*?\.net/, "https://zostream-cdn-edcdf4gbdjeegugm.z03.azurefd.net");
-    form.dash_url = form.dash_url.replace(/^.*?\.net/, "https://zostream-cdn-edcdf4gbdjeegugm.z03.azurefd.net");
-    form.hls_url = form.hls_url.replace(/^.*?\.net/, "https://zostream-cdn-edcdf4gbdjeegugm.z03.azurefd.net");
-
     // Encrypt all URL fields separately
     const [encryptedUrl, encryptedDash, encryptedHls] = await Promise.all([
       form.url ? encryptViaProxy(form.url) : '',
