@@ -293,6 +293,11 @@
                 URL</label><input id="movie-hls_url" v-model="editForm.hls_url" type="url"
                 class="block w-full rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900"
                 placeholder="https://example.com/movie.m3u8"></div>
+                <div class="form-group"><label for="title_img"
+                class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">Title Image
+                URL</label><input id="title_img" v-model="editForm.title_img" type="url"
+                class="block w-full rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900"
+                placeholder="https://example.com/title.jpg"></div>
           </div>
           <div class="attributes-section pt-8 border-t border-gray-200 dark:border-gray-800">
             <h3 class="text-xl font-semibold mb-6 text-gray-900 dark:text-white">Movie Attributes</h3>
@@ -547,7 +552,7 @@ const episodeBooleanFields = ref({
 });
 
 const getInitialMovieForm = () => ({
-  title: '', description: '', token: '', genre: '', director: '', duration: '',
+  title: '', description: '', token: '', genre: '', director: '', duration: '', title_img:'',
   ppv_amount: '', status: '', create_date: '', poster: '', cover_img: '',
   release_on: '', url: '', dash_url: '', hls_url: '',
   ...Object.fromEntries(Object.keys(movieBooleanFields.value).map(key => [key, false]))
