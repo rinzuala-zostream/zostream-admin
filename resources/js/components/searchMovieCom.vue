@@ -769,6 +769,7 @@ const editMovie = async (itemFromList, pMovieId = null, pSeasonId = null) => {
       }
     } else { // Movie
       form.title = itemDetails.title || '';
+      form.title_img = itemDetails.title_img|| '';
       form.description = itemDetails.description || '';
       form.token = itemDetails.token || '';
       form.genre = itemDetails.genre || '';
