@@ -90,16 +90,6 @@
                   class="block w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-all duration-200"
                   placeholder="Tell viewers about this episode..."></textarea>
               </div>
-
-              <!-- Token -->
-              <div class="space-y-2 md:col-span-2 lg:col-span-3">
-                <label for="token" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Episode Token
-                </label>
-                <textarea id="token" v-model="form.token" rows="3"
-                  class="block w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-all duration-200 font-mono text-sm"
-                  placeholder="Enter token data..."></textarea>
-              </div>
             </div>
           </div>
 
@@ -440,7 +430,6 @@ const getInitialFormState = () => ({
   dash_url: '',  // Prefilled Dash URL
   create_date: '', 
   status: '', 
-  token: '',
   notification: true,
   isProtected: false,
   isEnable: true,

@@ -224,11 +224,6 @@
                 id="movie-description" v-model="editForm.description"
                 class="block w-full min-h-[8rem] rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900"
                 rows="4" placeholder="Provide a compelling movie description..."></textarea></div>
-              <div class="form-group sm:col-span-2 lg:col-span-3"><label for="movie-token"
-                class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">Token</label><textarea
-                id="movie-token" v-model="editForm.token"
-                class="block w-full min-h-[8rem] rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900"
-                rows="4" placeholder="Provide a compelling movie token..."></textarea></div>
             <div class="form-group"><label for="movie-genre"
                 class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">Genre</label><input
                 id="movie-genre" v-model="editForm.genre" type="text"
@@ -350,11 +345,6 @@
                 Description</label><textarea id="ep-desc" v-model="editForm.desc"
                 class="block w-full min-h-[8rem] rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900"
                 rows="4" placeholder="Provide episode details..."></textarea></div>
-            <div class="form-group sm:col-span-2 lg:col-span-3"><label for="ep-token"
-                class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">Episode
-                Token</label><textarea id="ep-token" v-model="editForm.token"
-                class="block w-full min-h-[8rem] rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900"
-                rows="4" placeholder="Provide episode token..."></textarea></div>
             <div class="form-group"><label for="ep-txt"
                 class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">Episode
                 Identifier
@@ -531,7 +521,7 @@ const movieBooleanFields = ref({
   isDocumentary: 'Documentary', isAgeRestricted: 'Age Restricted', isDubbed: 'Dubbed',
   isEnable: 'Enable', isHollywood: 'Hollywood', isKorean: 'Korean', isMizo: 'Mizo',
   isPayPerView: 'Pay Per View', isPremium: 'Premium', isSeason: 'Season',
-  isSubtitle: 'Has Subtitle'
+  isSubtitle: 'Has Subtitle', notification: 'Notification',
 });
 
 const episodeBooleanFields = ref({
@@ -539,17 +529,18 @@ const episodeBooleanFields = ref({
   isEnable: 'Enable',
   isPPV: 'Pay Per View', // Assuming this maps to an API field like isPayPerView or isPpv
   isPremium: 'Premium',
+  notification: 'Notification',
 });
 
 const getInitialMovieForm = () => ({
-  title: '', description: '', token: '', genre: '', director: '', duration: '', title_img:'',
+  title: '', description: '', genre: '', notification: false, director: '', duration: '', title_img:'',
   ppv_amount: '', status: '', create_date: '', poster: '', cover_img: '',
   release_on: '', url: '', dash_url: '',
   ...Object.fromEntries(Object.keys(movieBooleanFields.value).map(key => [key, false]))
 });
 
 const getInitialEpisodeForm = () => ({
-  title: '', desc: '', token: '', txt: '', season_id: '', ppv_amount: '',
+  title: '', desc: '', txt: '', season_id: '', ppv_amount: '', notification: false,
   img: '', url: '', dash_url: '', status: '', create_date: '',
   ...Object.fromEntries(Object.keys(episodeBooleanFields.value).map(key => [key, false]))
 });
@@ -743,7 +734,6 @@ const editMovie = async (itemFromList, pMovieId = null, pSeasonId = null) => {
     if (isEpisode) {
       form.title = itemDetails.title || itemDetails.name || '';
       form.desc = itemDetails.desc || itemDetails.description || '';
-      form.token = itemDetails.token || '';
       form.txt = itemDetails.txt || ''; // This might be for display, API might not have/use it
       form.season_id = pSeasonId || itemDetails.season_id || ''; // API should provide season_id for an episode
       form.ppv_amount = itemDetails.ppv_amount || itemDetails.ppvAmount || ''; // Check API field name
@@ -760,8 +750,6 @@ const editMovie = async (itemFromList, pMovieId = null, pSeasonId = null) => {
     } else { // Movie
       form.title = itemDetails.title || '';
       form.title_img = itemDetails.title_img|| '';
-      form.description = itemDetails.description || '';
-      form.token = itemDetails.token || '';
       form.genre = itemDetails.genre || '';
       form.director = itemDetails.director || '';
       form.duration = itemDetails.duration || '';
