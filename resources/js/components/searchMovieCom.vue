@@ -284,16 +284,11 @@
                 class="block w-full rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900"
                 placeholder="https://example.com/movie.mp4"></div>
             <div class="form-group"><label for="movie-dash_url"
-                class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">Dash
+                class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">DRM
                 URL</label><input id="movie-dash_url" v-model="editForm.dash_url" type="url"
                 class="block w-full rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900"
                 placeholder="https://example.com/movie.mpd"></div>
-            <div class="form-group"><label for="movie-hls_url"
-                class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">HLS
-                URL</label><input id="movie-hls_url" v-model="editForm.hls_url" type="url"
-                class="block w-full rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900"
-                placeholder="https://example.com/movie.m3u8"></div>
-                <div class="form-group"><label for="title_img"
+            <div class="form-group"><label for="title_img"
                 class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">Title Image
                 URL</label><input id="title_img" v-model="editForm.title_img" type="url"
                 class="block w-full rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900"
@@ -387,15 +382,10 @@
                 class="block w-full rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900"
                 placeholder="https://example.com/episode.mp4"></div>
             <div class="form-group"><label for="ep-dash_url"
-                class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">DASH
+                class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">DRM
                 URL</label><input id="ep-dash_url" v-model="editForm.dash_url" type="url"
                 class="block w-full rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900"
                 placeholder="https://example.com/episode.mpd"></div>
-            <div class="form-group"><label for="ep-hls_url"
-                class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">HLS
-                URL</label><input id="ep-hls_url" v-model="editForm.hls_url" type="url"
-                class="block w-full rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900"
-                placeholder="https://example.com/episode.m3u8"></div>
             <div class="form-group"><label for="ep-status"
                 class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">Status</label><select
                 id="ep-status" v-model="editForm.status"
@@ -554,13 +544,13 @@ const episodeBooleanFields = ref({
 const getInitialMovieForm = () => ({
   title: '', description: '', token: '', genre: '', director: '', duration: '', title_img:'',
   ppv_amount: '', status: '', create_date: '', poster: '', cover_img: '',
-  release_on: '', url: '', dash_url: '', hls_url: '',
+  release_on: '', url: '', dash_url: '',
   ...Object.fromEntries(Object.keys(movieBooleanFields.value).map(key => [key, false]))
 });
 
 const getInitialEpisodeForm = () => ({
   title: '', desc: '', token: '', txt: '', season_id: '', ppv_amount: '',
-  img: '', url: '', dash_url: '', hls_url: '', status: '', create_date: '',
+  img: '', url: '', dash_url: '', status: '', create_date: '',
   ...Object.fromEntries(Object.keys(episodeBooleanFields.value).map(key => [key, false]))
 });
 
@@ -760,7 +750,7 @@ const editMovie = async (itemFromList, pMovieId = null, pSeasonId = null) => {
       form.status = itemDetails.status || '';
       form.create_date = formatDateForInput(itemDetails.create_date);
 
-      const epUrlFields = { img: 'img', url: 'url', dash_url: 'dash_url', hls_url: 'hls_url' };
+      const epUrlFields = { img: 'img', url: 'url', dash_url: 'dash_url' };
       for (const [formKey, detailKey] of Object.entries(epUrlFields)) {
         form[formKey] = itemDetails[detailKey] ? await decryptUrl(itemDetails[detailKey]) : '';
       }
@@ -780,7 +770,7 @@ const editMovie = async (itemFromList, pMovieId = null, pSeasonId = null) => {
       form.create_date = formatDateForInput(itemDetails.create_date || itemDetails.upload_date || itemDetails.createdAt);
       form.release_on = formatDateForInput(itemDetails.release_on || itemDetails.releaseDate);
 
-      const movieUrlFields = { poster: 'poster', cover_img: 'cover_img', url: 'url', dash_url: 'dash_url', hls_url: 'hls_url' };
+      const movieUrlFields = { poster: 'poster', cover_img: 'cover_img', url: 'url', dash_url: 'dash_url' };
       for (const [formKey, detailKey] of Object.entries(movieUrlFields)) {
         form[formKey] = itemDetails[detailKey] ? await decryptUrl(itemDetails[detailKey]) : '';
       }
@@ -827,7 +817,7 @@ const submitForm = async () => {
     const isEpisode = !!itemCtx.seasonId;
 
     // 1. Encrypt URLs
-    const urlFields = ['url', 'dash_url', 'hls_url'];
+    const urlFields = ['url', 'dash_url'];
     const urlsToEncrypt = Object.fromEntries(
       urlFields.map((key) => [key, currentFormState[key]])
     );

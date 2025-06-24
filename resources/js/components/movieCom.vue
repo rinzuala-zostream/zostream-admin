@@ -182,7 +182,7 @@
               <!-- Dash URL -->
               <div class="space-y-2">
                 <label for="dash_url" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Dash URL
+                  DRM URL
                 </label>
                 <div class="relative">
                   <input id="dash_url" v-model="form.dash_url" type="url"
@@ -191,23 +191,6 @@
                   <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                     <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"></path>
-                    </svg>
-                  </div>
-                </div>
-              </div>
-
-              <!-- HLS URL -->
-              <div class="space-y-2">
-                <label for="hls_url" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  HLS URL
-                </label>
-                <div class="relative">
-                  <input id="hls_url" v-model="form.hls_url" type="url"
-                    class="block w-full pl-4 pr-10 py-2.5 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-all duration-200"
-                    placeholder="https://example.com/playlist.m3u8">
-                  <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                    <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
                     </svg>
                   </div>
                 </div>
@@ -424,14 +407,14 @@ const getInitialFormState = () => ({
   poster: '', cover_img: '', 
   url: '',  // Prefilled Movie URL
   dash_url: '',  // Prefilled Dash URL
-  hls_url: '', trailer: '',
+  trailer: '',
   title_img:'',
   release_on: '', create_date: '', status: '', notification: true,
   isProtected: false, isBollywood: false, isCompleted: false, isDocumentary: false,
   isAgeRestricted: false, isDubbed: false, isEnable: true, isHollywood: false,
   isKorean: false, isMizo: false, isPayPerView: false, isPremium: false,
   isSeason: false, isSubtitle: false,
-  views: 0,
+  views: 0, token: ''
 })
 
 const form = reactive(getInitialFormState())
@@ -484,13 +467,11 @@ const submitForm = async () => {
     const [encryptedUrl, encryptedDash, encryptedHls] = await Promise.all([
       form.url ? encryptViaProxy(form.url) : '',
       form.dash_url ? encryptViaProxy(form.dash_url) : '',
-      form.hls_url ? encryptViaProxy(form.hls_url) : ''
     ])
 
     // Assign encrypted values
     form.url = encryptedUrl
     form.dash_url = encryptedDash
-    form.hls_url = encryptedHls
 
     // Prepare final payload
     const payload = Object.fromEntries(
