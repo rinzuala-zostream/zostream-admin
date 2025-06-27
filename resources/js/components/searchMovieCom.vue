@@ -76,7 +76,7 @@
               <p class="text-xs text-gray-500 dark:text-gray-400 font-mono truncate sm:hidden">{{ movie.id }}</p>
             </div>
           </div>
-          
+
           <div class="hidden sm:block text-sm text-gray-500 dark:text-gray-400 font-mono mx-2 truncate">
             {{ movie.id }}
           </div>
@@ -749,6 +749,7 @@ const editMovie = async (itemFromList, pMovieId = null, pSeasonId = null) => {
       }
     } else { // Movie
       form.title = itemDetails.title || '';
+      form.description = itemDetails.description || '';
       form.title_img = itemDetails.title_img|| '';
       form.genre = itemDetails.genre || '';
       form.director = itemDetails.director || '';
