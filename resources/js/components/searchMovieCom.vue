@@ -808,9 +808,20 @@ const submitForm = async () => {
     // 1. Encrypt URLs
     const urlFields = ['url', 'dash_url'];
     const urlsToEncrypt = Object.fromEntries(
-      urlFields.map((key) => [key, currentFormState[key]])
-    );
-
+  urlFields.map((key) => {
+    let originalUrl = currentFormState[key];
+    if (
+      typeof originalUrl === 'string' &&
+      originalUrl.startsWith('https://zostream.blob.core.windows.net/')
+    ) {
+      originalUrl = originalUrl.replace(
+        'https://zostream.blob.core.windows.net/',
+        'http://cdn.buannelstudio.in/'
+      );
+    }
+    return [key, originalUrl];
+  })
+);
     const encryptionPromises = Object.entries(urlsToEncrypt).map(async ([key, plainUrl]) =>
       plainUrl && typeof plainUrl === 'string' && plainUrl.trim()
         ? [key, (await encryptViaProxy(plainUrl)) || plainUrl]

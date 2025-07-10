@@ -7,8 +7,12 @@ Route::get('/', function () {
     return Inertia::render('Welcome');
 })->name('home');
 
-Route::get('movie', function () {
+Route::get('dashboard', function () {
     return Inertia::render('Dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::get('movie', function () {
+    return Inertia::render('Movie');
 })->middleware(['auth', 'verified'])->name('movie');
 
 Route::get('episode', function () {

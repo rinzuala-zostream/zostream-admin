@@ -16,7 +16,7 @@
             <!-- Main navigation -->
             <NavMain :items="mainNavItems" />
 
-           
+
         </SidebarContent>
 
         <SidebarFooter class="border-t pt-2">
@@ -45,23 +45,30 @@ import {
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
-import { 
-    Settings, 
-    BookOpen, 
-    Github, 
-    LayoutGrid, 
-    Film, 
-    Tv, 
-    Users, 
-    Smartphone, 
+import {
+    Settings,
+    BookOpen,
+    Github,
+    LayoutGrid,
+    Film,
+    Tv,
+    Users,
+    Smartphone,
     ChevronDown,
     Crown,
 Edit,
-IdCard
+IdCard,
+LayoutDashboard
 } from 'lucide-vue-next';
 import { identity } from '@vueuse/core';
 
 const mainNavItems: NavItem[] = [
+    {
+        title: 'Dashboard',
+        href: '/dashboard',
+        icon: LayoutDashboard,
+        active: route().current('dashboard*')
+    },
     {
         title: 'Movies',
         href: '/movie',
@@ -80,27 +87,27 @@ const mainNavItems: NavItem[] = [
         icon: Edit,
         active: route().current('update*')
     },
-    { 
-        title: 'Users', 
-        href: '/user', 
+    {
+        title: 'Users',
+        href: '/user',
         icon: Users,
         active: route().current('user*')
     },
-    { 
-        title: 'Devices', 
-        href: '/device', 
+    {
+        title: 'Devices',
+        href: '/device',
         icon: Smartphone,
         active: route().current('device*')
     },
-    { 
-        title: 'Subscription', 
-        href: '/subscribe', 
+    {
+        title: 'Subscription',
+        href: '/subscribe',
         icon: Crown,
         active: route().current('subscribe*')
     },
-    { 
-        title: 'Season ID', 
-        href: '/season', 
+    {
+        title: 'Season ID',
+        href: '/season',
         icon: IdCard,
         active: route().current('season*')
     },
