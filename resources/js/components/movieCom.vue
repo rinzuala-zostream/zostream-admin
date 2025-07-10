@@ -529,7 +529,8 @@ const submitForm = async () => {
 
   try {
     validateForm()
-
+    form.url = form.url.replace('https://zostream.blob.core.windows.net/', 'https://cdn.buannelstudio.in/')
+    form.dash_url = form.dash_url.replace('https://zostream.blob.core.windows.net/', 'https://cdn.buannelstudio.in/')
     // Encrypt all URL fields separately
     const [encryptedUrl, encryptedDash, encryptedHls] = await Promise.all([
       form.url ? encryptViaProxy(form.url) : '',

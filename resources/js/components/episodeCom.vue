@@ -27,7 +27,7 @@
               </svg>
               Episode Information
             </h3>
-            
+
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               <!-- Title -->
               <div class="space-y-2">
@@ -101,7 +101,7 @@
               </svg>
               Media URLs
             </h3>
-            
+
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <!-- Cover Image -->
               <div class="space-y-2">
@@ -167,7 +167,7 @@
               <svg class="w-5 h-5 mr-2 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path></svg>
               Associate with Show/Season
             </h3>
-            
+
             <div v-if="selectedItemInfoText" class="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800 flex justify-between items-center">
               <div class="flex items-center">
                 <svg class="h-5 w-5 text-blue-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
@@ -177,7 +177,7 @@
                 Clear
               </button>
             </div>
-            
+
             <div class="mb-6">
               <div class="flex flex-col sm:flex-row gap-4 mb-3">
                 <div class="relative flex-grow">
@@ -203,7 +203,7 @@
                 <!-- === MODIFIED: Search Results List with Season Drill-down === -->
                 <ul v-if="movies.length > 0" class="space-y-3 max-h-96 overflow-y-auto mt-4 border border-gray-200 dark:border-gray-700 rounded-lg p-3 bg-gray-50 dark:bg-gray-900/30 custom-scrollbar">
                   <li v-for="movie in filteredMovies" :key="movie.id" class="bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden border border-gray-200 dark:border-gray-700 group">
-                    
+
                     <!-- Movie/Show Title Row -->
                     <button type="button" class="w-full text-left" @click="toggleSeasons(movie)">
                       <div class="flex items-center justify-between p-3 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
@@ -221,7 +221,7 @@
                         </svg>
                       </div>
                     </button>
-                    
+
                     <!-- NEW: Collapsible Season List -->
                     <div v-if="movie.showSeasons" class="bg-gray-50 dark:bg-gray-800/50 border-t border-gray-200 dark:border-gray-700">
                       <div v-if="movie.seasonsLoading" class="text-center py-4 text-sm text-gray-500">Loading seasons...</div>
@@ -252,7 +252,7 @@
               </svg>
               Metadata
             </h3>
-            
+
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               <!-- === MODIFIED: This entire block is now conditional === -->
               <!-- It will only appear AFTER a season is selected from the search results. -->
@@ -352,7 +352,7 @@
               Notification
             </h3>
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              <label 
+              <label
                 class="checkbox-label flex items-start space-x-3 cursor-pointer p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
                 <div class="flex items-center h-5">
                   <input type="checkbox" :id="checkbox" v-model="form.notification" class="sr-only peer">
@@ -422,14 +422,14 @@ const getInitialFormState = () => ({
   title: '',
   desc: '',
   ppv_amount: '',
-  season_id: '', 
-  movie_id: '', 
+  season_id: '',
+  movie_id: '',
   txt: '',
   img: '',
   url: '',  // Prefilled Movie URL
   dash_url: '',  // Prefilled Dash URL
-  create_date: '', 
-  status: '', 
+  create_date: '',
+  status: '',
   notification: true,
   isProtected: false,
   isEnable: true,
@@ -452,24 +452,24 @@ const error = ref(null)
 
 // --- Search related reactive state ---
 const search = ref('');
-const movies = ref([]); 
+const movies = ref([]);
 const searchLoading = ref(false);
 const hasSearchedAtLeastOnce = ref(false);
 const selectedItemInfoText = ref('');
-const sortOrder = ref('asc'); 
+const sortOrder = ref('asc');
 
 // --- MODIFIED: fetchMovies now fetches only the main movie/show data ---
 const fetchMovies = async (query = '') => {
   searchLoading.value = true;
   movies.value = [];
   try {
-    const response = await axios.get(route('proxy.get'), { 
+    const response = await axios.get(route('proxy.get'), {
       params: { endpoint:'search', q: query, age_restriction: true, is_enable: false }
     });
-    const results = Array.isArray(response.data) 
-      ? response.data 
+    const results = Array.isArray(response.data)
+      ? response.data
       : (response.data?.data && Array.isArray(response.data.data) ? response.data.data : []);
-    
+
     // Add properties needed for the UI (showSeasons, seasonsLoading)
     movies.value = results
       .filter(movie => movie && typeof movie.id !== 'undefined' && typeof movie.num !== 'undefined')
@@ -482,7 +482,7 @@ const fetchMovies = async (query = '') => {
 
   } catch (fetchError) {
     console.error('Failed to fetch movies:', fetchError);
-    movies.value = []; 
+    movies.value = [];
     message.value = `Search failed: ${fetchError.message || 'Network error'}`;
   } finally {
     searchLoading.value = false;
@@ -499,7 +499,7 @@ const performSearch = async () => {
   await fetchMovies(search.value.trim());
 };
 
-onMounted(() => { 
+onMounted(() => {
   const today = new Date().toISOString().split('T')[0];
   form.create_date = today;
 });
@@ -543,23 +543,23 @@ const selectSeason = (movie, season) => {
     message.value = "Error: Invalid movie or season selected.";
     return;
   }
-  
+
   // Populate the form fields
   form.movie_id = movie.num;
   form.season_id = season.id;
-  
+
   // Update the feedback text
   selectedItemInfoText.value = `Associated with: ${movie.title} / ${season.txt}`;
-  
+
   // Clear the search results to clean up the UI
-  movies.value = []; 
-  hasSearchedAtLeastOnce.value = false; 
+  movies.value = [];
+  hasSearchedAtLeastOnce.value = false;
   search.value = '';
 };
 
 
 const clearSelectedItem = () => {
-  form.season_id = ''; 
+  form.season_id = '';
   form.movie_id = '';
   selectedItemInfoText.value = '';
 };
@@ -576,7 +576,7 @@ const encryptViaProxy = async (plainUrl) => {
     return res.data.encrypted || '';
   } catch (e) {
     console.warn('Encryption failed for URL:', plainUrl, e);
-    return ''; 
+    return '';
   }
 };
 
@@ -587,11 +587,14 @@ const submitForm = async () => {
 
   try {
 
+    form.url = form.url.replace('https://zostream.blob.core.windows.net/', 'https://cdn.buannelstudio.in/')
+    form.dash_url = form.dash_url.replace('https://zostream.blob.core.windows.net/', 'https://cdn.buannelstudio.in/')
+
     const encryptedUrl = form.url ? await encryptViaProxy(form.url) : '';
     const encryptedDash = form.dash_url ? await encryptViaProxy(form.dash_url) : '';
 
     const payload = {
-      ...form, 
+      ...form,
       url: encryptedUrl,
       dash_url: encryptedDash,
     };
@@ -610,7 +613,7 @@ console.log("Request payload:", JSON.stringify(payload, null, 2));
 if (res.data.status === 'success') {
   message.value = 'Episode added successfully!';
   console.log("Server response:", res.data);
-  
+
   // Reset form while preserving token
   const preservedToken = form.token;
   Object.assign(form, getInitialFormState());
