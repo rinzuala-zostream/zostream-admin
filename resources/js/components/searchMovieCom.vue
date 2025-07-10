@@ -797,7 +797,7 @@ const editMovie = async (itemFromList, pMovieId = null, pSeasonId = null) => {
             form.create_date = formatDateForInput(itemDetails.create_date || itemDetails.upload_date || itemDetails.createdAt);
             form.release_on = formatDateForInput(itemDetails.release_on || itemDetails.releaseDate);
 
-            const movieUrlFields = { poster: 'poster', cover_img: 'cover_img', url: 'url', dash_url: 'dash_url' };
+            const movieUrlFields = { poster: 'poster', cover_img: 'cover_img', url: 'url', dash_url: 'dash_url', title_img: 'title_img' };
             for (const [formKey, detailKey] of Object.entries(movieUrlFields)) {
                 form[formKey] = itemDetails[detailKey] ? await decryptUrl(itemDetails[detailKey]) : '';
             }
@@ -845,7 +845,7 @@ const submitForm = async () => {
         const base = 'https://zostream.blob.core.windows.net/';
         const cdn = 'https://cdn.buannelstudio.in/';
 
-        ['url', 'dash_url'].forEach((key) => {
+        ['url', 'dash_url', 'poster', 'cover_img', 'title_img'].forEach((key) => {
             if (typeof currentFormState[key] === 'string' && currentFormState[key].startsWith(base)) {
                 currentFormState[key] = currentFormState[key].replace(base, cdn);
             }
