@@ -697,6 +697,8 @@ const fetchMovies = async (query = '') => {
             is_enable: String(false),
         }));
         movies.value = Array.isArray(response.data) ? response.data : [];
+        console.log('Data:', response.data)
+        const desc = response.data.description;
     } catch (error) {
         console.error('Failed to fetch movies:', error);
         movies.value = [];
@@ -771,7 +773,7 @@ const editMovie = async (itemFromList, pMovieId = null, pSeasonId = null) => {
         const form = editForm.value;
         if (isEpisode) {
             form.title = itemDetails.title || itemDetails.name || '';
-            form.desc = itemDetails.desc || itemDetails.description || '';
+            form.desc = desc || itemDetails.desc || '';
             form.txt = itemDetails.txt || ''; // This might be for display, API might not have/use it
             form.season_id = pSeasonId || itemDetails.season_id || ''; // API should provide season_id for an episode
             form.ppv_amount = itemDetails.ppv_amount || itemDetails.ppvAmount || ''; // Check API field name
@@ -842,14 +844,7 @@ const submitForm = async () => {
         if (!itemCtx || !itemCtx.id) throw new Error("Editing context is invalid.");
 
         const isEpisode = !!itemCtx.seasonId;
-        const base = 'https://zostream.blob.core.windows.net/';
-        const cdn = 'https://cdn.buannelstudio.in/';
 
-        ['url', 'dash_url', 'poster', 'cover_img', 'title_img'].forEach((key) => {
-            if (typeof currentFormState[key] === 'string' && currentFormState[key].startsWith(base)) {
-                currentFormState[key] = currentFormState[key].replace(base, cdn);
-            }
-        });
         // 1. Encrypt URLs
         const urlFields = ['url', 'dash_url'];
         const urlsToEncrypt = Object.fromEntries(

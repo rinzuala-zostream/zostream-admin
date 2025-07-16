@@ -530,21 +530,6 @@ const submitForm = async () => {
   try {
     validateForm()
 
-    // ✅ Replace blob base URL with CDN for all relevant fields
-    const replaceBlobWithCDN = (url) => {
-      const base = 'https://zostream.blob.core.windows.net/';
-      const cdn = 'https://cdn.buannelstudio.in/';
-      return typeof url === 'string' && url.startsWith(base)
-        ? url.replace(base, cdn)
-        : url;
-    };
-
-    form.url = replaceBlobWithCDN(form.url)
-    form.dash_url = replaceBlobWithCDN(form.dash_url)
-    form.poster = replaceBlobWithCDN(form.poster)
-    form.cover_img = replaceBlobWithCDN(form.cover_img)
-    form.title_img = replaceBlobWithCDN(form.title_img)
-
     // Encrypt all URL fields separately
     const [encryptedUrl, encryptedDash] = await Promise.all([
       form.url ? encryptViaProxy(form.url) : '',
