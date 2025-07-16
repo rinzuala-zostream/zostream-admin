@@ -12,12 +12,6 @@
                             @keyup.enter="performSearch"
                             class="w-full pl-4 pr-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-600 dark:focus:border-blue-600 transition-all duration-200 text-sm sm:text-base" />
                     </div>
-
-                    <select v-model="sortOrder"
-                        class="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-600 dark:focus:border-blue-600 transition-all duration-200 sm:w-auto w-full text-sm sm:text-base">
-                        <option value="asc">A-Z</option>
-                        <option value="desc">Z-A</option>
-                    </select>
                 </div>
                 <div class="flex justify-center">
                     <button @click="performSearch" :disabled="loading"
@@ -698,7 +692,6 @@ const fetchMovies = async (query = '') => {
         }));
         movies.value = Array.isArray(response.data) ? response.data : [];
         console.log('Data:', response.data)
-        const desc = response.data.description;
     } catch (error) {
         console.error('Failed to fetch movies:', error);
         movies.value = [];
