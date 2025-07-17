@@ -766,7 +766,7 @@ const editMovie = async (itemFromList, pMovieId = null, pSeasonId = null) => {
         const form = editForm.value;
         if (isEpisode) {
             form.title = itemDetails.title || itemDetails.name || '';
-            form.desc = desc || itemDetails.desc || '';
+            form.desc = itemDetails.desc || '';
             form.txt = itemDetails.txt || ''; // This might be for display, API might not have/use it
             form.season_id = pSeasonId || itemDetails.season_id || ''; // API should provide season_id for an episode
             form.ppv_amount = itemDetails.ppv_amount || itemDetails.ppvAmount || ''; // Check API field name
