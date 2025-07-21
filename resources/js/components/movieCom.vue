@@ -231,6 +231,26 @@
                 </div>
               </div>
 
+              <!-- Dash URL -->
+              <div class="space-y-2">
+                <label for="trailer" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Trailer URL
+                </label>
+                <div class="relative">
+                  <input id="trailer" v-model="form.trailer" type="url"
+                    class="block w-full pl-4 pr-10 py-2.5 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-all duration-200"
+                    placeholder="https://example.com/trailer.mpd">
+                  <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                    <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01">
+                      </path>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
               <div class="space-y-2">
                 <label for="title_img" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                   Title Image URL
