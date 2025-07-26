@@ -219,11 +219,12 @@
 
         <!-- Edit Modal (remains the same, with v-if="showEditModal") -->
         <div v-if="showEditModal"
-            class="fixed inset-0 bg-gray-600 bg-opacity-75 dark:bg-gray-900 dark:bg-opacity-75 transition-opacity duration-300 ease-in-out flex items-center justify-center p-4 z-[100]"
-            @click.self="closeEditModal">
-            <!-- Movie Edit Form -->
-            <div v-if="editingItem && !editingItem.seasonId"
-                class="form-container bg-white dark:bg-gray-950 text-gray-800 dark:text-gray-100 p-6 sm:p-8 md:p-10 rounded-xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto">
+     class="fixed inset-0 bg-gray-600 bg-opacity-75 dark:bg-gray-900 dark:bg-opacity-75 transition-opacity duration-300 ease-in-out flex items-center justify-center p-4 z-[100]"
+     @click.self="closeEditModal">
+
+     <!-- Wider Movie Edit Form -->
+     <div v-if="editingItem && !editingItem.seasonId"
+          class="form-container bg-white dark:bg-gray-950 text-gray-800 dark:text-gray-100 p-6 sm:p-8 md:p-10 rounded-xl shadow-2xl w-full max-w-5xl max-h-[90vh] overflow-y-auto">
                 <!-- ... Movie form content ... -->
                 <h2
                     class="text-2xl sm:text-3xl font-bold mb-8 text-center sm:text-left text-gray-900 dark:text-white tracking-tight">
@@ -291,16 +292,51 @@
                                 Date</label><input id="movie-release_on" v-model="editForm.release_on" type="date"
                                 class="block w-full rounded-lg border-0 py-2 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900 dark:[color-scheme:dark]">
                         </div>
-                        <div class="form-group"><label for="movie-url"
-                                class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">Movie
-                                URL</label><input id="movie-url" v-model="editForm.url" type="url"
-                                class="block w-full rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900"
-                                placeholder="https://example.com/movie.mp4"></div>
-                        <div class="form-group"><label for="movie-dash_url"
-                                class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">DRM
-                                URL</label><input id="movie-dash_url" v-model="editForm.dash_url" type="url"
-                                class="block w-full rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900"
-                                placeholder="https://example.com/movie.mpd"></div>
+                            <!-- Movie URL with Play Button -->
+                            <div class="form-group">
+                                <label for="movie-url"
+                                    class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">
+                                    Movie URL
+                                </label>
+                                <div class="flex items-center gap-2">
+                                    <input id="movie-url" v-model="editForm.url" type="url"
+                                        class="flex-1 rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900"
+                                        placeholder="https://example.com/movie.mp4">
+                                    <button @click="showPlayer(editForm.url)" :disabled="!editForm.url"
+                                        class="flex-shrink-0 h-10 w-10 flex items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                                        title="Preview movie">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
+                                            fill="currentColor">
+                                            <path fill-rule="evenodd"
+                                                d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
+                                                clip-rule="evenodd" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- DRM URL with Play Button -->
+                            <div class="form-group">
+                                <label for="movie-dash_url"
+                                    class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">
+                                    DRM URL
+                                </label>
+                                <div class="flex items-center gap-2">
+                                    <input id="movie-dash_url" v-model="editForm.dash_url" type="url"
+                                        class="flex-1 rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900"
+                                        placeholder="https://example.com/movie.mpd">
+                                    <button @click="showPlayer(editForm.dash_url)" :disabled="!editForm.dash_url"
+                                        class="flex-shrink-0 h-10 w-10 flex items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                                        title="Preview DRM content">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
+                                            fill="currentColor">
+                                            <path fill-rule="evenodd"
+                                                d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
+                                                clip-rule="evenodd" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
                         <div class="form-group"><label for="title_img"
                                 class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">Title
                                 Image
@@ -390,16 +426,51 @@
                                 URL</label><input id="ep-img" v-model="editForm.img" type="url"
                                 class="block w-full rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900"
                                 placeholder="https://example.com/image.jpg"></div>
-                        <div class="form-group"><label for="ep-url"
-                                class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">Video
-                                URL</label><input id="ep-url" v-model="editForm.url" type="url"
-                                class="block w-full rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900"
-                                placeholder="https://example.com/episode.mp4"></div>
-                        <div class="form-group"><label for="ep-dash_url"
-                                class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">DRM
-                                URL</label><input id="ep-dash_url" v-model="editForm.dash_url" type="url"
-                                class="block w-full rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900"
-                                placeholder="https://example.com/episode.mpd"></div>
+                            <!-- Video URL with Play Button -->
+                            <div class="form-group">
+                                <label for="ep-url"
+                                    class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">
+                                    Video URL
+                                </label>
+                                <div class="relative flex items-center gap-2">
+                                    <input id="ep-url" v-model="editForm.url" type="url"
+                                        class="block flex-1 rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900"
+                                        placeholder="https://example.com/episode.mp4">
+                                    <button @click="showPlayer(editForm.url)" :disabled="!editForm.url"
+                                        class="flex items-center justify-center h-10 w-10 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                                        title="Preview video">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
+                                            fill="currentColor">
+                                            <path fill-rule="evenodd"
+                                                d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
+                                                clip-rule="evenodd" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- DRM URL with Play Button -->
+                            <div class="form-group">
+                                <label for="ep-dash_url"
+                                    class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">
+                                    DRM URL
+                                </label>
+                                <div class="relative flex items-center gap-2">
+                                    <input id="ep-dash_url" v-model="editForm.dash_url" type="url"
+                                        class="block flex-1 rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900"
+                                        placeholder="https://example.com/episode.mpd">
+                                    <button @click="showPlayer(editForm.dash_url)" :disabled="!editForm.dash_url"
+                                        class="flex items-center justify-center h-10 w-10 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                                        title="Preview DRM content">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
+                                            fill="currentColor">
+                                            <path fill-rule="evenodd"
+                                                d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
+                                                clip-rule="evenodd" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
                         <div class="form-group"><label for="ep-status"
                                 class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">Status</label><select
                                 id="ep-status" v-model="editForm.status"
@@ -483,8 +554,8 @@
                 </div>
                 <div v-if="deleteModalMessage" class="mt-4 p-3 rounded-md text-sm text-center" :class="{
                             'bg-green-50 dark:bg-green-700/20 text-green-700 dark:text-green-300 border border-green-300 dark:border-green-600/50': !deleteModalMessage.startsWith('Failed'),
-              'bg-red-50 dark:bg-red-700/20 text-red-700 dark:text-red-300 border border-red-300 dark:border-red-600/50': deleteModalMessage.startsWith('Failed')
-            }">
+                            'bg-red-50 dark:bg-red-700/20 text-red-700 dark:text-red-300 border border-red-300 dark:border-red-600/50': deleteModalMessage.startsWith('Failed')
+                        }">
                     {{ deleteModalMessage }}
                 </div>
                 <div class="mt-5 sm:mt-6 sm:grid sm:grid-cols-2 sm:gap-3 sm:grid-flow-row-dense">
@@ -510,7 +581,7 @@
                 </div>
             </div>
         </div>
-
+        <ShakaPlayer v-if="showPlayer" :videoUrl="videoUrl" @close="showPlayer = false" />
     </div>
 </template>
 
@@ -519,10 +590,11 @@ import { ref, computed, onMounted } from 'vue';
 import axios from 'axios';
 import { db } from '@/firebase'; // Used for toggleMovie, toggleSeasonEpisodes (local Firestore data)
 import { collection, getDocs } from 'firebase/firestore';
+import ShakaPlayer from '@/components/shakaPlayerCom.vue'
 
 // --- Configuration ---
 // IMPORTANT: For production, use environment variables and ideally a backend proxy for API keys.
-const ZOS_API_KEY = import.meta.env.VITE_ZOS_API_KEY || 'ljkfdnakadsfthbretmjsavbigruw3niadghr67errh8';
+const ZOS_API_KEY = import.meta.env.VITE_ZOS_API_KEY || '';
 const ZOS_BASE_URL = 'https://apis.zostream.in/api'; // Centralize base URL
 
 // --- Reactive State ---
@@ -537,6 +609,8 @@ const showDeleteConfirmModal = ref(false);
 const itemToDelete = ref(null); // Will store { id, type: 'movie' | 'episode', titleOrTxt, parentMovieId?, parentSeasonId? }
 const isDeleting = ref(false);
 const deleteModalMessage = ref('');
+
+const videoUrl = computed(() => editForm.url || editForm.dash_url)
 
 // Modal State
 const showEditModal = ref(false);
