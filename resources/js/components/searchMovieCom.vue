@@ -591,7 +591,7 @@ import axios from 'axios';
 import { db } from '@/firebase'; // Used for toggleMovie, toggleSeasonEpisodes (local Firestore data)
 import { collection, getDocs } from 'firebase/firestore';
 import ShakaPlayer from '@/components/shakaPlayerCom.vue'
-import { toastContainers } from 'vue3-toastify';
+import { toast } from 'vue3-toastify';
 
 // --- Reactive State ---
 const movies = ref([]);
@@ -959,7 +959,7 @@ const submitForm = async () => {
             }
         });
 
-        toast.success(`${isEpisode ? 'Episode' : 'Movie'} updated successfully!`)
+        toast.success(`${isEpisode ? 'Episode' : 'Movie'} updated successfully!`);
         modalMessage.value = `${isEpisode ? 'Episode' : 'Movie'} updated successfully!`;
         showEditModal.value = false;
 
@@ -989,6 +989,7 @@ const submitForm = async () => {
         // Optional: Automatically close modal
         // setTimeout(closeEditModal, 1500);
     } catch (err) {
+        toast.error('Update submission failed:', err.config?.url, err.response || err);
         console.error('Update submission failed:', err.config?.url, err.response || err);
         let errorMsg = 'An unknown error occurred during update.';
         if (err.response) {
