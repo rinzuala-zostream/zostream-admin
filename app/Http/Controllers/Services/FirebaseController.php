@@ -8,8 +8,10 @@ use App\Services\FirebaseService;
 
 class FirebaseController extends Controller
 {
-    public function getStats(FirebaseService $firebase)
+    public function count(FirebaseService $firebaseService)
     {
-        return response()->json($firebase->getUserStats());
+        $count = $firebaseService->countUsers();
+
+        return response()->json(['count' => $count]);
     }
 }

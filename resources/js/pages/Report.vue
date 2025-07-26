@@ -2,20 +2,21 @@
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/vue3';
-import movieCount from '@/components/dashboardCom.vue';
+import reportCom from '../components/reportCom.vue';
+
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Movie Panel',
-        href: '/dashboard',
+        title: 'Report Panel',
+        href: '/report',
     },
 ];
 </script>
 
 <template>
-    <Head title="Dashboard" />
+    <Head title="Report" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
-                <movieCount />
+                <reportCom />
     </AppLayout>
 </template>

@@ -9,5 +9,5 @@ Route::post('/proxy', [ApiProxyController::class, 'proxyRequest'])->name('proxy.
 Route::get('/proxy', [ApiProxyController::class, 'proxyRequest'])->name('proxy.get');
 Route::put('/proxy', [ApiProxyController::class, 'proxyRequest'])->name('proxy.put');
 Route::post('/decrypt', [DecryptController::class, 'decrypt'])->name('decrypt');
-Route::get('/firebase/user-stats', [FirebaseController::class, 'getStats'])->name('count');
+Route::get('/firebase/users/count', [FirebaseController::class, 'count'])->name('count');
 

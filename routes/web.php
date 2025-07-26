@@ -11,6 +11,10 @@ Route::get('dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
+Route::get('report', function () {
+    return Inertia::render('Report');
+})->middleware(['auth', 'verified'])->name('report');
+
 Route::get('movie', function () {
     return Inertia::render('Movie');
 })->middleware(['auth', 'verified'])->name('movie');

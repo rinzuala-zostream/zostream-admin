@@ -56,6 +56,7 @@ import {
     Smartphone,
     ChevronDown,
     Crown,
+    Command,
 Edit,
 IdCard,
 LayoutDashboard
@@ -110,6 +111,12 @@ const mainNavItems: NavItem[] = [
         href: '/season',
         icon: IdCard,
         active: route().current('season*')
+    },
+    {
+        title: 'Report',
+        href: '/report',
+        icon: Command,
+        active: route().current('report*')
     },
 ];
 
