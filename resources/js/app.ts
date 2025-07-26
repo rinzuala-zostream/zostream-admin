@@ -6,7 +6,7 @@ import type { DefineComponent } from 'vue';
 import { createApp, h } from 'vue';
 import { ZiggyVue } from 'ziggy-js';
 import { initializeTheme } from './composables/useAppearance';
-import { toast } from 'vue3-toastify';
+import Vue3Toastify, { type ToastContainerOptions } from 'vue3-toastify'
 import 'vue3-toastify/dist/index.css';
 
 // Extend ImportMeta interface for Vite...
@@ -30,7 +30,11 @@ createInertiaApp({
     setup({ el, App, props, plugin }) {
         createApp({ render: () => h(App, props) })
             .use(plugin)
-            .use(toast)
+            .use(Vue3Toastify, {
+                autoClose: 3000,
+                position: 'top-right',
+                theme: 'dark', // or 'light'
+              } satisfies ToastContainerOptions)
             .use(ZiggyVue)
             .mount(el);
     },
