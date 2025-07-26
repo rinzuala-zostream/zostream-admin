@@ -3,7 +3,6 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/vue3';
 import reportCom from '../components/reportCom.vue';
-import ShakaVue from './Shaka.vue';
 
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -19,6 +18,5 @@ const breadcrumbs: BreadcrumbItem[] = [
 
     <AppLayout :breadcrumbs="breadcrumbs">
                 <reportCom />
-                <ShakaVue />
     </AppLayout>
 </template>
