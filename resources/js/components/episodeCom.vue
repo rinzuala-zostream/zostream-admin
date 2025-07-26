@@ -124,40 +124,54 @@
                 </div>
               </div>
 
-              <!-- Video URL -->
+              <!-- Movie URL -->
               <div class="space-y-2">
-                <label for="url" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Video URL <span class="text-red-500">*</span>
-                </label>
-                <div class="relative">
-                  <input id="url" v-model="form.url" type="url" required
-                    class="block w-full pl-4 pr-10 py-2.5 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-all duration-200"
-                    placeholder="https://example.com/video.mp4">
-                  <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                    <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path>
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                  </div>
-                </div>
-              </div>
+                                <label for="url" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    Movie URL <span class="text-red-500">*</span>
+                                </label>
+                                <div class="flex items-center gap-2">
+                                    <div class="relative flex-1">
+                                        <input id="url" v-model="form.url" type="url" required
+                                            class="block w-full pl-4 pr-10 py-2.5 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-all duration-200"
+                                            placeholder="https://example.com/movie.mp4">
+                                    </div>
+                                    <button
+                                        class="flex items-center justify-center h-[42px] w-[42px] rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                                        @click="showPlayer = true" :disabled="!form.url" title="Preview player">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
+                                            fill="currentColor">
+                                            <path fill-rule="evenodd"
+                                                d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
+                                                clip-rule="evenodd" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
 
-              <!-- DASH URL -->
+              <!-- Dash URL -->
               <div class="space-y-2">
-                <label for="dash_url" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  DRM URL
-                </label>
-                <div class="relative">
-                  <input id="dash_url" v-model="form.dash_url" type="url"
-                    class="block w-full pl-4 pr-10 py-2.5 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-all duration-200"
-                    placeholder="https://example.com/manifest.mpd">
-                  <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                    <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"></path>
-                    </svg>
-                  </div>
-                </div>
-              </div>
+                                <label for="dash_url"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    DRM URL
+                                </label>
+                                <div class="flex items-center gap-2">
+                                    <div class="relative flex-1">
+                                        <input id="dash_url" v-model="form.dash_url" type="url"
+                                            class="block w-full pl-4 pr-10 py-2.5 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-all duration-200"
+                                            placeholder="https://example.com/manifest.mpd">
+                                    </div>
+                                    <button
+                                        class="flex items-center justify-center h-[42px] w-[42px] rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                                        @click="showPlayer = true" :disabled="!form.dash_url" title="Preview player">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
+                                            fill="currentColor">
+                                            <path fill-rule="evenodd"
+                                                d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
+                                                clip-rule="evenodd" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
             </div>
           </div>
 
@@ -409,6 +423,7 @@
         </form>
       </div>
     </div>
+    <ShakaPlayer v-if="showPlayer" :videoUrl="videoUrl" @close="showPlayer = false" />
   </div>
 </template>
 
@@ -417,6 +432,7 @@ import { ref, reactive, computed, onMounted } from 'vue'
 import axios from 'axios'
 import { db } from '@/firebase'; // Make sure this path is correct for your project
 import { collection, getDocs } from 'firebase/firestore';
+import ShakaPlayer from '@/components/shakaPlayerCom.vue'
 
 const getInitialFormState = () => ({
   title: '',
@@ -445,6 +461,8 @@ const booleanFields = {
   isPPV: 'Pay Per View',
   isPremium: 'Premium',
 }
+
+const videoUrl = computed(() => form.url || form.dash_url)
 
 const formSubmitting = ref(false) // Loading state for form submission
 const message = ref('')
