@@ -592,11 +592,6 @@ import { db } from '@/firebase'; // Used for toggleMovie, toggleSeasonEpisodes (
 import { collection, getDocs } from 'firebase/firestore';
 import ShakaPlayer from '@/components/shakaPlayerCom.vue'
 
-// --- Configuration ---
-// IMPORTANT: For production, use environment variables and ideally a backend proxy for API keys.
-const ZOS_API_KEY = import.meta.env.VITE_ZOS_API_KEY || '';
-const ZOS_BASE_URL = 'https://apis.zostream.in/api'; // Centralize base URL
-
 // --- Reactive State ---
 const movies = ref([]);
 const search = ref('');
@@ -819,8 +814,15 @@ const editMovie = async (itemFromList, pMovieId = null, pSeasonId = null) => {
         let itemDetails;
 
         if (isEpisode) {
-            const episodeDetailUrl = `${ZOS_BASE_URL}/episode/${itemIdToFetch}`;
-            const response = await axios.get(episodeDetailUrl, { headers: { 'X-Api-Key': ZOS_API_KEY } });
+            const response = await axios.get(route('proxy.get'), {
+                params: {
+                    endpoint: `episode/${itemIdToFetch}`
+                } ,
+                headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+            });
 
             itemDetails = response.data.episode;
             if (!itemDetails) throw new Error("Episode data not found in Zostream API response.");
@@ -945,14 +947,16 @@ const submitForm = async () => {
             apiSegment = 'episode';
         }
 
-        const actualApiUrl = `${ZOS_BASE_URL}/${apiSegment}/${itemCtx.id}`;
-        const apiHeaders = {
-            'Content-Type': 'application/json',
-            'X-Api-Key': ZOS_API_KEY,
-        };
-
-        console.log(`Submitting update to: ${actualApiUrl}`, "Payload:", payload);
-        await axios.put(actualApiUrl, payload, { headers: apiHeaders });
+        console.log(`Submitting update to`, "Payload:", payload);
+        await axios.put(route('proxy.put'), payload, {
+            params:{
+                endpoint: `${apiSegment}/${itemCtx.id}`
+            },
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        });
 
         modalMessage.value = `${isEpisode ? 'Episode' : 'Movie'} updated successfully!`;
 
@@ -1033,15 +1037,17 @@ const confirmDeleteItem = async () => {
             apiDeleteSegment = 'episode'; // Change to 'episode' for episodes
         }
 
-        const actualApiUrl = `${ZOS_BASE_URL}/${apiDeleteSegment}/${itemCtx.id}`;
-        const apiHeaders = {
-            // 'Content-Type': 'application/json', // Usually not strictly needed for DELETE without body
-            'X-Api-Key': ZOS_API_KEY,
-        };
+        console.log(`Attempting to DELETE: ${itemCtx.type} with ID ${itemCtx.id} from URL`);
 
-        console.log(`Attempting to DELETE: ${itemCtx.type} with ID ${itemCtx.id} from URL: ${actualApiUrl}`);
+        await axios.delete(route('proxy.delete'),{
+            params:{
+                endpoint:`${apiDeleteSegment}/${itemCtx.id}`
+            },
 
-        await axios.delete(actualApiUrl, { headers: apiHeaders });
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            }});
 
         deleteModalMessage.value = `${itemCtx.type.charAt(0).toUpperCase() + itemCtx.type.slice(1)} deleted successfully!`;
 
