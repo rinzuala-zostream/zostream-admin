@@ -851,7 +851,7 @@ const editMovie = async (itemFromList, pMovieId = null, pSeasonId = null) => {
             form.status = itemDetails.status || '';
             form.create_date = formatDateForInput(itemDetails.create_date);
 
-            const epUrlFields = { img: 'img', url: 'url', dash_url: 'dash_url' };
+            const epUrlFields = { url: 'url', dash_url: 'dash_url' };
             for (const [formKey, detailKey] of Object.entries(epUrlFields)) {
                 form[formKey] = itemDetails[detailKey] ? await decryptUrl(itemDetails[detailKey]) : '';
             }
@@ -870,7 +870,7 @@ const editMovie = async (itemFromList, pMovieId = null, pSeasonId = null) => {
             form.create_date = formatDateForInput(itemDetails.create_date || itemDetails.upload_date || itemDetails.createdAt);
             form.release_on = formatDateForInput(itemDetails.release_on || itemDetails.releaseDate);
 
-            const movieUrlFields = { poster: 'poster', cover_img: 'cover_img', url: 'url', dash_url: 'dash_url', title_img: 'title_img' };
+            const movieUrlFields = { url: 'url', dash_url: 'dash_url' };
             for (const [formKey, detailKey] of Object.entries(movieUrlFields)) {
                 form[formKey] = itemDetails[detailKey] ? await decryptUrl(itemDetails[detailKey]) : '';
             }
