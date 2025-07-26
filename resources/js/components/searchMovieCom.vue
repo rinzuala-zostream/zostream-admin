@@ -386,7 +386,7 @@
 
             <!-- Episode Edit Form -->
             <div v-if="editingItem && editingItem.seasonId"
-                class="form-container bg-white dark:bg-gray-950 text-gray-800 dark:text-gray-100 p-6 sm:p-8 md:p-10 rounded-xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto">
+                class="form-container bg-white dark:bg-gray-950 text-gray-800 dark:text-gray-100 p-6 sm:p-8 md:p-10 rounded-xl shadow-2xl w-full max-w-5xl max-h-[90vh] overflow-y-auto">
                 <!-- ... Episode form content ... -->
                 <h2
                     class="text-2xl sm:text-3xl font-bold mb-8 text-center sm:text-left text-gray-900 dark:text-white tracking-tight">
@@ -591,6 +591,7 @@ import axios from 'axios';
 import { db } from '@/firebase'; // Used for toggleMovie, toggleSeasonEpisodes (local Firestore data)
 import { collection, getDocs } from 'firebase/firestore';
 import ShakaPlayer from '@/components/shakaPlayerCom.vue'
+import { toastContainers } from 'vue3-toastify';
 
 // --- Reactive State ---
 const movies = ref([]);
@@ -958,7 +959,9 @@ const submitForm = async () => {
             }
         });
 
+        toast.success(`${isEpisode ? 'Episode' : 'Movie'} updated successfully!`)
         modalMessage.value = `${isEpisode ? 'Episode' : 'Movie'} updated successfully!`;
+        showEditModal.value = false;
 
         // 5. Update local list
         if (isEpisode) {
