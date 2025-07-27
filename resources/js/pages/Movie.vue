@@ -3,6 +3,7 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/vue3';
 import movieComVue from '@/components/movieCom.vue';
+import bannerComVue from '@/components/bannerCom.vue';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -17,5 +18,6 @@ const breadcrumbs: BreadcrumbItem[] = [
 
     <AppLayout :breadcrumbs="breadcrumbs">
                 <movieComVue />
+                <bannerComVue />
     </AppLayout>
 </template>

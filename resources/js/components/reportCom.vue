@@ -1,5 +1,5 @@
 <template>
-    <div class="min-h-screen bg-gray-50 dark:bg-gray-900 p-4 md:p-6 transition-colors duration-200">
+    <div class="min-h-screen bg-gray-50 dark:bg-gray-900 p-4 md:p-6 transition-colors">
       <div class="max-w-6xl mx-auto">
         <h1 class="text-2xl md:text-3xl font-bold text-gray-800 dark:text-white mb-6">Reports Management</h1>
 

@@ -7,6 +7,7 @@ import {
   signInWithPopup,
 } from 'firebase/auth';
 import {getFirestore} from "firebase/firestore";
+import { getDatabase } from 'firebase/database'
 
 const firebaseConfig = {
   apiKey: "AIzaSyChVVv2AuwL9Fv-quOOneUj8cHw-7a9zAc",
@@ -26,5 +27,6 @@ setPersistence(auth, browserLocalPersistence);
 
 const googleProvider = new GoogleAuthProvider();
 const db = getFirestore(app);
+const rdb = getDatabase(app)
 
-export { auth, googleProvider, signInWithPopup, db };
+export { auth, googleProvider, signInWithPopup, db, rdb };
