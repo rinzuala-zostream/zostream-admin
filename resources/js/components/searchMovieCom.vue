@@ -131,9 +131,23 @@
                             </div>
                         </div>
 
+                        <!-- Seasons and Episodes Section -->
                         <div v-if="expandedMovie === movie.id && movie.isSeason"
                             class="border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/30 transition-all duration-200">
-                            <div v-for="season in movie.seasons || []" :key="season.id"
+
+                            <!-- Loader for Seasons -->
+                            <div v-if="loadingSeasonsFor.has(movie.id)" class="p-4 text-center">
+                                <div class="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-blue-500 mx-auto"></div>
+                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">Loading seasons...</p>
+                            </div>
+
+                            <!-- Message for no seasons found -->
+                            <div v-else-if="!movie.seasons || movie.seasons.length === 0" class="p-4 text-center text-sm text-gray-500 dark:text-gray-400">
+                                No seasons found for this series.
+                            </div>
+
+                            <!-- Render Seasons (only if not loading and seasons exist) -->
+                            <div v-else v-for="season in movie.seasons" :key="season.id"
                                 class="px-3 sm:px-4 py-2 sm:py-3">
                                 <div class="flex items-center justify-between font-medium text-xs sm:text-sm">
                                     <div class="flex items-center space-x-2 cursor-pointer hover:text-blue-500 dark:hover:text-blue-400 transition-colors duration-150"
@@ -146,69 +160,71 @@
                                                 d="M9 5l7 7-7 7"></path>
                                         </svg>
                                         <span class="truncate max-w-[120px] sm:max-w-none">{{ season.txt }}</span>
-                                        <span
-                                            class="text-xs text-gray-500 dark:text-gray-400 font-mono hidden sm:inline">{{
-                            season.id }}</span>
+                                        <span class="text-xs text-gray-500 dark:text-gray-400 font-mono hidden sm:inline">{{ season.id }}</span>
                                     </div>
-                                    <span class="text-xs text-gray-500 dark:text-gray-400">{{ season.episodes.length }}
-                                        episode{{
-                            season.episodes.length !== 1 ? 's' : '' }}</span>
+                                    <span class="text-xs text-gray-500 dark:text-gray-400">{{ season.episodes?.length || 0 }}
+                                        episode{{ (season.episodes?.length || 0) !== 1 ? 's' : '' }}</span>
                                 </div>
                                 <ul v-if="season.showEpisodes"
                                     class="ml-4 sm:ml-6 mt-1 sm:mt-2 space-y-1 sm:space-y-2 animate-fadeIn">
-                                    <li v-for="ep in season.episodes" :key="ep.id"
-                                        class="flex items-center justify-between py-1 sm:py-2 px-2 sm:px-3 -mx-2 sm:-mx-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors duration-150">
-                                        <span class="text-xs sm:text-sm truncate max-w-[100px] sm:max-w-none">{{ ep.txt
-                            || 'Untitled Episode' }}</span>
-                                        <span
-                                            class="text-xs text-gray-500 dark:text-gray-400 font-mono ml-2 sm:ml-4 hidden sm:inline">{{
-                            ep.id }}</span>
-                                        <!-- Middle: Status Badge -->
-                                        <div class="flex-shrink-0 mx-1 sm:mx-2" v-if="ep.status">
-                                            <span :class="getStatusClass(ep.status)"
-                                                class="px-1.5 py-0.5 sm:px-2.5 sm:py-1 inline-flex text-xs leading-5 font-semibold rounded-full capitalize">
-                                                {{ ep.status }}
-                                            </span>
-                                        </div>
-                                        <div class="flex space-x-1 sm:space-x-2 flex-shrink-0">
-                                            <button
-                                                class="px-1.5 py-0.5 sm:px-2 sm:py-1 text-xs bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors duration-200 flex items-center space-x-1 disabled:opacity-70 disabled:cursor-wait"
-                                                @click.stop="editMovie(ep, movie.id, season.id)"
-                                                :disabled="isFetchingEditItemDetails && editingItemContext?.id === ep.id && editingItemContext?.seasonId === season.id">
-                                                <svg v-if="isFetchingEditItemDetails && editingItemContext?.id === ep.id && editingItemContext?.seasonId === season.id"
-                                                    class="animate-spin h-2.5 w-2.5 sm:h-3 sm:w-3 text-white"
-                                                    xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                                    <circle class="opacity-25" cx="12" cy="12" r="10"
-                                                        stroke="currentColor" stroke-width="4">
-                                                    </circle>
-                                                    <path class="opacity-75" fill="currentColor"
-                                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                                                    </path>
-                                                </svg>
-                                                <svg v-else class="w-2.5 h-2.5 sm:w-3 sm:h-3" fill="none"
-                                                    stroke="currentColor" viewBox="0 0 24 24"
-                                                    xmlns="http://www.w3.org/2000/svg">
-                                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                                        stroke-width="2"
-                                                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
-                                                    </path>
-                                                </svg>
-                                                <span class="hidden sm:inline">Edit</span>
-                                            </button>
-                                            <button
-                                                class="px-1.5 py-0.5 sm:px-2 sm:py-1 text-xs bg-red-600 hover:bg-red-700 text-white rounded transition-colors duration-200 flex items-center space-x-1"
-                                                @click.stop="openDeleteConfirmation(ep, movie.id, season.id)">
-                                                <svg class="w-2.5 h-2.5 sm:w-3 sm:h-3" fill="none" stroke="currentColor"
-                                                    viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                                        stroke-width="2"
-                                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
-                                                    </path>
-                                                </svg>
-                                                <span class="hidden sm:inline">Delete</span>
-                                            </button>
-                                        </div>
+
+                                    <!-- Loader for Episodes -->
+                                    <li v-if="loadingEpisodesFor.has(season.id)" class="py-2 text-center">
+                                        <div class="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-blue-500 mx-auto"></div>
                                     </li>
+
+                                    <!-- Render Episodes (only if not loading) -->
+                                    <template v-else>
+                                        <li v-if="season.episodes.length === 0" class="py-2 text-xs text-gray-500 dark:text-gray-400">
+                                            No episodes found for this season.
+                                        </li>
+                                        <li v-else v-for="ep in season.episodes" :key="ep.id"
+                                            class="flex items-center justify-between py-1 sm:py-2 px-2 sm:px-3 -mx-2 sm:-mx-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors duration-150">
+                                            <span class="text-xs sm:text-sm truncate max-w-[100px] sm:max-w-none">{{ ep.txt || 'Untitled Episode' }}</span>
+                                            <span class="text-xs text-gray-500 dark:text-gray-400 font-mono ml-2 sm:ml-4 hidden sm:inline">{{ ep.id }}</span>
+                                            <div class="flex-shrink-0 mx-1 sm:mx-2" v-if="ep.status">
+                                                <span :class="getStatusClass(ep.status)"
+                                                    class="px-1.5 py-0.5 sm:px-2.5 sm:py-1 inline-flex text-xs leading-5 font-semibold rounded-full capitalize">
+                                                    {{ ep.status }}
+                                                </span>
+                                            </div>
+                                            <div class="flex space-x-1 sm:space-x-2 flex-shrink-0">
+                                                <button
+                                                    class="px-1.5 py-0.5 sm:px-2 sm:py-1 text-xs bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors duration-200 flex items-center space-x-1 disabled:opacity-70 disabled:cursor-wait"
+                                                    @click.stop="editMovie(ep, movie.id, season.id)"
+                                                    :disabled="isFetchingEditItemDetails && editingItemContext?.id === ep.id && editingItemContext?.seasonId === season.id">
+                                                    <svg v-if="isFetchingEditItemDetails && editingItemContext?.id === ep.id && editingItemContext?.seasonId === season.id"
+                                                        class="animate-spin h-2.5 w-2.5 sm:h-3 sm:w-3 text-white"
+                                                        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                        <circle class="opacity-25" cx="12" cy="12" r="10"
+                                                            stroke="currentColor" stroke-width="4"></circle>
+                                                        <path class="opacity-75" fill="currentColor"
+                                                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                                    </svg>
+                                                    <svg v-else class="w-2.5 h-2.5 sm:w-3 sm:h-3" fill="none"
+                                                        stroke="currentColor" viewBox="0 0 24 24"
+                                                        xmlns="http://www.w3.org/2000/svg">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2"
+                                                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                                    </svg>
+                                                    <span class="hidden sm:inline">Edit</span>
+                                                </button>
+                                                <button
+                                                    class="px-1.5 py-0.5 sm:px-2 sm:py-1 text-xs bg-red-600 hover:bg-red-700 text-white rounded transition-colors duration-200 flex items-center space-x-1"
+                                                    @click.stop="openDeleteConfirmation(ep, movie.id, season.id)">
+                                                    <svg class="w-2.5 h-2.5 sm:w-3 sm:h-3" fill="none" stroke="currentColor"
+                                                        viewBox="0 0 24 24"
+                                                        xmlns="http://www.w3.org/2000/svg">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2"
+                                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                                    </svg>
+                                                    <span class="hidden sm:inline">Delete</span>
+                                                </button>
+                                            </div>
+                                        </li>
+                                    </template>
                                 </ul>
                             </div>
                         </div>
@@ -217,7 +233,7 @@
             </div>
         </div>
 
-        <!-- Edit Modal (remains the same, with v-if="showEditModal") -->
+        <!-- Edit Modal -->
         <div v-if="showEditModal"
      class="fixed inset-0 bg-gray-600 bg-opacity-75 dark:bg-gray-900 dark:bg-opacity-75 transition-opacity duration-300 ease-in-out flex items-center justify-center p-4 z-[100]"
      @click.self="closeEditModal">
@@ -225,7 +241,6 @@
      <!-- Wider Movie Edit Form -->
      <div v-if="editingItem && !editingItem.seasonId"
           class="form-container bg-white dark:bg-gray-950 text-gray-800 dark:text-gray-100 p-6 sm:p-8 md:p-10 rounded-xl shadow-2xl w-full max-w-5xl max-h-[90vh] overflow-y-auto">
-                <!-- ... Movie form content ... -->
                 <h2
                     class="text-2xl sm:text-3xl font-bold mb-8 text-center sm:text-left text-gray-900 dark:text-white tracking-tight">
                     Update Movie</h2>
@@ -302,7 +317,7 @@
                                     <input id="movie-url" v-model="editForm.url" type="url"
                                         class="flex-1 rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900"
                                         placeholder="https://example.com/movie.mp4">
-                                    <button @click="playVideo(editForm.url)" :disabled="!editForm.url"
+                                    <button type="button" @click.prevent="playVideo(editForm.url)" :disabled="!editForm.url"
                                         class="flex-shrink-0 h-10 w-10 flex items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                                         title="Preview movie">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
@@ -325,7 +340,7 @@
                                     <input id="movie-dash_url" v-model="editForm.dash_url" type="url"
                                         class="flex-1 rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900"
                                         placeholder="https://example.com/movie.mpd">
-                                    <button @click="playVideo(editForm.dash_url)" :disabled="!editForm.dash_url"
+                                    <button type="button" @click.prevent="playVideo(editForm.dash_url)" :disabled="!editForm.dash_url"
                                         class="flex-shrink-0 h-10 w-10 flex items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                                         title="Preview DRM content">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
@@ -387,7 +402,6 @@
             <!-- Episode Edit Form -->
             <div v-if="editingItem && editingItem.seasonId"
                 class="form-container bg-white dark:bg-gray-950 text-gray-800 dark:text-gray-100 p-6 sm:p-8 md:p-10 rounded-xl shadow-2xl w-full max-w-5xl max-h-[90vh] overflow-y-auto">
-                <!-- ... Episode form content ... -->
                 <h2
                     class="text-2xl sm:text-3xl font-bold mb-8 text-center sm:text-left text-gray-900 dark:text-white tracking-tight">
                     Update Episode</h2>
@@ -436,7 +450,7 @@
                                     <input id="ep-url" v-model="editForm.url" type="url"
                                         class="block flex-1 rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900"
                                         placeholder="https://example.com/episode.mp4">
-                                    <button @click="playVideo(editForm.url)" :disabled="!editForm.url"
+                                    <button type="button" @click.prevent="playVideo(editForm.url)" :disabled="!editForm.url"
                                         class="flex items-center justify-center h-10 w-10 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                                         title="Preview video">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
@@ -459,7 +473,7 @@
                                     <input id="ep-dash_url" v-model="editForm.dash_url" type="url"
                                         class="block flex-1 rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900"
                                         placeholder="https://example.com/episode.mpd">
-                                    <button @@click="playVideo(editForm.dash_url)" :disabled="!editForm.dash_url"
+                                    <button type="button" @click.prevent="playVideo(editForm.dash_url)" :disabled="!editForm.dash_url"
                                         class="flex items-center justify-center h-10 w-10 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                                         title="Preview DRM content">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
@@ -581,18 +595,19 @@
                 </div>
             </div>
         </div>
-        <ShakaPlayer
-  v-if="showPlayer"
-  :videoUrl="currentVideoUrl"
-  @close="showPlayer = false"
-/>
+        <div v-if="showPlayer" class="fixed inset-0 z-[120]">
+            <ShakaPlayer
+              :videoUrl="currentVideoUrl"
+              @close="showPlayer = false"
+            />
+        </div>
     </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import axios from 'axios';
-import { db } from '@/firebase'; // Used for toggleMovie, toggleSeasonEpisodes (local Firestore data)
+import { db } from '@/firebase';
 import { collection, getDocs } from 'firebase/firestore';
 import ShakaPlayer from '@/components/shakaPlayerCom.vue'
 import { toast } from 'vue3-toastify';
@@ -605,13 +620,25 @@ const loading = ref(false); // Main search loading
 const expandedMovie = ref(null);
 const hasSearchedAtLeastOnce = ref(false);
 
+const loadingSeasonsFor = ref(new Set()); // Tracks loading state for seasons per movie ID
+const loadingEpisodesFor = ref(new Set()); // Tracks loading state for episodes per season ID
+
 const showDeleteConfirmModal = ref(false);
-const itemToDelete = ref(null); // Will store { id, type: 'movie' | 'episode', titleOrTxt, parentMovieId?, parentSeasonId? }
+const itemToDelete = ref(null);
 const isDeleting = ref(false);
 const deleteModalMessage = ref('');
 
 const showPlayer = ref(false)
 const currentVideoUrl = ref('');
+
+// Modal State
+const showEditModal = ref(false);
+const editingItem = ref(null);
+const editForm = ref({});
+const modalLoading = ref(false);
+const modalMessage = ref('');
+const isFetchingEditItemDetails = ref(false);
+const editingItemContext = ref(null);
 
 // Simple function to play the video
 const playVideo = (url) => {
@@ -619,15 +646,6 @@ const playVideo = (url) => {
   currentVideoUrl.value = url;
   showPlayer.value = true;
 };
-
-// Modal State
-const showEditModal = ref(false);
-const editingItem = ref(null); // { id (movie/ep ID), movieId?, seasonId? }
-const editForm = ref({});
-const modalLoading = ref(false); // Modal submission loading
-const modalMessage = ref('');
-const isFetchingEditItemDetails = ref(false);
-const editingItemContext = ref(null); // { id, seasonId? } for loading spinner on edit button
 
 // --- Form Field Definitions ---
 const movieBooleanFields = ref({
@@ -641,7 +659,7 @@ const movieBooleanFields = ref({
 const episodeBooleanFields = ref({
     isProtected: 'Protected',
     isEnable: 'Enable',
-    isPPV: 'Pay Per View', // Assuming this maps to an API field like isPayPerView or isPpv
+    isPPV: 'Pay Per View',
     isPremium: 'Premium',
     notification: 'Notification',
 });
@@ -660,78 +678,20 @@ const getInitialEpisodeForm = () => ({
 });
 
 // --- Utility Functions ---
-const formatDateForInput = (dateStringOrTimestamp) => {
-    if (!dateStringOrTimestamp) return '';
-
+const formatDateForInput = (dateValue) => {
+    if (!dateValue) return '';
     try {
-        let year, month, day; // Target: year (number), month (1-12), day (number)
-
-        if (typeof dateStringOrTimestamp === 'object' && dateStringOrTimestamp.seconds !== undefined && dateStringOrTimestamp.nanoseconds !== undefined) {
-            // Firestore Timestamp (represents a point in time, UTC)
-            const d = new Date(dateStringOrTimestamp.seconds * 1000);
-            year = d.getUTCFullYear();
-            month = d.getUTCMonth() + 1; // getUTCMonth is 0-indexed
-            day = d.getUTCDate();
-        } else if (typeof dateStringOrTimestamp === 'string') {
-            // Attempt to parse "DD Month YYYY" format, e.g., "15 May 2025"
-            const ddmmyyyyParts = dateStringOrTimestamp.match(/^(\d{1,2})\s+([A-Za-z]+)\s+(\d{4})$/);
-            if (ddmmyyyyParts) {
-                day = parseInt(ddmmyyyyParts[1], 10);
-                const monthName = ddmmyyyyParts[2];
-                year = parseInt(ddmmyyyyParts[3], 10);
-                // Convert month name to 1-indexed number. Date.parse is good for this.
-                // Create a temporary date like "May 1, 2000" to reliably get the month index.
-                const tempMonthDate = new Date(Date.parse(monthName + " 1, 2000"));
-                if (isNaN(tempMonthDate.valueOf())) throw new Error(`Invalid month name: ${monthName}`);
-                month = tempMonthDate.getMonth() + 1; // getMonth is 0-indexed
-
-                if (isNaN(day) || isNaN(month) || isNaN(year)) {
-                    throw new Error(`Failed to parse DD Month YYYY: ${dateStringOrTimestamp}`);
-                }
-            } else {
-                // Handle other string formats like "YYYY-MM-DD" or full ISO strings.
-                const d = new Date(dateStringOrTimestamp);
-                if (isNaN(d.valueOf())) {
-                    throw new Error(`Invalid date string for new Date(): ${dateStringOrTimestamp}`);
-                }
-
-                // If the string was "YYYY-MM-DD" (date-only form), new Date() parses it as UTC midnight.
-                // To preserve that specific date, use UTC getters.
-                if (dateStringOrTimestamp.match(/^\d{4}-\d{2}-\d{2}$/)) {
-                    year = d.getUTCFullYear();
-                    month = d.getUTCMonth() + 1;
-                    day = d.getUTCDate();
-                } else {
-                    // For other valid date strings (e.g., full ISO with time, or other formats new Date understands),
-                    // they might represent local time or specific UTC time.
-                    // We'll take the date components as they are interpreted by the Date object.
-                    // If it's a full ISO string with 'Z' or offset, it's UTC. If no offset, it's local.
-                    // For display in a date input, typically the local date part is desired.
-                    year = d.getFullYear();
-                    month = d.getMonth() + 1;
-                    day = d.getDate();
-                }
-            }
-        } else if (typeof dateStringOrTimestamp === 'number') {
-            // Assume it's a Unix timestamp in milliseconds (UTC)
-            const d = new Date(dateStringOrTimestamp);
-            year = d.getUTCFullYear();
-            month = d.getUTCMonth() + 1;
-            day = d.getUTCDate();
-        } else {
-            throw new Error(`Unsupported date input type: ${typeof dateStringOrTimestamp}`);
-        }
-
-        if (year === undefined || month === undefined || day === undefined) {
-            throw new Error(`Date components not successfully parsed from: ${dateStringOrTimestamp}`);
-        }
-
-        // Format to YYYY-MM-DD
-        return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-
+        const d = new Date(
+            (typeof dateValue === 'object' && dateValue.seconds) ? dateValue.seconds * 1000 : dateValue
+        );
+        if (isNaN(d.valueOf())) return '';
+        const year = d.getUTCFullYear();
+        const month = String(d.getUTCMonth() + 1).padStart(2, '0');
+        const day = String(d.getUTCDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
     } catch (e) {
-        console.error("Error in formatDateForInput with '", dateStringOrTimestamp, "':", e.message);
-        return ''; // Return empty string on error, so the input field is blank.
+        console.error("Could not format date:", dateValue, e);
+        return '';
     }
 };
 
@@ -773,9 +733,9 @@ const fetchMovies = async (query = '') => {
             is_enable: String(false),
         }));
         movies.value = Array.isArray(response.data) ? response.data : [];
-        console.log('Data:', response.data)
     } catch (error) {
         console.error('Failed to fetch movies:', error);
+        toast.error("Failed to fetch movies. Please try again.");
         movies.value = [];
     } finally {
         loading.value = false;
@@ -799,13 +759,13 @@ const filteredMovies = computed(() => {
 });
 
 const getStatusClass = (status) => {
-    if (!status) return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'; // Default/Unknown
+    if (!status) return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300';
     status = status.toLowerCase();
     switch (status) {
         case 'published':
             return 'bg-green-100 text-green-800 dark:bg-green-700/30 dark:text-green-300';
         case 'draft':
-            return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-700/30 dark:text-yellow-400'; // Yellow for draft
+            return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-700/30 dark:text-yellow-400';
         case 'scheduled':
             return 'bg-blue-100 text-blue-800 dark:bg-blue-700/30 dark:text-blue-400';
         default:
@@ -847,63 +807,47 @@ const editMovie = async (itemFromList, pMovieId = null, pSeasonId = null) => {
             console.log("Fetched Proxied Movie Details:", itemDetails);
         }
 
-        // Standardize itemDetails structure check
         if (typeof itemDetails !== 'object' || Array.isArray(itemDetails)) {
-            throw new Error(`Invalid item data structure. Expected a single object, got ${typeof itemDetails}.`);
+            throw new Error(`Invalid item data structure. Expected a single object.`);
         }
 
         const form = editForm.value;
         if (isEpisode) {
             form.title = itemDetails.title || itemDetails.name || '';
             form.desc = itemDetails.desc || '';
-            form.txt = itemDetails.txt || ''; // This might be for display, API might not have/use it
-            form.season_id = pSeasonId || itemDetails.season_id || ''; // API should provide season_id for an episode
-            form.ppv_amount = itemDetails.ppv_amount || itemDetails.ppvAmount || ''; // Check API field name
+            form.txt = itemDetails.txt || '';
+            form.season_id = pSeasonId || itemDetails.season_id || '';
+            form.ppv_amount = itemDetails.ppv_amount || '';
             form.status = itemDetails.status || '';
             form.create_date = formatDateForInput(itemDetails.create_date);
-
-            const epUrlFields = { url: 'url', dash_url: 'dash_url' };
-            for (const [formKey, detailKey] of Object.entries(epUrlFields)) {
-                form[formKey] = itemDetails[detailKey] ? await decryptUrl(itemDetails[detailKey]) : '';
-            }
-            for (const key in episodeBooleanFields.value) {
-                form[key] = !!itemDetails[key]; // Map API boolean fields
-            }
-        } else { // Movie
+            form.img = itemDetails.img || '';
+            form.url = itemDetails.url ? await decryptUrl(itemDetails.url) : '';
+            form.dash_url = itemDetails.dash_url ? await decryptUrl(itemDetails.dash_url) : '';
+            for (const key in episodeBooleanFields.value) form[key] = !!itemDetails[key];
+        } else {
             form.title = itemDetails.title || '';
             form.description = itemDetails.description || '';
             form.title_img = itemDetails.title_img || '';
             form.genre = itemDetails.genre || '';
             form.director = itemDetails.director || '';
             form.duration = itemDetails.duration || '';
-            form.ppv_amount = itemDetails.ppv_amount || itemDetails.ppvAmount || '';
+            form.ppv_amount = itemDetails.ppv_amount || '';
             form.status = itemDetails.status || '';
-            form.create_date = formatDateForInput(itemDetails.create_date || itemDetails.upload_date || itemDetails.createdAt);
-            form.release_on = formatDateForInput(itemDetails.release_on || itemDetails.releaseDate);
-
-            const movieUrlFields = { url: 'url', dash_url: 'dash_url' };
-            for (const [formKey, detailKey] of Object.entries(movieUrlFields)) {
-                form[formKey] = itemDetails[detailKey] ? await decryptUrl(itemDetails[detailKey]) : '';
-            }
-            for (const key in movieBooleanFields.value) {
-                form[key] = !!itemDetails[key];
-            }
+            form.create_date = formatDateForInput(itemDetails.create_date || itemDetails.upload_date);
+            form.release_on = formatDateForInput(itemDetails.release_on);
+            form.poster = itemDetails.poster || '';
+            form.cover_img = itemDetails.cover_img || '';
+            form.url = itemDetails.url ? await decryptUrl(itemDetails.url) : '';
+            form.dash_url = itemDetails.dash_url ? await decryptUrl(itemDetails.dash_url) : '';
+            for (const key in movieBooleanFields.value) form[key] = !!itemDetails[key];
         }
 
         editingItem.value = { id: itemIdToFetch, movieId: pMovieId || (isEpisode ? null : itemIdToFetch), seasonId: pSeasonId };
         showEditModal.value = true;
-
     } catch (error) {
-        console.error('Failed to prepare item for editing:', error.config?.url, error);
-        let errorMessage = 'Unknown error loading details.';
-        if (error.response) {
-            errorMessage = `API Error (${error.response.status}): ${error.response.data?.message || error.response.statusText}`;
-        } else if (error.request) {
-            errorMessage = 'No response from server.';
-        } else {
-            errorMessage = error.message;
-        }
-        alert(`Error: ${errorMessage}`);
+        console.error('Failed to prepare item for editing:', error);
+        let errorMessage = error.response ? `API Error: ${error.response.data?.message || error.message}` : error.message;
+        toast.error(`Error loading details: ${errorMessage}`);
     } finally {
         isFetchingEditItemDetails.value = false;
         editingItemContext.value = null;
@@ -914,160 +858,88 @@ const closeEditModal = () => {
     showEditModal.value = false;
     editingItem.value = null;
     editForm.value = {};
+    modalMessage.value = '';
 };
 
 const submitForm = async () => {
     modalLoading.value = true;
     modalMessage.value = '';
-
     try {
         const currentFormState = JSON.parse(JSON.stringify(editForm.value));
         const itemCtx = editingItem.value;
         if (!itemCtx || !itemCtx.id) throw new Error("Editing context is invalid.");
 
         const isEpisode = !!itemCtx.seasonId;
+        if (currentFormState.url) currentFormState.url = await encryptViaProxy(currentFormState.url);
+        if (currentFormState.dash_url) currentFormState.dash_url = await encryptViaProxy(currentFormState.dash_url);
 
-        // 1. Encrypt URLs
-        const urlFields = ['url', 'dash_url'];
-        const urlsToEncrypt = Object.fromEntries(
-            urlFields.map((key) => [key, currentFormState[key]])
-        );
-
-        const encryptionPromises = Object.entries(urlsToEncrypt).map(async ([key, plainUrl]) =>
-            plainUrl && typeof plainUrl === 'string' && plainUrl.trim()
-                ? [key, (await encryptViaProxy(plainUrl)) || plainUrl]
-                : [key, '']
-        );
-
-        const encryptedUrlsMap = Object.fromEntries(await Promise.all(encryptionPromises));
-
-        // 2. Prepare payload
-        const payload = {
-            ...currentFormState,
-            ...encryptedUrlsMap,
-        };
-
-        // 3. Normalize booleans
+        const payload = { ...currentFormState };
         const booleanFieldsConfig = isEpisode ? episodeBooleanFields.value : movieBooleanFields.value;
-        for (const boolKey in booleanFieldsConfig) {
-            payload[boolKey] = !!payload[boolKey];
-        }
+        for (const boolKey in booleanFieldsConfig) payload[boolKey] = !!payload[boolKey];
 
-        // 4. Set endpoint and additional fields
-        let apiSegment = 'movies';
-        if (isEpisode) {
-            payload.season_id = itemCtx.seasonId;
-            apiSegment = 'episode';
-        }
-
-        console.log(`Submitting update to`, "Payload:", payload);
+        let apiSegment = isEpisode ? 'episode' : 'movies';
         await axios.put(route('proxy.put'), payload, {
-            params:{
-                endpoint: `${apiSegment}/${itemCtx.id}`
-            },
-            headers: {
-                'Content-Type': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest'
-            }
+            params:{ endpoint: `${apiSegment}/${itemCtx.id}` },
+            headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
         });
 
         toast.success(`${isEpisode ? 'Episode' : 'Movie'} updated successfully!`);
-        modalMessage.value = `${isEpisode ? 'Episode' : 'Movie'} updated successfully!`;
-        showEditModal.value = false;
 
-        // 5. Update local list
         if (isEpisode) {
             const movieToUpdate = movies.value.find(m => m.id === itemCtx.movieId);
             const seasonToUpdate = movieToUpdate?.seasons?.find(s => s.id === itemCtx.seasonId);
             const epIndex = seasonToUpdate?.episodes?.findIndex(e => e.id === itemCtx.id);
-
-            if (epIndex !== undefined && epIndex !== -1) {
-                seasonToUpdate.episodes[epIndex] = {
-                    ...seasonToUpdate.episodes[epIndex],
-                    ...editForm.value,
-                    txt: editForm.value.title || editForm.value.txt,
-                };
+            if (epIndex !== undefined && epIndex > -1) {
+                Object.assign(seasonToUpdate.episodes[epIndex], { ...editForm.value, txt: editForm.value.title || editForm.value.txt });
             }
         } else {
             const movieIndex = movies.value.findIndex(m => m.id === itemCtx.id);
-            if (movieIndex !== -1) {
-                movies.value[movieIndex] = {
-                    ...movies.value[movieIndex],
-                    ...editForm.value,
-                };
-            }
+            if (movieIndex > -1) Object.assign(movies.value[movieIndex], editForm.value);
         }
-
-        // Optional: Automatically close modal
-        // setTimeout(closeEditModal, 1500);
+        closeEditModal();
     } catch (err) {
-        toast.error('Update submission failed:', err.config?.url, err.response || err);
-        console.error('Update submission failed:', err.config?.url, err.response || err);
-        let errorMsg = 'An unknown error occurred during update.';
-        if (err.response) {
-            errorMsg = `API Error (${err.response.status}): ${JSON.stringify(err.response.data?.errors || err.response.data?.message || err.response.data || err.response.statusText)}`;
-        } else if (err.request) {
-            errorMsg = 'No response from server.';
-        } else {
-            errorMsg = err.message;
-        }
-        modalMessage.value = `Update Failed: ${errorMsg.substring(0, 300)}`;
+        console.error('Update submission failed:', err.response || err);
+        let errorMsg = err.response ? (err.response.data?.message || JSON.stringify(err.response.data)) : err.message;
+        modalMessage.value = `Update Failed: ${errorMsg}`;
+        toast.error(`Update Failed: ${errorMsg}`);
     } finally {
         modalLoading.value = false;
     }
 };
 
-// --- Helper: openDeleteConfirmation ---
 const openDeleteConfirmation = (item, parentMovieId = null, parentSeasonId = null) => {
     const isEpisode = !!parentSeasonId;
     itemToDelete.value = {
         id: item.id,
         type: isEpisode ? 'episode' : 'movie',
-        titleOrTxt: item.title || item.txt || 'this item', // For display in modal
+        titleOrTxt: item.title || item.txt || 'this item',
         parentMovieId: parentMovieId,
         parentSeasonId: parentSeasonId
     };
-    deleteModalMessage.value = ''; // Clear previous messages
+    deleteModalMessage.value = '';
     showDeleteConfirmModal.value = true;
 };
 
-// --- Helper: closeDeleteConfirmation ---
 const closeDeleteConfirmation = () => {
     showDeleteConfirmModal.value = false;
     itemToDelete.value = null;
-    isDeleting.value = false; // Reset deleting state
+    isDeleting.value = false;
 };
 
-// --- Helper: confirmDeleteItem ---
 const confirmDeleteItem = async () => {
     if (!itemToDelete.value) return;
-
     isDeleting.value = true;
     deleteModalMessage.value = '';
-    const itemCtx = itemToDelete.value; // { id, type: 'movie' | 'episode', ... }
-
+    const itemCtx = itemToDelete.value;
     try {
-        // Determine the correct API path segment based on the item type
-        let apiDeleteSegment = 'movies'; // Default for movies
-        if (itemCtx.type === 'episode') {
-            apiDeleteSegment = 'episode'; // Change to 'episode' for episodes
-        }
-
-        console.log(`Attempting to DELETE: ${itemCtx.type} with ID ${itemCtx.id} from URL`);
-
+        let apiDeleteSegment = itemCtx.type === 'episode' ? 'episode' : 'movies';
         await axios.delete(route('proxy.delete'),{
-            params:{
-                endpoint:`${apiDeleteSegment}/${itemCtx.id}`
-            },
+            params:{ endpoint:`${apiDeleteSegment}/${itemCtx.id}` },
+            headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
+        });
 
-            headers: {
-                'Content-Type': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest'
-            }});
+        toast.success(`${itemCtx.type.charAt(0).toUpperCase() + itemCtx.type.slice(1)} deleted successfully!`);
 
-        deleteModalMessage.value = `${itemCtx.type.charAt(0).toUpperCase() + itemCtx.type.slice(1)} deleted successfully!`;
-
-        // Remove item from local list
         if (itemCtx.type === 'episode') {
             const movieToUpdate = movies.value.find(m => m.id === itemCtx.parentMovieId);
             if (movieToUpdate?.seasons) {
@@ -1076,70 +948,64 @@ const confirmDeleteItem = async () => {
                     seasonToUpdate.episodes = seasonToUpdate.episodes.filter(e => e.id !== itemCtx.id);
                 }
             }
-        } else { // Movie
+        } else {
             movies.value = movies.value.filter(m => m.id !== itemCtx.id);
         }
-
-        setTimeout(() => {
-            closeDeleteConfirmation();
-            modalMessage.value = `${itemCtx.type.charAt(0).toUpperCase() + itemCtx.type.slice(1)} "${itemCtx.titleOrTxt}" was deleted.`;
-            setTimeout(() => modalMessage.value = '', 3000);
-        }, 1500);
-
+        setTimeout(() => closeDeleteConfirmation(), 500);
     } catch (err) {
-        console.error(`Failed to delete ${itemCtx.type}:`, err.config?.url, err.response || err);
-        let errorMsg = `An unknown error occurred while deleting the ${itemCtx.type}.`;
-        if (err.response) {
-            errorMsg = `API Error (${err.response.status}) deleting ${itemCtx.type}: ${JSON.stringify(err.response.data?.errors || err.response.data?.message || err.response.data || err.response.statusText)}`;
-        } else if (err.request) {
-            errorMsg = `No response from server while deleting ${itemCtx.type}.`;
-        } else {
-            errorMsg = err.message;
-        }
-        deleteModalMessage.value = `Failed: ${errorMsg.substring(0, 250)}`;
+        console.error(`Failed to delete ${itemCtx.type}:`, err.response || err);
+        let errorMsg = err.response ? (err.response.data?.message || JSON.stringify(err.response.data)) : err.message;
+        deleteModalMessage.value = `Failed: ${errorMsg}`;
+        toast.error(`Deletion failed: ${errorMsg}`);
     } finally {
         isDeleting.value = false;
     }
 };
 
-// Functions for expanding seasons/episodes (using local Firestore data)
 const toggleMovie = async (movie) => {
     if (expandedMovie.value === movie.id) {
-        expandedMovie.value = null; return;
+        expandedMovie.value = null;
+        return;
     }
     expandedMovie.value = movie.id;
-    // Fetch seasons from Firestore if movie.isSeason and seasons aren't loaded
+
+    // Fetch seasons from Firestore if movie.isSeason and seasons aren't loaded yet
     if (movie.isSeason && (!movie.seasons || movie.seasons.length === 0)) {
+        loadingSeasonsFor.value.add(movie.id);
         try {
-            const qSnap = await getDocs(collection(db, `movie/${movie.id}/season`)); // Check Firestore path
+            const qSnap = await getDocs(collection(db, `movie/${movie.id}/season`));
             movie.seasons = qSnap.docs.map(d => ({
-                id: d.id, // Use Firestore doc ID for season
-                ...(d.data()), // Spread other season data from Firestore
-                txt: d.data().txt || d.data().title || `Season ${d.id.slice(-2)}`, // Prefer txt, then title
+                id: d.id,
+                ...(d.data()),
+                txt: d.data().txt || d.data().title || `Season ${d.id.slice(-2)}`,
                 episodes: [],
                 showEpisodes: false
             })).sort((a, b) => (a.txt || '').localeCompare(b.txt || '', undefined, { numeric: true }));
         } catch (err) {
             console.error(`Error fetching seasons for movie ${movie.id}:`, err);
+            toast.error("Failed to load seasons.");
             movie.seasons = [];
+        } finally {
+            loadingSeasonsFor.value.delete(movie.id);
         }
     }
 };
 
 const toggleSeasonEpisodes = async (movie, season) => {
     season.showEpisodes = !season.showEpisodes;
-    // Fetch episodes for this season (from your proxy/API, not Firestore here based on original code)
+
+    // Fetch episodes for this season from your API if they haven't been loaded
     if (season.showEpisodes && (!season.episodes || season.episodes.length === 0)) {
+        loadingEpisodesFor.value.add(season.id);
         try {
-            // This `id` should be the season's ID that your `proxy.get` endpoint expects
             const resp = await axios.get(route("proxy.get", { id: season.id, endpoint: "episodes", is_enable: false }));
             if (Array.isArray(resp.data)) {
                 season.episodes = resp.data
                     .filter(ep => ep && ep.id != null && String(ep.id).trim() !== '')
                     .map(ep => ({
-                        ...ep, // Spread all properties from API response for the episode
+                        ...ep,
                         id: String(ep.id).trim(),
-                        txt: ep.txt || ep.title || ep.name || `Episode ${String(ep.id).trim()}` // Robust title/identifier
+                        txt: ep.txt || ep.title || ep.name || `Episode ${String(ep.id).trim()}`
                     }))
                     .sort((a, b) => {
                         const numA = parseInt(String(a.txt).match(/\d+/)?.[0] || String(a.id));
@@ -1147,10 +1013,15 @@ const toggleSeasonEpisodes = async (movie, season) => {
                         if (!isNaN(numA) && !isNaN(numB)) return numA - numB;
                         return (a.txt || '').localeCompare(b.txt || '', undefined, { numeric: true });
                     });
-            } else { season.episodes = []; }
+            } else {
+                season.episodes = [];
+            }
         } catch (err) {
             console.error(`Failed to fetch episodes for season ${season.id}:`, err);
+            toast.error("Failed to load episodes.");
             season.episodes = [];
+        } finally {
+            loadingEpisodesFor.value.delete(season.id);
         }
     }
 };
@@ -1158,7 +1029,6 @@ const toggleSeasonEpisodes = async (movie, season) => {
 </script>
 
 <style scoped>
-/* ... (same styles as before) ... */
 .animate-fadeIn {
     animation: fadeIn 0.2s ease-out;
 }
