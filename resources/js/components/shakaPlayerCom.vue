@@ -68,29 +68,34 @@ function initPlayer() {
 
     // Optional DRM config
     if (props.isDrm && props.licenseUrl) {
-  player.configure({
-    drm: {
-      servers: {
-        'com.widevine.alpha': props.licenseUrl,
-      },
-      advanced: {
-        'com.widevine.alpha': {
-          videoRobustness: 'SW_SECURE_DECODE',
-          audioRobustness: 'SW_SECURE_CRYPTO',
-        }
-      }
+        player.configure({
+            drm: {
+                servers: {
+                    'com.widevine.alpha': props.licenseUrl,
+                },
+                advanced: {
+                    'com.widevine.alpha': {
+                        // Provide an ordered list of acceptable video robustness levels.
+                        // Player will try the first, then fallback to the second, etc.
+                        'videoRobustness': ['HW_SECURE_ALL', 'SW_SECURE_CRYPTO'],
+
+                        // Audio is generally fine with software security.
+                        'audioRobustness': ['SW_SECURE_CRYPTO'],
+                    }
+                }
+            }
+        })
     }
-  })
-}
+
     // Load the video
     if (props.videoUrl) {
+        console.log('[ShakaPlayer] Attempting to play:', props.videoUrl)
         player
             .load(props.videoUrl)
-            .then(() => console.log('Video loaded with Shaka UI and DRM'))
+            .then(() => console.log('[ShakaPlayer] Video loaded successfully'))
             .catch(onError)
     }
 }
-
 function onErrorEvent(event) {
     onError(event.detail)
 }
