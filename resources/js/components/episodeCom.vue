@@ -139,7 +139,7 @@
                                     </div>
                                     <button
                                         class="flex items-center justify-center h-[42px] w-[42px] rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                                        @click="showPlayer = true" :disabled="!form.url" title="Preview player">
+                                        @click.prevent="playVideo(form.url)" :disabled="!form.url" title="Preview player">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
                                             fill="currentColor">
                                             <path fill-rule="evenodd"
@@ -166,7 +166,7 @@
                                     </div>
                                     <button
                                         class="flex items-center justify-center h-[42px] w-[42px] rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                                        @click="showPlayer = true" :disabled="!form.dash_url" title="Preview player">
+                                        @click.prevent="playVideo(form.dash_url)" :disabled="!form.dash_url" title="Preview player">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
                                             fill="currentColor">
                                             <path fill-rule="evenodd"
@@ -429,9 +429,9 @@
     </div>
     <ShakaPlayer
   v-if="showPlayer"
-  :videoUrl="videoUrl"
-  :isDrm="!!form.dash_url"
-  :licenseUrl="form.dash_url ? 'https://drm-widevine-licensing.axprod.net/AcquireLicense' : ''"
+  :videoUrl="currentVideo.url"
+  :isDrm="currentVideo.isDrm"
+  :licenseUrl="currentVideo.licenseUrl"
   @close="showPlayer = false"
 />
   </div>
@@ -472,11 +472,21 @@ const booleanFields = {
   isPremium: 'Premium',
 }
 
-const videoUrl = computed(() => form.url || form.dash_url)
-
 const formSubmitting = ref(false) // Loading state for form submission
 const message = ref('')
 const error = ref(null)
+
+const currentVideo = ref('');
+
+// Simple function to play the video
+const playVideo = (url, isDrm = false, licenseUrl = '') => {
+  currentVideo.value = {
+    url,
+    isDrm,
+    licenseUrl,
+  }
+  showPlayer.value = true
+}
 
 // --- Search related reactive state ---
 const search = ref('');

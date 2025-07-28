@@ -73,23 +73,13 @@ function initPlayer() {
                 servers: {
                     'com.widevine.alpha': props.licenseUrl,
                 },
-                advanced: {
-                    'com.widevine.alpha': {
-                        // Provide an ordered list of acceptable video robustness levels.
-                        // Player will try the first, then fallback to the second, etc.
-                        'videoRobustness': ['HW_SECURE_ALL', 'SW_SECURE_CRYPTO'],
-
-                        // Audio is generally fine with software security.
-                        'audioRobustness': ['SW_SECURE_CRYPTO'],
-                    }
-                }
             }
         })
     }
 
     // Load the video
     if (props.videoUrl) {
-        console.log('[ShakaPlayer] Attempting to play:', props.videoUrl)
+        console.log('Attempting to play:', props.videoUrl)
         player
             .load(props.videoUrl)
             .then(() => console.log('[ShakaPlayer] Video loaded successfully'))
