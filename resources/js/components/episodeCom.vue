@@ -427,7 +427,13 @@
         </form>
       </div>
     </div>
-    <ShakaPlayer v-if="showPlayer" :videoUrl="videoUrl" @close="showPlayer = false" />
+    <ShakaPlayer
+  v-if="showPlayer"
+  :videoUrl="videoUrl"
+  :isDrm="!!form.dash_url"
+  :licenseUrl="form.dash_url ? 'https://drm-widevine-licensing.axprod.net/AcquireLicense' : ''"
+  @close="showPlayer = false"
+/>
   </div>
 </template>
 

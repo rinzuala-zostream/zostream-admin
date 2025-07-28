@@ -21,9 +21,9 @@ import shaka from 'shaka-player/dist/shaka-player.ui.js'
 import 'shaka-player/dist/controls.css'
 
 const props = defineProps({
-    videoUrl: String,
-    isDrm: Boolean, // Optional: Set to true if DRM is required
-    licenseUrl: String // Optional: License server URL (if different from default)
+  videoUrl: String,
+  isDrm: Boolean,
+  licenseUrl: String
 })
 
 const videoRef = ref(null)
@@ -68,21 +68,20 @@ function initPlayer() {
 
     // Optional DRM config
     if (props.isDrm && props.licenseUrl) {
-        player.configure({
-            drm: {
-                servers: {
-                    'com.widevine.alpha': props.licenseUrl,
-                },
-                advanced: {
-                    'com.widevine.alpha': {
-                        videoRobustness: 'SW_SECURE_DECODE',
-                        audioRobustness: 'SW_SECURE_CRYPTO',
-                    }
-                }
-            }
-        })
+  player.configure({
+    drm: {
+      servers: {
+        'com.widevine.alpha': props.licenseUrl,
+      },
+      advanced: {
+        'com.widevine.alpha': {
+          videoRobustness: 'SW_SECURE_DECODE',
+          audioRobustness: 'SW_SECURE_CRYPTO',
+        }
+      }
     }
-
+  })
+}
     // Load the video
     if (props.videoUrl) {
         player

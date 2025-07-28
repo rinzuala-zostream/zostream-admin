@@ -319,7 +319,7 @@
                                         placeholder="https://example.com/movie.mp4">
                                         <div v-if="editForm.url" class="absolute left-0 -bottom-10 w-max max-w-[400px] px-3 py-1.5 rounded-md bg-gray-800 text-white text-xs shadow-lg z-20 transition-opacity duration-200 opacity-0 group-hover:opacity-100 pointer-events-none whitespace-pre-wrap">
                                                 {{ editForm.url}}</div>
-                                    <button type="button" @click.prevent="playVideo(editForm.url)" :disabled="!editForm.url"
+                                    <button type="button" @click="showPlayer = true" :disabled="!editForm.url"
                                         class="flex-shrink-0 h-10 w-10 flex items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                                         title="Preview movie">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
@@ -344,7 +344,7 @@
                                         placeholder="https://example.com/movie.mpd">
                                         <div v-if="editForm.dash_url" class="absolute left-0 -bottom-10 w-max max-w-[400px] px-3 py-1.5 rounded-md bg-gray-800 text-white text-xs shadow-lg z-20 transition-opacity duration-200 opacity-0 group-hover:opacity-100 pointer-events-none whitespace-pre-wrap">
                                                 {{ editForm.dash_url}}</div>
-                                    <button type="button" @click.prevent="playVideo(editForm.dash_url)" :disabled="!editForm.dash_url"
+                                    <button type="button" @click="showPlayer = true" :disabled="!editForm.dash_url"
                                         class="flex-shrink-0 h-10 w-10 flex items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                                         title="Preview DRM content">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
@@ -456,7 +456,7 @@
                                         placeholder="https://example.com/episode.mp4">
                                         <div v-if="editForm.url" class="absolute left-0 -bottom-10 w-max max-w-[400px] px-3 py-1.5 rounded-md bg-gray-800 text-white text-xs shadow-lg z-20 transition-opacity duration-200 opacity-0 group-hover:opacity-100 pointer-events-none whitespace-pre-wrap">
                                                 {{ editForm.url}}</div>
-                                    <button type="button" @click.prevent="playVideo(editForm.url)" :disabled="!editForm.url"
+                                    <button type="button" @click="showPlayer = true" :disabled="!editForm.url"
                                         class="flex items-center justify-center h-10 w-10 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                                         title="Preview video">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
@@ -481,7 +481,7 @@
                                         placeholder="https://example.com/episode.mpd">
                                         <div v-if="editForm.dash_url" class="absolute left-0 -bottom-10 w-max max-w-[400px] px-3 py-1.5 rounded-md bg-gray-800 text-white text-xs shadow-lg z-20 transition-opacity duration-200 opacity-0 group-hover:opacity-100 pointer-events-none whitespace-pre-wrap">
                                                 {{ editForm.dash_url}}</div>
-                                    <button type="button" @click.prevent="playVideo(editForm.dash_url)" :disabled="!editForm.dash_url"
+                                    <button type="button" @click="showPlayer = true" :disabled="!editForm.dash_url"
                                         class="flex items-center justify-center h-10 w-10 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                                         title="Preview DRM content">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
@@ -605,9 +605,11 @@
         </div>
         <div v-if="showPlayer" class="fixed inset-0 z-[120]">
             <ShakaPlayer
-              :videoUrl="currentVideoUrl"
-              @close="showPlayer = false"
-            />
+            :videoUrl="videoUrl"
+            :isDrm="!!editForm.dash_url"
+            :licenseUrl="editForm.dash_url ? 'https://drm-widevine-licensing.axprod.net/AcquireLicense' : ''"
+            @close="showPlayer = false"
+/>
         </div>
     </div>
 </template>
@@ -649,11 +651,7 @@ const isFetchingEditItemDetails = ref(false);
 const editingItemContext = ref(null);
 
 // Simple function to play the video
-const playVideo = (url) => {
-  if (!url) return;
-  currentVideoUrl.value = url;
-  showPlayer.value = true;
-};
+const videoUrl = computed(() => editForm.dash_url || editForm.url);
 
 // --- Form Field Definitions ---
 const movieBooleanFields = ref({
