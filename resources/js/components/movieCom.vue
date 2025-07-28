@@ -206,12 +206,14 @@
                                         <input id="url" v-model="form.url" type="url" required
                                             class="block w-full pl-4 pr-10 py-2.5 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-all duration-200"
                                             placeholder="https://example.com/movie.mp4">
-                                            <div v-if="form.url" class="absolute left-0 -bottom-10 w-max max-w-[400px] px-3 py-1.5 rounded-md bg-gray-800 text-white text-xs shadow-lg z-20 transition-opacity duration-200 opacity-0 group-hover:opacity-100 pointer-events-none whitespace-pre-wrap">
-                                                {{ form.url }}</div>
+                                        <div v-if="form.url"
+                                            class="absolute left-0 -bottom-10 w-max max-w-[400px] px-3 py-1.5 rounded-md bg-gray-800 text-white text-xs shadow-lg z-20 transition-opacity duration-200 opacity-0 group-hover:opacity-100 pointer-events-none whitespace-pre-wrap">
+                                            {{ form.url }}</div>
                                     </div>
                                     <button
                                         class="flex items-center justify-center h-[42px] w-[42px] rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                                        @click.prevent="playVideo(form.url)" :disabled="!form.url" title="Preview player">
+                                        @click.prevent="playVideo(form.url)" :disabled="!form.url"
+                                        title="Preview player">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
                                             fill="currentColor">
                                             <path fill-rule="evenodd"
@@ -229,16 +231,18 @@
                                     DRM URL
                                 </label>
                                 <div class="flex items-center gap-2">
-                                    <div class="relative flex-1">
-                                        <input id="dash_url" v-model="form.dash_url" type="url"
+                                    <div class="relative flex-1 group">
+                                        <input id="dash_url" v-model="form.dash_url" type="url" required
                                             class="block w-full pl-4 pr-10 py-2.5 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-all duration-200"
-                                            placeholder="https://example.com/manifest.mpd">
-                                            <div v-if="form.dash_url" class="absolute left-0 -bottom-10 w-max max-w-[400px] px-3 py-1.5 rounded-md bg-gray-800 text-white text-xs shadow-lg z-20 transition-opacity duration-200 opacity-0 group-hover:opacity-100 pointer-events-none whitespace-pre-wrap">
-                                                {{ form.dash_url }}</div>
+                                            placeholder="https://example.com/manifest.mpd" />
+                                        <div v-if="form.dash_url"
+                                            class="absolute left-0 -bottom-10 w-max max-w-[400px] px-3 py-1.5 rounded-md bg-gray-800 text-white text-xs shadow-lg z-20 transition-opacity duration-200 opacity-0 group-hover:opacity-100 pointer-events-none whitespace-pre-wrap">
+                                            {{ form.dash_url }}
+                                        </div>
                                     </div>
                                     <button
                                         class="flex items-center justify-center h-[42px] w-[42px] rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                                        @click.prevent="playVideo(form.dash_url)" :disabled="!form.dash_url" title="Preview player">
+                                        @click.prevent="playDrmVideo" :disabled="!form.dash_url" title="Preview player">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
                                             fill="currentColor">
                                             <path fill-rule="evenodd"
@@ -508,13 +512,8 @@
                 </form>
             </div>
         </div>
-        <ShakaPlayer
-  v-if="showPlayer"
-  :videoUrl="currentVideo.url"
-  :isDrm="currentVideo.isDrm"
-  :licenseUrl="currentVideo.licenseUrl"
-  @close="showPlayer = false"
-/>
+        <ShakaPlayer v-if="showPlayer" :videoUrl="currentVideo.url" :isDrm="currentVideo.isDrm"
+            :licenseToken="currentVideo.token" :licenseUrl="currentVideo.licenseUrl" @close="showPlayer = false" />
     </div>
 </template>
 
@@ -556,13 +555,51 @@ const showPlayer = ref(false)
 const currentVideo = ref('');
 
 // Simple function to play the video
-const playVideo = (url, isDrm = false, licenseUrl = '') => {
-  currentVideo.value = {
-    url,
-    isDrm,
-    licenseUrl,
-  }
-  showPlayer.value = true
+const playVideo = (url, isDrm = false, token = '', licenseUrl = '') => {
+    currentVideo.value = {
+        url,
+        isDrm,
+        token,
+        licenseUrl
+    }
+    showPlayer.value = true
+}
+
+const playDrmVideo = async () => {
+    if (!form.dash_url) return
+
+    try {
+        loading.value = true
+
+        // Step 1: Encrypt DRM MPD URL via proxy
+        const encrypted = await encryptViaProxy(form.dash_url)
+        if (!encrypted) {
+            throw new Error('Failed to encrypt Dash URL')
+        }
+
+        // Step 2: Generate DRM token from Laravel backend
+        const tokenRes = await axios.get(route('proxy.get'), {
+            params: {
+                endpoint: 'generate-token',
+                encryptedMpd: encrypted
+            }
+        })
+
+        const token = tokenRes.data
+        if (!token || typeof token !== 'string') {
+            throw new Error('Invalid token received')
+        }
+
+        // Step 3: Define license URL and play the DRM video
+        const widevineLicenseUrl = 'https://drm-widevine-licensing.axprod.net/AcquireLicense'
+        playVideo(form.dash_url, true, token, widevineLicenseUrl)
+
+    } catch (err) {
+        console.error('DRM Playback failed:', err)
+        error.value = err.message || 'Error during DRM playback'
+    } finally {
+        loading.value = false
+    }
 }
 
 // Validate form fields
