@@ -475,6 +475,7 @@ const booleanFields = {
 const formSubmitting = ref(false) // Loading state for form submission
 const message = ref('')
 const error = ref(null)
+const showPlayer = ref(false)
 
 const currentVideo = ref('');
 

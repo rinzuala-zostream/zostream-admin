@@ -71,7 +71,7 @@ function initPlayer() {
         player.configure({
             drm: {
                 servers: {
-                    'com.widevine.alpha': props.licenseUrl,
+                    'com.widevine.alpha': 'https://drm-widevine-licensing.axprod.net/AcquireLicense'
                 },
             }
         })
