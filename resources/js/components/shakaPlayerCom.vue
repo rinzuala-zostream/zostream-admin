@@ -1,4 +1,3 @@
-<!-- ShakaPlayer.vue -->
 <template>
     <div class="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50">
         <div class="w-full max-w-5xl relative">
@@ -10,7 +9,6 @@
 
             <div ref="videoContainer" class="w-full h-auto">
                 <video ref="videoRef" autoplay playsinline class="shaka-video w-full h-auto"></video>
-                <!-- Controls will be added by Shaka UI -->
                 <div class="shaka-controls-container"></div>
             </div>
         </div>
@@ -24,7 +22,10 @@ import 'shaka-player/dist/controls.css'
 
 const props = defineProps({
     videoUrl: String,
+    isDrm: Boolean, // Optional: Set to true if DRM is required
+    licenseUrl: String // Optional: License server URL (if different from default)
 })
+
 const videoRef = ref(null)
 const videoContainer = ref(null)
 
@@ -63,13 +64,30 @@ function initPlayer() {
     ui.configure(uiConfig)
 
     const controls = ui.getControls()
-
     player.addEventListener('error', onErrorEvent)
 
+    // Optional DRM config
+    if (props.isDrm && props.licenseUrl) {
+        player.configure({
+            drm: {
+                servers: {
+                    'com.widevine.alpha': props.licenseUrl,
+                },
+                advanced: {
+                    'com.widevine.alpha': {
+                        videoRobustness: 'SW_SECURE_DECODE',
+                        audioRobustness: 'SW_SECURE_CRYPTO',
+                    }
+                }
+            }
+        })
+    }
+
+    // Load the video
     if (props.videoUrl) {
         player
             .load(props.videoUrl)
-            .then(() => console.log('Video loaded with custom UI'))
+            .then(() => console.log('Video loaded with Shaka UI and DRM'))
             .catch(onError)
     }
 }
@@ -83,12 +101,7 @@ function onError(error) {
 </script>
 
 <style scoped>
-/* You can override or extend Shaka UI styles here */
 .shaka-video {
     border-radius: 0.5rem;
-}
-
-.shaka-controls-container {
-    /* no need to add anything unless customizing */
 }
 </style>
