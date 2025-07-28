@@ -67,7 +67,7 @@ function initPlayer() {
     player.addEventListener('error', onErrorEvent)
 
     // Optional DRM config
-    if (props.isDrm && props.licenseUrl) {
+    if (props.isDrm) {
         player.configure({
             drm: {
                 servers: {
