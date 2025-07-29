@@ -864,7 +864,7 @@ const editMovie = async (itemFromList, pMovieId = null, pSeasonId = null) => {
 };
 
 const playDrmVideo = async () => {
-    if (!form.dash_url) return
+    if (!editForm.dash_url) return
 
     try {
         loading.value = true
