@@ -157,7 +157,7 @@
                                             class="block w-full pl-4 pr-10 py-2.5 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-all duration-200"
                                             placeholder="https://example.com/movie.mp4">
                                         <div v-if="form.url"
-                                            class="absolute left-0 -bottom-10 w-max max-w-[400px] px-3 py-1.5 rounded-md bg-gray-800 text-white text-xs shadow-lg z-20 transition-opacity duration-200 opacity-0 group-hover:opacity-100 pointer-events-none whitespace-pre-wrap">
+                                            class="absolute left-0 -bottom-10 w-max max-w-[800px] px-3 py-1.5 rounded-md bg-gray-800 text-white text-xs shadow-lg z-20 transition-opacity duration-200 opacity-0 group-hover:opacity-100 pointer-events-none whitespace-pre-wrap">
                                             {{ form.url }}</div>
                                     </div>
                                     <button
@@ -186,7 +186,7 @@
                                             class="block w-full pl-4 pr-10 py-2.5 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-all duration-200"
                                             placeholder="https://example.com/manifest.mpd">
                                         <div v-if="form.dash_url"
-                                            class="absolute left-0 -bottom-10 w-max max-w-[400px] px-3 py-1.5 rounded-md bg-gray-800 text-white text-xs shadow-lg z-20 transition-opacity duration-200 opacity-0 group-hover:opacity-100 pointer-events-none whitespace-pre-wrap">
+                                            class="absolute left-0 -bottom-10 w-max max-w-[800px] px-3 py-1.5 rounded-md bg-gray-800 text-white text-xs shadow-lg z-20 transition-opacity duration-200 opacity-0 group-hover:opacity-100 pointer-events-none whitespace-pre-wrap">
                                             {{ form.dash_url }}</div>
                                     </div>
                                     <button
@@ -540,7 +540,7 @@
             </div>
         </div>
         <ShakaPlayer v-if="showPlayer" :videoUrl="currentVideo.url" :isDrm="currentVideo.isDrm"
-            :licenseUrl="currentVideo.licenseUrl" @close="showPlayer = false" />
+            :licenseToken="currentVideo.token" :licenseUrl="currentVideo.licenseUrl" @close="showPlayer = false" />
     </div>
 </template>
 
@@ -568,6 +568,7 @@ const getInitialFormState = () => ({
     isEnable: true,
     isPPV: false,
     isPremium: false,
+    token: ''
 })
 
 const form = reactive(getInitialFormState())
@@ -599,41 +600,50 @@ const playVideo = (url, isDrm = false, token = '', licenseUrl = '') => {
 }
 
 const playDrmVideo = async () => {
-    if (!form.dash_url) return
+    console.log("--- playDrmVideo: Clicked! ---");
+
+    if (!form.dash_url) {
+        toast.warn("Please enter a valid DRM URL first.");
+        return;
+    }
+
+    loading.value = true;
+    console.log("Set loading to true. Starting DRM process...");
 
     try {
-        loading.value = true
-
-        // Step 1: Encrypt DRM MPD URL via proxy
+        // Step A: Encrypt URL
         const encrypted = await encryptViaProxy(form.dash_url);
-        console.log("url for token:", encrypted);
-        if (!encrypted) {
-            throw new Error('Failed to encrypt Dash URL')
-        }
+        console.log("Encrypted URL result:", encrypted);
 
-        // Step 2: Generate DRM token from Laravel backend
+        if (!encrypted) {
+            // This is a critical check. If encryption fails, the process cannot continue.
+            throw new Error('Failed to encrypt the Dash URL via proxy. The result was empty.');
+        }
         const tokenRes = await axios.get(route('proxy.get'), {
             params: {
                 endpoint: 'preview',
                 mpd: encrypted
             }
-        })
+        });
 
-        const token = tokenRes.data.token
-        console.log("token:", token)
+        const token = tokenRes.data.token;
         if (!token || typeof token !== 'string') {
-            throw new Error('Invalid token received')
+            throw new Error('Invalid or missing token in the server response.');
         }
+        console.log("Token extracted successfully:", token);
 
-        // Step 3: Define license URL and play the DRM video
-        const widevineLicenseUrl = 'https://drm-widevine-licensing.axprod.net/AcquireLicense'
-        playVideo(form.dash_url, true, token, widevineLicenseUrl)
+        // Step C: Play Video
+        const widevineLicenseUrl = 'https://drm-widevine-licensing.axprod.net/AcquireLicense';
+        playVideo(form.dash_url, true, token, widevineLicenseUrl);
 
     } catch (err) {
-        console.error('DRM Playback failed:', err)
-        error.value = err.message || 'Error during DRM playback'
+        console.error("!!! DRM Playback FAILED at some point in the 'try' block !!!", err);
+        const errorMessage = err.response?.data?.message || err.message || 'An unknown error occurred during DRM playback.';
+        toast.error(`DRM Playback Failed: ${errorMessage}`);
+        // error.value = `DRM Playback Failed: ${errorMessage}`; // If using a ref for the modal
+
     } finally {
-        loading.value = false
+        loading.value = false;
     }
 }
 
