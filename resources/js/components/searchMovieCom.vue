@@ -968,6 +968,7 @@ const submitForm = async () => {
         if (currentFormState.dash_url) currentFormState.dash_url = await encryptViaProxy(currentFormState.dash_url);
 
         const payload = { ...currentFormState };
+        console.log("data to update:", payload)
         const booleanFieldsConfig = isEpisode ? episodeBooleanFields.value : movieBooleanFields.value;
         for (const boolKey in booleanFieldsConfig) payload[boolKey] = !!payload[boolKey];
 
