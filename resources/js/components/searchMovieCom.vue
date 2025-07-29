@@ -137,12 +137,15 @@
 
                             <!-- Loader for Seasons -->
                             <div v-if="loadingSeasonsFor.has(movie.id)" class="p-4 text-center">
-                                <div class="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-blue-500 mx-auto"></div>
+                                <div
+                                    class="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-blue-500 mx-auto">
+                                </div>
                                 <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">Loading seasons...</p>
                             </div>
 
                             <!-- Message for no seasons found -->
-                            <div v-else-if="!movie.seasons || movie.seasons.length === 0" class="p-4 text-center text-sm text-gray-500 dark:text-gray-400">
+                            <div v-else-if="!movie.seasons || movie.seasons.length === 0"
+                                class="p-4 text-center text-sm text-gray-500 dark:text-gray-400">
                                 No seasons found for this series.
                             </div>
 
@@ -160,9 +163,12 @@
                                                 d="M9 5l7 7-7 7"></path>
                                         </svg>
                                         <span class="truncate max-w-[120px] sm:max-w-none">{{ season.txt }}</span>
-                                        <span class="text-xs text-gray-500 dark:text-gray-400 font-mono hidden sm:inline">{{ season.id }}</span>
+                                        <span
+                                            class="text-xs text-gray-500 dark:text-gray-400 font-mono hidden sm:inline">{{
+                            season.id }}</span>
                                     </div>
-                                    <span class="text-xs text-gray-500 dark:text-gray-400">{{ season.episodes?.length || 0 }}
+                                    <span class="text-xs text-gray-500 dark:text-gray-400">{{ season.episodes?.length ||
+                            0 }}
                                         episode{{ (season.episodes?.length || 0) !== 1 ? 's' : '' }}</span>
                                 </div>
                                 <ul v-if="season.showEpisodes"
@@ -170,18 +176,24 @@
 
                                     <!-- Loader for Episodes -->
                                     <li v-if="loadingEpisodesFor.has(season.id)" class="py-2 text-center">
-                                        <div class="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-blue-500 mx-auto"></div>
+                                        <div
+                                            class="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-blue-500 mx-auto">
+                                        </div>
                                     </li>
 
                                     <!-- Render Episodes (only if not loading) -->
                                     <template v-else>
-                                        <li v-if="season.episodes.length === 0" class="py-2 text-xs text-gray-500 dark:text-gray-400">
+                                        <li v-if="season.episodes.length === 0"
+                                            class="py-2 text-xs text-gray-500 dark:text-gray-400">
                                             No episodes found for this season.
                                         </li>
                                         <li v-else v-for="ep in season.episodes" :key="ep.id"
                                             class="flex items-center justify-between py-1 sm:py-2 px-2 sm:px-3 -mx-2 sm:-mx-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors duration-150">
-                                            <span class="text-xs sm:text-sm truncate max-w-[100px] sm:max-w-none">{{ ep.txt || 'Untitled Episode' }}</span>
-                                            <span class="text-xs text-gray-500 dark:text-gray-400 font-mono ml-2 sm:ml-4 hidden sm:inline">{{ ep.id }}</span>
+                                            <span class="text-xs sm:text-sm truncate max-w-[100px] sm:max-w-none">{{
+                            ep.txt || 'Untitled Episode' }}</span>
+                                            <span
+                                                class="text-xs text-gray-500 dark:text-gray-400 font-mono ml-2 sm:ml-4 hidden sm:inline">{{
+                            ep.id }}</span>
                                             <div class="flex-shrink-0 mx-1 sm:mx-2" v-if="ep.status">
                                                 <span :class="getStatusClass(ep.status)"
                                                     class="px-1.5 py-0.5 sm:px-2.5 sm:py-1 inline-flex text-xs leading-5 font-semibold rounded-full capitalize">
@@ -195,30 +207,34 @@
                                                     :disabled="isFetchingEditItemDetails && editingItemContext?.id === ep.id && editingItemContext?.seasonId === season.id">
                                                     <svg v-if="isFetchingEditItemDetails && editingItemContext?.id === ep.id && editingItemContext?.seasonId === season.id"
                                                         class="animate-spin h-2.5 w-2.5 sm:h-3 sm:w-3 text-white"
-                                                        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                        xmlns="http://www.w3.org/2000/svg" fill="none"
+                                                        viewBox="0 0 24 24">
                                                         <circle class="opacity-25" cx="12" cy="12" r="10"
                                                             stroke="currentColor" stroke-width="4"></circle>
                                                         <path class="opacity-75" fill="currentColor"
-                                                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                                        </path>
                                                     </svg>
                                                     <svg v-else class="w-2.5 h-2.5 sm:w-3 sm:h-3" fill="none"
                                                         stroke="currentColor" viewBox="0 0 24 24"
                                                         xmlns="http://www.w3.org/2000/svg">
                                                         <path stroke-linecap="round" stroke-linejoin="round"
                                                             stroke-width="2"
-                                                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
+                                                        </path>
                                                     </svg>
                                                     <span class="hidden sm:inline">Edit</span>
                                                 </button>
                                                 <button
                                                     class="px-1.5 py-0.5 sm:px-2 sm:py-1 text-xs bg-red-600 hover:bg-red-700 text-white rounded transition-colors duration-200 flex items-center space-x-1"
                                                     @click.stop="openDeleteConfirmation(ep, movie.id, season.id)">
-                                                    <svg class="w-2.5 h-2.5 sm:w-3 sm:h-3" fill="none" stroke="currentColor"
-                                                        viewBox="0 0 24 24"
+                                                    <svg class="w-2.5 h-2.5 sm:w-3 sm:h-3" fill="none"
+                                                        stroke="currentColor" viewBox="0 0 24 24"
                                                         xmlns="http://www.w3.org/2000/svg">
                                                         <path stroke-linecap="round" stroke-linejoin="round"
                                                             stroke-width="2"
-                                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                                                        </path>
                                                     </svg>
                                                     <span class="hidden sm:inline">Delete</span>
                                                 </button>
@@ -235,12 +251,12 @@
 
         <!-- Edit Modal -->
         <div v-if="showEditModal"
-     class="fixed inset-0 bg-gray-600 bg-opacity-75 dark:bg-gray-900 dark:bg-opacity-75 transition-opacity duration-300 ease-in-out flex items-center justify-center p-4 z-[100]"
-     @click.self="closeEditModal">
+            class="fixed inset-0 bg-gray-600 bg-opacity-75 dark:bg-gray-900 dark:bg-opacity-75 transition-opacity duration-300 ease-in-out flex items-center justify-center p-4 z-[100]"
+            @click.self="closeEditModal">
 
-     <!-- Wider Movie Edit Form -->
-     <div v-if="editingItem && !editingItem.seasonId"
-          class="form-container bg-white dark:bg-gray-950 text-gray-800 dark:text-gray-100 p-6 sm:p-8 md:p-10 rounded-xl shadow-2xl w-full max-w-5xl max-h-[90vh] overflow-y-auto">
+            <!-- Wider Movie Edit Form -->
+            <div v-if="editingItem && !editingItem.seasonId"
+                class="form-container bg-white dark:bg-gray-950 text-gray-800 dark:text-gray-100 p-6 sm:p-8 md:p-10 rounded-xl shadow-2xl w-full max-w-5xl max-h-[90vh] overflow-y-auto">
                 <h2
                     class="text-2xl sm:text-3xl font-bold mb-8 text-center sm:text-left text-gray-900 dark:text-white tracking-tight">
                     Update Movie</h2>
@@ -307,55 +323,64 @@
                                 Date</label><input id="movie-release_on" v-model="editForm.release_on" type="date"
                                 class="block w-full rounded-lg border-0 py-2 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900 dark:[color-scheme:dark]">
                         </div>
-                            <!-- Movie URL with Play Button -->
-                            <div class="form-group">
-                                <label for="movie-url"
-                                    class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">
-                                    Movie URL
-                                </label>
-                                <div class="flex items-center gap-2">
-                                    <input id="movie-url" v-model="editForm.url" type="url"
-                                        class="flex-1 rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900"
-                                        placeholder="https://example.com/movie.mp4">
-                                        <div v-if="editForm.url" class="absolute left-0 -bottom-10 w-max max-w-[400px] px-3 py-1.5 rounded-md bg-gray-800 text-white text-xs shadow-lg z-20 transition-opacity duration-200 opacity-0 group-hover:opacity-100 pointer-events-none whitespace-pre-wrap">
-                                                {{ editForm.url}}</div>
-                                    <button type="button" @click.prevent="playVideo(editForm.url)" :disabled="!editForm.url"
-                                        class="flex-shrink-0 h-10 w-10 flex items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                                        title="Preview movie">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
-                                            fill="currentColor">
-                                            <path fill-rule="evenodd"
-                                                d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
-                                                clip-rule="evenodd" />
-                                        </svg>
-                                    </button>
-                                </div>
-                            </div>
 
-                            <!-- DRM URL with Play Button -->
-                            <div class="form-group">
-                                <label for="movie-dash_url"
-                                    class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">
-                                    DRM URL
-                                </label>
-                                <div class="flex items-center gap-2">
-                                    <input id="movie-dash_url" v-model="editForm.dash_url" type="url"
-                                        class="flex-1 rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900"
-                                        placeholder="https://example.com/movie.mpd">
-                                        <div v-if="editForm.dash_url" class="absolute left-0 -bottom-10 w-max max-w-[400px] px-3 py-1.5 rounded-md bg-gray-800 text-white text-xs shadow-lg z-20 transition-opacity duration-200 opacity-0 group-hover:opacity-100 pointer-events-none whitespace-pre-wrap">
-                                                {{ editForm.dash_url}}</div>
-                                    <button type="button" @click.prevent="playDrmVideo" :disabled="!editForm.dash_url"
-                                        class="flex-shrink-0 h-10 w-10 flex items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                                        title="Preview DRM content">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
-                                            fill="currentColor">
-                                            <path fill-rule="evenodd"
-                                                d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
-                                                clip-rule="evenodd" />
-                                        </svg>
-                                    </button>
+                        <div class="form-group">
+                            <label for="movie-url"
+                                class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">
+                                Movie URL
+                            </label>
+                            <div class="relative flex items-center gap-2 group">
+                                <input id="movie-url" v-model="editForm.url" type="url"
+                                    class="flex-1 rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900"
+                                    placeholder="https://example.com/movie.mp4">
+                                <div v-if="editForm.url"
+                                    class="absolute left-0 -bottom-10 w-max max-w-[400px] px-3 py-1.5 rounded-md bg-gray-800 text-white text-xs shadow-lg z-20 transition-opacity duration-200 opacity-0 group-hover:opacity-100 pointer-events-none whitespace-pre-wrap">
+                                    {{ editForm.url }}
                                 </div>
+                                <button type="button" @click.prevent="playVideo(editForm.url)" :disabled="!editForm.url"
+                                    class="flex-shrink-0 h-10 w-10 flex items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                                    title="Preview movie">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
+                                        fill="currentColor">
+                                        <path fill-rule="evenodd"
+                                            d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
+                                            clip-rule="evenodd" />
+                                    </svg>
+                                </button>
                             </div>
+                        </div>
+
+                        <!-- DRM URL with Play Button -->
+                        <div class="form-group">
+                            <label for="ep-dash_url"
+                                class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">
+                                DRM URL
+                            </label>
+                            <!-- Add class="group" here -->
+                            <div class="relative flex items-center gap-2 group">
+                                <input id="ep-dash_url" v-model="editForm.dash_url" type="url"
+                                    class="block flex-1 rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900"
+                                    placeholder="https://example.com/episode.mpd">
+
+                                <!-- Tooltip becomes visible on hover -->
+                                <div v-if="editForm.dash_url"
+                                    class="absolute left-0 -bottom-10 w-max max-w-[400px] px-3 py-1.5 rounded-md bg-gray-800 text-white text-xs shadow-lg z-20 transition-opacity duration-200 opacity-0 group-hover:opacity-100 pointer-events-none whitespace-pre-wrap">
+                                    {{ editForm.dash_url }}
+                                </div>
+
+                                <button type="button" @click.prevent="playDrmVideo"
+                                    :disabled="!editForm.dash_url"
+                                    class="flex items-center justify-center h-10 w-10 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                                    title="Preview DRM content">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
+                                        fill="currentColor">
+                                        <path fill-rule="evenodd"
+                                            d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
+                                            clip-rule="evenodd" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
                         <div class="form-group"><label for="title_img"
                                 class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">Title
                                 Image
@@ -444,55 +469,64 @@
                                 URL</label><input id="ep-img" v-model="editForm.img" type="url"
                                 class="block w-full rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900"
                                 placeholder="https://example.com/image.jpg"></div>
-                            <!-- Video URL with Play Button -->
-                            <div class="form-group">
-                                <label for="ep-url"
-                                    class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">
-                                    Video URL
-                                </label>
-                                <div class="relative flex items-center gap-2">
-                                    <input id="ep-url" v-model="editForm.url" type="url"
-                                        class="block flex-1 rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900"
-                                        placeholder="https://example.com/episode.mp4">
-                                        <div v-if="editForm.url" class="absolute left-0 -bottom-10 w-max max-w-[400px] px-3 py-1.5 rounded-md bg-gray-800 text-white text-xs shadow-lg z-20 transition-opacity duration-200 opacity-0 group-hover:opacity-100 pointer-events-none whitespace-pre-wrap">
-                                                {{ editForm.url}}</div>
-                                    <button type="button" @click.prevent="playVideo(editForm.url)" :disabled="!editForm.url"
-                                        class="flex items-center justify-center h-10 w-10 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                                        title="Preview video">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
-                                            fill="currentColor">
-                                            <path fill-rule="evenodd"
-                                                d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
-                                                clip-rule="evenodd" />
-                                        </svg>
-                                    </button>
+                        <!-- Video URL with Play Button -->
+                        <div class="form-group">
+                            <label for="ep-url"
+                                class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">
+                                Video URL
+                            </label>
+                            <div class="relative flex items-center gap-2 group">
+                                <input id="ep-url" v-model="editForm.url" type="url"
+                                    class="block flex-1 rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900"
+                                    placeholder="https://example.com/episode.mp4">
+                                <div v-if="editForm.url"
+                                    class="absolute left-0 -bottom-10 w-max max-w-[400px] px-3 py-1.5 rounded-md bg-gray-800 text-white text-xs shadow-lg z-20 transition-opacity duration-200 opacity-0 group-hover:opacity-100 pointer-events-none whitespace-pre-wrap">
+                                    {{ editForm.url }}
                                 </div>
+                                <button type="button" @click.prevent="playVideo(editForm.url)" :disabled="!editForm.url"
+                                    class="flex items-center justify-center h-10 w-10 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                                    title="Preview video">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
+                                        fill="currentColor">
+                                        <path fill-rule="evenodd"
+                                            d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
+                                            clip-rule="evenodd" />
+                                    </svg>
+                                </button>
                             </div>
+                        </div>
+                        <!-- DRM URL with Play Button -->
+                        <div class="form-group">
+                            <label for="ep-dash_url"
+                                class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">
+                                DRM URL
+                            </label>
+                            <!-- Add class="group" here -->
+                            <div class="relative flex items-center gap-2 group">
+                                <input id="ep-dash_url" v-model="editForm.dash_url" type="url"
+                                    class="block flex-1 rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900"
+                                    placeholder="https://example.com/episode.mpd">
 
-                            <!-- DRM URL with Play Button -->
-                            <div class="form-group">
-                                <label for="ep-dash_url"
-                                    class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">
-                                    DRM URL
-                                </label>
-                                <div class="relative flex items-center gap-2">
-                                    <input id="ep-dash_url" v-model="editForm.dash_url" type="url"
-                                        class="block flex-1 rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900"
-                                        placeholder="https://example.com/episode.mpd">
-                                        <div v-if="editForm.dash_url" class="absolute left-0 -bottom-10 w-max max-w-[400px] px-3 py-1.5 rounded-md bg-gray-800 text-white text-xs shadow-lg z-20 transition-opacity duration-200 opacity-0 group-hover:opacity-100 pointer-events-none whitespace-pre-wrap">
-                                                {{ editForm.dash_url}}</div>
-                                    <button type="button" @click.prevent="playDrmVideo" :disabled="!editForm.dash_url"
-                                        class="flex items-center justify-center h-10 w-10 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                                        title="Preview DRM content">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
-                                            fill="currentColor">
-                                            <path fill-rule="evenodd"
-                                                d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
-                                                clip-rule="evenodd" />
-                                        </svg>
-                                    </button>
+                                <!-- Tooltip becomes visible on hover -->
+                                <div v-if="editForm.dash_url"
+                                    class="absolute left-0 -bottom-10 w-max max-w-[400px] px-3 py-1.5 rounded-md bg-gray-800 text-white text-xs shadow-lg z-20 transition-opacity duration-200 opacity-0 group-hover:opacity-100 pointer-events-none whitespace-pre-wrap">
+                                    {{ editForm.dash_url }}
                                 </div>
+
+                                <button type="button" @click.prevent="playDrmVideo"
+                                    :disabled="!editForm.dash_url"
+                                    class="flex items-center justify-center h-10 w-10 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                                    title="Preview DRM content">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
+                                        fill="currentColor">
+                                        <path fill-rule="evenodd"
+                                            d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
+                                            clip-rule="evenodd" />
+                                    </svg>
+                                </button>
                             </div>
+                        </div>
+
                         <div class="form-group"><label for="ep-status"
                                 class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">Status</label><select
                                 id="ep-status" v-model="editForm.status"
@@ -588,7 +622,8 @@
                             <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg"
                                 fill="none" viewBox="0 0 24 24">
                                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
-                                    stroke-width="4"></circle>
+                                    stroke-width="4">
+                                </circle>
                                 <path class="opacity-75" fill="currentColor"
                                     d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
                                 </path>
@@ -603,8 +638,8 @@
                 </div>
             </div>
         </div>
-        <div v-if="showPlayer" class="fixed inset-0 z-[120]">
-            <ShakaPlayer v-if="showPlayer" :videoUrl="currentVideo.url" :isDrm="currentVideo.isDrm"
+        <div v-if="showPlayer" class="fixed inset-0 z-[130]">
+            <ShakaPlayer :videoUrl="currentVideo.url" :isDrm="currentVideo.isDrm"
             :licenseToken="currentVideo.token" :licenseUrl="currentVideo.licenseUrl" @close="showPlayer = false" />
         </div>
     </div>
@@ -657,42 +692,53 @@ const playVideo = (url, isDrm = false, token = '', licenseUrl = '') => {
     showPlayer.value = true
 }
 
+// In your <script setup>
+
 const playDrmVideo = async () => {
-    if (!editForm.dash_url) return
+    console.log("--- playDrmVideo: Clicked! ---");
+
+    if (!editForm.value.dash_url) {
+        toast.warn("Please enter a valid DRM URL first.");
+        return;
+    }
+
+    loading.value = true;
+    console.log("Set loading to true. Starting DRM process...");
 
     try {
-        loading.value = true
+        // Step A: Encrypt URL
+        const encrypted = await encryptViaProxy(editForm.value.dash_url);
+        console.log("Encrypted URL result:", encrypted);
 
-        // Step 1: Encrypt DRM MPD URL via proxy
-        const encrypted = editForm.dash_url;
-        console.log("url for token:", encrypted);
         if (!encrypted) {
-            throw new Error('Failed to encrypt Dash URL')
+            // This is a critical check. If encryption fails, the process cannot continue.
+            throw new Error('Failed to encrypt the Dash URL via proxy. The result was empty.');
         }
-
-        // Step 2: Generate DRM token from Laravel backend
         const tokenRes = await axios.get(route('proxy.get'), {
             params: {
                 endpoint: 'preview',
                 mpd: encrypted
             }
-        })
+        });
 
-        const token = tokenRes.data.token
-        console.log("token:", token)
+        const token = tokenRes.data.token;
         if (!token || typeof token !== 'string') {
-            throw new Error('Invalid token received')
+            throw new Error('Invalid or missing token in the server response.');
         }
+        console.log("Token extracted successfully:", token);
 
-        // Step 3: Define license URL and play the DRM video
-        const widevineLicenseUrl = 'https://drm-widevine-licensing.axprod.net/AcquireLicense'
-        playVideo(editForm.dash_url, true, token, widevineLicenseUrl)
+        // Step C: Play Video
+        const widevineLicenseUrl = 'https://drm-widevine-licensing.axprod.net/AcquireLicense';
+        playVideo(editForm.value.dash_url, true, token, widevineLicenseUrl);
 
     } catch (err) {
-        console.error('DRM Playback failed:', err)
-        error.value = err.message || 'Error during DRM playback'
+        console.error("!!! DRM Playback FAILED at some point in the 'try' block !!!", err);
+        const errorMessage = err.response?.data?.message || err.message || 'An unknown error occurred during DRM playback.';
+        toast.error(`DRM Playback Failed: ${errorMessage}`);
+        // error.value = `DRM Playback Failed: ${errorMessage}`; // If using a ref for the modal
+
     } finally {
-        loading.value = false
+        loading.value = false;
     }
 }
 // --- Form Field Definitions ---
@@ -838,11 +884,11 @@ const editMovie = async (itemFromList, pMovieId = null, pSeasonId = null) => {
             const response = await axios.get(route('proxy.get'), {
                 params: {
                     endpoint: `episode/${itemIdToFetch}`
-                } ,
+                },
                 headers: {
-                'Content-Type': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest'
-            }
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
             });
 
             itemDetails = response.data.episode;
@@ -927,7 +973,7 @@ const submitForm = async () => {
 
         let apiSegment = isEpisode ? 'episode' : 'movies';
         await axios.put(route('proxy.put'), payload, {
-            params:{ endpoint: `${apiSegment}/${itemCtx.id}` },
+            params: { endpoint: `${apiSegment}/${itemCtx.id}` },
             headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
         });
 
@@ -981,8 +1027,8 @@ const confirmDeleteItem = async () => {
     const itemCtx = itemToDelete.value;
     try {
         let apiDeleteSegment = itemCtx.type === 'episode' ? 'episode' : 'movies';
-        await axios.delete(route('proxy.delete'),{
-            params:{ endpoint:`${apiDeleteSegment}/${itemCtx.id}` },
+        await axios.delete(route('proxy.delete'), {
+            params: { endpoint: `${apiDeleteSegment}/${itemCtx.id}` },
             headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
         });
 
