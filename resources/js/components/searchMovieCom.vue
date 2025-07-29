@@ -870,7 +870,7 @@ const playDrmVideo = async () => {
         loading.value = true
 
         // Step 1: Encrypt DRM MPD URL via proxy
-        const encrypted = await encryptViaProxy(form.dash_url);
+        const encrypted = await encryptViaProxy(editForm.dash_url);
         console.log("url for token:", encrypted);
         if (!encrypted) {
             throw new Error('Failed to encrypt Dash URL')
