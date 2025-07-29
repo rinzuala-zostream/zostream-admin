@@ -431,7 +431,7 @@
 
             <!-- Episode Edit Form -->
             <div v-if="editingItem && editingItem.seasonId"
-                class="form-container bg-white dark:bg-gray-950 text-gray-800 dark:text-gray-100 p-6 sm:p-8 md:p-10 rounded-xl shadow-2xl w-full max-w-5xl max-h-[90vh] overflow-y-auto">
+            class="form-container bg-white dark:bg-gray-950 text-gray-800 dark:text-gray-100 p-6 sm:p-8 md:p-10 rounded-xl shadow-2xl w-full max-w-[95vw] max-h-[90vh] overflow-y-auto">
                 <h2
                     class="text-2xl sm:text-3xl font-bold mb-8 text-center sm:text-left text-gray-900 dark:text-white tracking-tight">
                     Update Episode</h2>
