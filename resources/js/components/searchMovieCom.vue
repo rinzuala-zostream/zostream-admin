@@ -656,6 +656,45 @@ const playVideo = (url, isDrm = false, token = '', licenseUrl = '') => {
     }
     showPlayer.value = true
 }
+
+const playDrmVideo = async () => {
+    if (!editForm.dash_url) return
+
+    try {
+        loading.value = true
+
+        // Step 1: Encrypt DRM MPD URL via proxy
+        const encrypted = editForm.dash_url;
+        console.log("url for token:", encrypted);
+        if (!encrypted) {
+            throw new Error('Failed to encrypt Dash URL')
+        }
+
+        // Step 2: Generate DRM token from Laravel backend
+        const tokenRes = await axios.get(route('proxy.get'), {
+            params: {
+                endpoint: 'preview',
+                mpd: encrypted
+            }
+        })
+
+        const token = tokenRes.data.token
+        console.log("token:", token)
+        if (!token || typeof token !== 'string') {
+            throw new Error('Invalid token received')
+        }
+
+        // Step 3: Define license URL and play the DRM video
+        const widevineLicenseUrl = 'https://drm-widevine-licensing.axprod.net/AcquireLicense'
+        playVideo(editForm.dash_url, true, token, widevineLicenseUrl)
+
+    } catch (err) {
+        console.error('DRM Playback failed:', err)
+        error.value = err.message || 'Error during DRM playback'
+    } finally {
+        loading.value = false
+    }
+}
 // --- Form Field Definitions ---
 const movieBooleanFields = ref({
     isProtected: 'Protected', isBollywood: 'Bollywood', isCompleted: 'Completed',
@@ -862,45 +901,6 @@ const editMovie = async (itemFromList, pMovieId = null, pSeasonId = null) => {
         editingItemContext.value = null;
     }
 };
-
-const playDrmVideo = async () => {
-    if (!editForm.dash_url) return
-
-    try {
-        loading.value = true
-
-        // Step 1: Encrypt DRM MPD URL via proxy
-        const encrypted = editForm.dash_url;
-        console.log("url for token:", encrypted);
-        if (!encrypted) {
-            throw new Error('Failed to encrypt Dash URL')
-        }
-
-        // Step 2: Generate DRM token from Laravel backend
-        const tokenRes = await axios.get(route('proxy.get'), {
-            params: {
-                endpoint: 'preview',
-                mpd: encrypted
-            }
-        })
-
-        const token = tokenRes.data.token
-        console.log("token:", token)
-        if (!token || typeof token !== 'string') {
-            throw new Error('Invalid token received')
-        }
-
-        // Step 3: Define license URL and play the DRM video
-        const widevineLicenseUrl = 'https://drm-widevine-licensing.axprod.net/AcquireLicense'
-        playVideo(editForm.dash_url, true, token, widevineLicenseUrl)
-
-    } catch (err) {
-        console.error('DRM Playback failed:', err)
-        error.value = err.message || 'Error during DRM playback'
-    } finally {
-        loading.value = false
-    }
-}
 
 const closeEditModal = () => {
     showEditModal.value = false;
