@@ -207,7 +207,7 @@
                                             class="block w-full pl-4 pr-10 py-2.5 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-all duration-200"
                                             placeholder="https://example.com/movie.mp4">
                                         <div v-if="form.url"
-                                            class="absolute left-0 -bottom-10 w-max max-w-[400px] px-3 py-1.5 rounded-md bg-gray-800 text-white text-xs shadow-lg z-20 transition-opacity duration-200 opacity-0 group-hover:opacity-100 pointer-events-none whitespace-pre-wrap">
+                                            class="absolute left-0 -bottom-10 w-max max-w-[800px] px-3 py-1.5 rounded-md bg-gray-800 text-white text-xs shadow-lg z-20 transition-opacity duration-200 opacity-0 group-hover:opacity-100 pointer-events-none whitespace-pre-wrap">
                                             {{ form.url }}</div>
                                     </div>
                                     <button
@@ -236,7 +236,7 @@
                                             class="block w-full pl-4 pr-10 py-2.5 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-all duration-200"
                                             placeholder="https://example.com/manifest.mpd" />
                                         <div v-if="form.dash_url"
-                                            class="absolute left-0 -bottom-10 w-max max-w-[400px] px-3 py-1.5 rounded-md bg-gray-800 text-white text-xs shadow-lg z-20 transition-opacity duration-200 opacity-0 group-hover:opacity-100 pointer-events-none whitespace-pre-wrap">
+                                            class="absolute left-0 -bottom-10 w-max max-w-[800px] px-3 py-1.5 rounded-md bg-gray-800 text-white text-xs shadow-lg z-20 transition-opacity duration-200 opacity-0 group-hover:opacity-100 pointer-events-none whitespace-pre-wrap">
                                             {{ form.dash_url }}
                                         </div>
                                     </div>
@@ -572,7 +572,8 @@ const playDrmVideo = async () => {
         loading.value = true
 
         // Step 1: Encrypt DRM MPD URL via proxy
-        const encrypted = await encryptViaProxy(form.dash_url)
+        const encrypted = await encryptViaProxy(form.dash_url);
+        console.log("url for token:", encrypted);
         if (!encrypted) {
             throw new Error('Failed to encrypt Dash URL')
         }
@@ -580,12 +581,13 @@ const playDrmVideo = async () => {
         // Step 2: Generate DRM token from Laravel backend
         const tokenRes = await axios.get(route('proxy.get'), {
             params: {
-                endpoint: 'generate-token',
-                encryptedMpd: encrypted
+                endpoint: 'preview',
+                mpd: encrypted
             }
         })
 
-        const token = tokenRes.data
+        const token = tokenRes.data.token
+        console.log("token:", token)
         if (!token || typeof token !== 'string') {
             throw new Error('Invalid token received')
         }

@@ -21,8 +21,8 @@ class ApiProxyController extends Controller
     }
 
     // Build the full backend API URL
-    $apiUrl = "https://apis.zostream.in/api/{$endpoint}";
-    $apiKey = 'ljkfdnakadsfthbretmjsavbigruw3niadghr67errh8';
+    $apiUrl = "http://192.168.1.46:8000/api/{$endpoint}";
+    $apiKey = '12345qwerty';
 
     // Common headers
     $headers = [
