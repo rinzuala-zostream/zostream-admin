@@ -604,7 +604,7 @@
             </div>
         </div>
         <div v-if="showPlayer" class="fixed inset-0 z-[120]">
-            <ShakaPlayer :videoUrl="currentVideo.url" :isDrm="currentVideo.isDrm"
+            <ShakaPlayer v-if="showPlayer" :videoUrl="currentVideo.url" :isDrm="currentVideo.isDrm"
             :licenseToken="currentVideo.token" :licenseUrl="currentVideo.licenseUrl" @close="showPlayer = false" />
         </div>
     </div>
