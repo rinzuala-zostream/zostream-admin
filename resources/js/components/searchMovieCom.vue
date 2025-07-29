@@ -892,7 +892,7 @@ const playDrmVideo = async () => {
 
         // Step 3: Define license URL and play the DRM video
         const widevineLicenseUrl = 'https://drm-widevine-licensing.axprod.net/AcquireLicense'
-        playVideo(form.dash_url, true, token, widevineLicenseUrl)
+        playVideo(editForm.dash_url, true, token, widevineLicenseUrl)
 
     } catch (err) {
         console.error('DRM Playback failed:', err)
