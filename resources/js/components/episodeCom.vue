@@ -166,7 +166,7 @@
                                     </div>
                                     <button
                                         class="flex items-center justify-center h-[42px] w-[42px] rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                                        @click.prevent="playVideo(form.dash_url)" :disabled="!form.dash_url" title="Preview player">
+                                        @click.prevent="playDrmVideo" :disabled="!form.dash_url" title="Preview player">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
                                             fill="currentColor">
                                             <path fill-rule="evenodd"
@@ -480,13 +480,53 @@ const showPlayer = ref(false)
 const currentVideo = ref('');
 
 // Simple function to play the video
-const playVideo = (url, isDrm = false, licenseUrl = '') => {
-  currentVideo.value = {
-    url,
-    isDrm,
-    licenseUrl,
-  }
-  showPlayer.value = true
+const playVideo = (url, isDrm = false, token = '', licenseUrl = '') => {
+    currentVideo.value = {
+        url,
+        isDrm,
+        token,
+        licenseUrl
+    }
+    showPlayer.value = true
+}
+
+const playDrmVideo = async () => {
+    if (!form.dash_url) return
+
+    try {
+        loading.value = true
+
+        // Step 1: Encrypt DRM MPD URL via proxy
+        const encrypted = await encryptViaProxy(form.dash_url);
+        console.log("url for token:", encrypted);
+        if (!encrypted) {
+            throw new Error('Failed to encrypt Dash URL')
+        }
+
+        // Step 2: Generate DRM token from Laravel backend
+        const tokenRes = await axios.get(route('proxy.get'), {
+            params: {
+                endpoint: 'preview',
+                mpd: encrypted
+            }
+        })
+
+        const token = tokenRes.data.token
+        console.log("token:", token)
+        if (!token || typeof token !== 'string') {
+            throw new Error('Invalid token received')
+        }
+
+        // Step 3: Define license URL and play the DRM video
+        const widevineLicenseUrl = 'https://drm-widevine-licensing.axprod.net/AcquireLicense'
+        playVideo(form.dash_url, true, token, widevineLicenseUrl)
+
+    } catch (err) {
+        console.error('DRM Playback failed:', err)
+        error.value = err.message || 'Error during DRM playback'
+    } finally {
+        loading.value = false
+    }
 }
 
 // --- Search related reactive state ---

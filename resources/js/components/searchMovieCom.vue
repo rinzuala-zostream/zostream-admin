@@ -344,7 +344,7 @@
                                         placeholder="https://example.com/movie.mpd">
                                         <div v-if="editForm.dash_url" class="absolute left-0 -bottom-10 w-max max-w-[400px] px-3 py-1.5 rounded-md bg-gray-800 text-white text-xs shadow-lg z-20 transition-opacity duration-200 opacity-0 group-hover:opacity-100 pointer-events-none whitespace-pre-wrap">
                                                 {{ editForm.dash_url}}</div>
-                                    <button type="button" @click.prevent="playVideo(editForm.dash_url)" :disabled="!editForm.dash_url"
+                                    <button type="button" @click.prevent="playDrmVideo" :disabled="!editForm.dash_url"
                                         class="flex-shrink-0 h-10 w-10 flex items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                                         title="Preview DRM content">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
@@ -481,7 +481,7 @@
                                         placeholder="https://example.com/episode.mpd">
                                         <div v-if="editForm.dash_url" class="absolute left-0 -bottom-10 w-max max-w-[400px] px-3 py-1.5 rounded-md bg-gray-800 text-white text-xs shadow-lg z-20 transition-opacity duration-200 opacity-0 group-hover:opacity-100 pointer-events-none whitespace-pre-wrap">
                                                 {{ editForm.dash_url}}</div>
-                                    <button type="button" @click.prevent="playVideo(editForm.dash_url)" :disabled="!editForm.dash_url"
+                                    <button type="button" @click.prevent="playDrmVideo" :disabled="!editForm.dash_url"
                                         class="flex items-center justify-center h-10 w-10 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                                         title="Preview DRM content">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
@@ -604,12 +604,8 @@
             </div>
         </div>
         <div v-if="showPlayer" class="fixed inset-0 z-[120]">
-            <ShakaPlayer
-  :videoUrl="currentVideo.url"
-  :isDrm="currentVideo.isDrm"
-  :licenseUrl="currentVideo.licenseUrl"
-  @close="showPlayer = false"
-/>
+            <ShakaPlayer :videoUrl="currentVideo.url" :isDrm="currentVideo.isDrm"
+            :licenseToken="currentVideo.token" :licenseUrl="currentVideo.licenseUrl" @close="showPlayer = false" />
         </div>
     </div>
 </template>
@@ -651,15 +647,15 @@ const isFetchingEditItemDetails = ref(false);
 const editingItemContext = ref(null);
 
 // Simple function to play the video
-const playVideo = (url, isDrm = false, licenseUrl = '') => {
-  currentVideo.value = {
-    url,
-    isDrm,
-    licenseUrl,
-  }
-  showPlayer.value = true
+const playVideo = (url, isDrm = false, token = '', licenseUrl = '') => {
+    currentVideo.value = {
+        url,
+        isDrm,
+        token,
+        licenseUrl
+    }
+    showPlayer.value = true
 }
-
 // --- Form Field Definitions ---
 const movieBooleanFields = ref({
     isProtected: 'Protected', isBollywood: 'Bollywood', isCompleted: 'Completed',
@@ -866,6 +862,45 @@ const editMovie = async (itemFromList, pMovieId = null, pSeasonId = null) => {
         editingItemContext.value = null;
     }
 };
+
+const playDrmVideo = async () => {
+    if (!form.dash_url) return
+
+    try {
+        loading.value = true
+
+        // Step 1: Encrypt DRM MPD URL via proxy
+        const encrypted = await encryptViaProxy(form.dash_url);
+        console.log("url for token:", encrypted);
+        if (!encrypted) {
+            throw new Error('Failed to encrypt Dash URL')
+        }
+
+        // Step 2: Generate DRM token from Laravel backend
+        const tokenRes = await axios.get(route('proxy.get'), {
+            params: {
+                endpoint: 'preview',
+                mpd: encrypted
+            }
+        })
+
+        const token = tokenRes.data.token
+        console.log("token:", token)
+        if (!token || typeof token !== 'string') {
+            throw new Error('Invalid token received')
+        }
+
+        // Step 3: Define license URL and play the DRM video
+        const widevineLicenseUrl = 'https://drm-widevine-licensing.axprod.net/AcquireLicense'
+        playVideo(form.dash_url, true, token, widevineLicenseUrl)
+
+    } catch (err) {
+        console.error('DRM Playback failed:', err)
+        error.value = err.message || 'Error during DRM playback'
+    } finally {
+        loading.value = false
+    }
+}
 
 const closeEditModal = () => {
     showEditModal.value = false;
