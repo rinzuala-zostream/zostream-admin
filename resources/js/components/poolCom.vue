@@ -92,6 +92,7 @@
     addDoc,
     updateDoc
   } from 'firebase/firestore'
+import { toast } from 'vue3-toastify'
 
   const polls = ref([])
   const message = ref('')
@@ -163,6 +164,7 @@
       })
 
       message.value = 'Poll created successfully!'
+      toast.success('Poll created successfully!')
       setTimeout(() => message.value = '', 3000)
 
       // Reset form
