@@ -3,8 +3,6 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/vue3';
 import reportCom from '../components/reportCom.vue';
-import poolComVue from '@/components/poolCom.vue';
-
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -19,6 +17,5 @@ const breadcrumbs: BreadcrumbItem[] = [
 
     <AppLayout :breadcrumbs="breadcrumbs">
                 <reportCom />
-                <poolComVue />
     </AppLayout>
 </template>
