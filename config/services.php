@@ -37,5 +37,8 @@ return [
     'firebase' => [
         'credentials_file' => env('FIREBASE_CREDENTIALS'),
     ],
+    'zo_stream' => [
+    'api_key' => env('ZOSTREAM_API_KEY'),
+    ]
 
 ];

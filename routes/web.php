@@ -43,5 +43,13 @@ Route::get('season', function () {
     return Inertia::render('Season');
 })->middleware(['auth', 'verified'])->name('season');
 
+Route::get('ads', function () {
+    return Inertia::render('Ads');
+})->middleware(['auth', 'verified'])->name('ads');
+
+Route::get('banner', function () {
+    return Inertia::render('Banner');
+})->middleware(['auth', 'verified'])->name('banner');
+
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';

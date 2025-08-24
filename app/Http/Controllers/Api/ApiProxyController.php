@@ -22,7 +22,7 @@ class ApiProxyController extends Controller
 
     // Build the full backend API URL
     $apiUrl = "https://apis.zostream.in/api/{$endpoint}";
-    $apiKey = 'ljkfdnakadsfthbretmjsavbigruw3niadghr67errh8';
+    $apiKey = config('services.zo_stream.api_key');
 
     // Common headers
     $headers = [

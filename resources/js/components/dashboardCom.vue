@@ -189,6 +189,7 @@ const fetchSubs = async () => {
   try {
     const response = await axios.get(route('proxy.get', {
       endpoint: 'admin/subscriptions',
+      device_type: 'Browser'
     }));
 
     const data = response.data.data;

@@ -2,20 +2,23 @@
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/vue3';
-import movieComVue from '@/components/movieCom.vue';
+import banner from '@/components/bannerCom.vue';
+import pool from '@/components/poolCom.vue';
+
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Movie Panel',
-        href: '/movie',
+        title: 'Banner Panel',
+        href: '/banner',
     },
 ];
 </script>
 
 <template>
-    <Head title="Movie Panel" />
+    <Head title="banner/pools" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
-                <movieComVue />
+                <banner />
+                <pool />
     </AppLayout>
 </template>

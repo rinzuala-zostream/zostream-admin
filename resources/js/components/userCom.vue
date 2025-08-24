@@ -55,6 +55,11 @@
             Edit Profile
           </button>
         </div>
+        <div class="text-center mt-4">
+            <button @click="openDeleteModal = true" class="px-4 py-2 bg-red-600 text-white rounded-xl hover:bg-red-700">
+            Delete User
+            </button>
+          </div>
       </div>
     </div>
 
@@ -176,12 +181,48 @@
       </div>
     </div>
   </div>
+  <!-- Delete Confirm Modal (moved OUTSIDE the edit modal) -->
+<div
+  v-if="openDeleteModal"
+  class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+>
+  <div class="bg-white dark:bg-gray-800 w-full max-w-md p-6 rounded-xl shadow-xl">
+    <h3 class="text-lg font-semibold mb-2 text-center text-red-600">Delete User?</h3>
+    <p class="text-sm text-gray-700 dark:text-gray-200 text-center">
+      This will remove the account from <b>Firebase Authentication only</b>. It cannot be undone.
+    </p>
+
+    <div class="mt-4 bg-gray-50 dark:bg-gray-900 rounded-lg p-3 text-sm">
+      <div><span class="font-medium">UID:</span> {{ user?.uid || 'N/A' }}</div>
+      <div><span class="font-medium">Email:</span> {{ user?.mail || user?.email || 'N/A' }}</div>
+      <div v-if="deleteError" class="text-red-600 mt-2">{{ deleteError }}</div>
+    </div>
+
+    <div class="mt-6 flex justify-between">
+      <button
+        @click="confirmDeleteUser"
+        :disabled="deleteLoading"
+        class="px-4 py-2 bg-red-600 text-white rounded-xl hover:bg-red-700 disabled:opacity-50"
+      >
+        {{ deleteLoading ? 'Deleting...' : 'Yes, Delete' }}
+      </button>
+      <button
+        @click="openDeleteModal = false"
+        :disabled="deleteLoading"
+        class="px-4 py-2 bg-gray-400 text-white rounded-xl hover:bg-gray-500 disabled:opacity-50"
+      >
+        Cancel
+      </button>
+    </div>
+  </div>
+</div>
 </template>
 
 <script setup>
 import { ref } from 'vue'
 import axios from 'axios'
 import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth'
+import { toast } from 'vue3-toastify'
 
 const form = ref({
   name: '',
@@ -203,6 +244,11 @@ const loading = ref(false)
 const registerEmail = ref('')
 const registerResult = ref('')
 const registerError = ref('')
+
+// --- Delete state
+const openDeleteModal = ref(false)
+const deleteLoading = ref(false)
+const deleteError = ref('')
 
 const updateUid = ref('')
 const newDob = ref('')
@@ -310,9 +356,9 @@ const registerUser = async () => {
   try {
     const auth = getAuth()
     const userCredential = await createUserWithEmailAndPassword(auth, form.value.email, form.value.password)
-    const user = userCredential.user
-    sessionStorage.setItem('searchedUserUid', user.uid)
-    const idToken = await user.getIdToken()
+const fbUser = userCredential.user
+sessionStorage.setItem('searchedUserUid', fbUser.uid)
+const idToken = await fbUser.getIdToken()
 
     // Get device name (you can adjust `info` logic as needed)
     const info = {
@@ -338,9 +384,9 @@ const registerUser = async () => {
         isAccountComplete: false,
         khua: '',
         lastLogin: getFormattedDateTime(),
-        mail: user.email || '',
+        mail: fbUser.email || '',
         name: form.value.name,
-        uid: user.uid,
+        uid: fbUser.uid,
         veng: '',
         device_name: info.deviceName || '',
         token: idToken,
@@ -404,11 +450,34 @@ const buttonClass = (tab) => {
 const insertUidFromCache = () => {
   const cachedUid = sessionStorage.getItem('searchedUserUid')
   if (cachedUid) {
-    updateUid.value= cachedUid
-    input.value= cachedUid
+    updateUid.value = cachedUid
+    input.value = cachedUid
   } else {
-    message.value = 'No cached UID found.'
-    error.value = true
+    error.value = 'No cached UID found.'
+  }
+}
+
+const confirmDeleteUser = async () => {
+  deleteError.value = ''
+  deleteLoading.value = true
+  try {
+    const payload = {}
+    if (user.value?.uid) payload.uid = user.value.uid
+    if (user.value?.mail || user.value?.email) payload.email = user.value.mail || user.value.email
+
+    await axios.post(
+      route('admin.deleteUser'), payload)
+
+    toast.success('User deleted from Firebase Auth.')
+    // Clear local UI state, but DO NOT touch your DB
+    user.value = null
+    input.value = ''
+    sessionStorage.removeItem('searchedUserUid')
+    openDeleteModal.value = false
+  } catch (err) {
+    deleteError.value = err?.response?.data?.message || err.message || 'Delete failed.'
+  } finally {
+    deleteLoading.value = false
   }
 }
 </script>

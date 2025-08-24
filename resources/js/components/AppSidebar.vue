@@ -59,7 +59,9 @@ import {
     Command,
 Edit,
 IdCard,
-LayoutDashboard
+LayoutDashboard,
+TabletSmartphone,
+Flag
 } from 'lucide-vue-next';
 import { identity } from '@vueuse/core';
 
@@ -117,6 +119,18 @@ const mainNavItems: NavItem[] = [
         href: '/report',
         icon: Command,
         active: route().current('report*')
+    },
+    {
+        title: 'Advertisement',
+        href: '/ads',
+        icon: TabletSmartphone,
+        active: route().current('ads*')
+    },
+    {
+        title: 'Banners/Pools',
+        href: '/banner',
+        icon: Flag,
+        active: route().current('banner*')
     },
 ];
 
