@@ -461,15 +461,36 @@ const confirmDeleteUser = async () => {
   deleteError.value = ''
   deleteLoading.value = true
   try {
+    // Build payload for Firebase delete
     const payload = {}
     if (user.value?.uid) payload.uid = user.value.uid
-    if (user.value?.mail || user.value?.email) payload.email = user.value.mail || user.value.email
+    if (user.value?.mail) payload.mail = user.value.mail
+    else if (user.value?.email) payload.mail = user.value.email // normalize to mail
 
-    await axios.post(
-      route('admin.deleteUser'), payload)
+    // Step 1: Delete from Firebase (admin.deleteUser)
+    const dbRes = await axios.delete(route('proxy.delete'), {
+      params: {
+        endpoint: 'user-delete',
+        uid: user.value?.uid,
+        mail: user.value?.mail || user.value?.email,
+      },
+    })
 
-    toast.success('User deleted from Firebase Auth.')
-    // Clear local UI state, but DO NOT touch your DB
+    if (dbRes?.data?.status === 'success') {
+      console.log(`${dbRes?.data?.message}`)
+    } else {
+      throw new Error(dbRes?.data?.message || 'Database delete failed.')
+    }
+    // Step 2: Delete from Database (proxy → user-delete)
+    const firebaseRes = await axios.post(route('admin.deleteUser'), payload)
+
+    if (firebaseRes?.data?.status === 'success') {
+      toast.success(firebaseRes?.data?.message)
+    }else {
+      throw new Error(firebaseRes?.data?.message || 'Firebase delete failed.')
+    }
+
+    // Step 3: Clear UI state
     user.value = null
     input.value = ''
     sessionStorage.removeItem('searchedUserUid')

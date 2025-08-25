@@ -33,28 +33,28 @@ class ApiProxyController extends Controller
     $method = $request->method();
 
     switch ($method) {
-        case 'POST':
-            $response = Http::withHeaders($headers)->post($apiUrl, $request->all());
-            break;
+    case 'POST':
+        $response = Http::withHeaders($headers)->post($apiUrl, $request->all());
+        break;
 
-        case 'PUT':
-            $response = Http::withHeaders($headers)->put($apiUrl, $request->all());
-            break;
+    case 'PUT':
+        $response = Http::withHeaders($headers)->put($apiUrl, $request->all());
+        break;
 
-        case 'PATCH':
-            $response = Http::withHeaders($headers)->patch($apiUrl, $request->all());
-            break;
+    case 'PATCH':
+        $response = Http::withHeaders($headers)->patch($apiUrl, $request->all());
+        break;
 
-        case 'DELETE':
-            $response = Http::withHeaders($headers)->delete($apiUrl);
-            break;
+    case 'DELETE':
+        // Forward query params too!
+        $response = Http::withHeaders($headers)->delete($apiUrl, $request->query());
+        break;
 
-        case 'GET':
-        default:
-            $response = Http::withHeaders($headers)->get($apiUrl, $request->query());
-            break;
-    }
-
+    case 'GET':
+    default:
+        $response = Http::withHeaders($headers)->get($apiUrl, $request->query());
+        break;
+}
     return response()->json($response->json(), $response->status());
 }
 }
