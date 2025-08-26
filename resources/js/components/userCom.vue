@@ -159,12 +159,6 @@
           <label class="block text-sm font-medium">Call</label>
           <input v-model="editForm.call" type="text" class="w-full px-3 py-2 border rounded-md" />
         </div>
-
-        <div>
-          <label class="block text-sm font-medium">Edit Date</label>
-          <input v-model="editForm.edit_date" type="date" class="w-full px-3 py-2 border rounded-md" />
-        </div>
-
         <div class="flex items-center space-x-2">
           <input type="checkbox" v-model="editForm.isAccountComplete" id="isAccountComplete" class="rounded" />
           <label for="isAccountComplete" class="text-sm">Is Account Complete?</label>
@@ -302,17 +296,27 @@ const fetchUser = async () => {
   }
 }
 
-
+const getFormattedDateTime = () => {
+  const now = new Date()
+  return now.toLocaleString('en-US', {
+    month: 'short',
+    day: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: true
+  })
+}
 const openEditModal = () => {
   if (!user.value) return
-  const today = new Date().toISOString().split('T')[0]
   editForm.value = {
     uid: user.value.uid || '',
     name: user.value.name || '',
     veng: user.value.veng || '',
     khua: user.value.khua || '',
     call: user.value.call || '',
-    edit_date: today,
+    edit_date: getFormattedDateTime(),
     isAccountComplete: !!user.value.isAccountComplete,
   }
   showEditModal.value = true
@@ -325,7 +329,7 @@ const submitEditForm = async () => {
     veng: editForm.value.veng,
     khua: editForm.value.khua,
     call: editForm.value.call,
-    edit_date: editForm.value.edit_date,
+    edit_date: getFormattedDateTime(),
     isAccountComplete: editForm.value.isAccountComplete ? 1 : 0,
   }
 
@@ -358,7 +362,6 @@ const registerUser = async () => {
     const userCredential = await createUserWithEmailAndPassword(auth, form.value.email, form.value.password)
 const fbUser = userCredential.user
 sessionStorage.setItem('searchedUserUid', fbUser.uid)
-const idToken = await fbUser.getIdToken()
 
     // Get device name (you can adjust `info` logic as needed)
     const info = {
@@ -367,19 +370,26 @@ const idToken = await fbUser.getIdToken()
 
     // Format current date
     const getFormattedDateTime = () => {
-      const now = new Date()
-      return now.toISOString()
-    }
-
+  const now = new Date()
+  return now.toLocaleString('en-US', {
+    month: 'short',
+    day: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: true
+  })
+}
     await axios.post(
       route('proxy.post'),
       {
         call: '',
         created_date: getFormattedDateTime(),
         device_id: '',
-        dob: '',
+        dob: 'null',
         edit_date: getFormattedDateTime(),
-        img: '',
+        img: 'null',
         isACActive: true,
         isAccountComplete: false,
         khua: '',
@@ -389,7 +399,7 @@ const idToken = await fbUser.getIdToken()
         uid: fbUser.uid,
         veng: '',
         device_name: info.deviceName || '',
-        token: idToken,
+        token: 'null',
       },
       {
         params: {
