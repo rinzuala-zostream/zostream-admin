@@ -21,7 +21,7 @@ class ApiProxyController extends Controller
     }
 
     // Build the full backend API URL
-    $apiUrl = "https://apis.zostream.in/api/{$endpoint}";
+    $apiUrl = "http://192.168.1.51:8000/api/{$endpoint}";
     $apiKey = config('services.zo_stream.api_key');
 
     // Common headers

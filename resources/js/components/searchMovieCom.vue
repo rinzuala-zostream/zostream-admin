@@ -383,7 +383,7 @@
                             </div>
                         </div>
                         <div class="form-group"><label for="trailer"
-                                class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">Trailer URL</label><input id="title_img" v-model="editForm.trailer" type="url"
+                                class="block text-sm font-medium leading-6 text-gray-700 dark:text-gray-300 mb-1.5">Trailer URL</label><input id="title_img" v-model="editForm.trailer" type="text"
                                 class="block w-full rounded-lg border-0 py-2.5 px-3.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6 bg-white dark:bg-gray-900"
                                 placeholder="https://example.com/trailer.mpd"></div>
                         <div class="form-group"><label for="title_img"
