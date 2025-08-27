@@ -217,6 +217,7 @@ import { ref } from 'vue'
 import axios from 'axios'
 import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth'
 import { toast } from 'vue3-toastify'
+import { useDeviceInfo } from '@/utils/device';
 
 const form = ref({
   name: '',
@@ -364,9 +365,7 @@ const fbUser = userCredential.user
 sessionStorage.setItem('searchedUserUid', fbUser.uid)
 
     // Get device name (you can adjust `info` logic as needed)
-    const info = {
-      deviceName: navigator.userAgent
-    }
+    const info = await useDeviceInfo();
 
     // Format current date
     const getFormattedDateTime = () => {
@@ -386,10 +385,10 @@ sessionStorage.setItem('searchedUserUid', fbUser.uid)
       {
         call: '',
         created_date: getFormattedDateTime(),
-        device_id: '',
-        dob: 'null',
+        device_id: info.deviceId,
+        dob: '',
         edit_date: getFormattedDateTime(),
-        img: 'null',
+        img: '',
         isACActive: true,
         isAccountComplete: false,
         khua: '',
