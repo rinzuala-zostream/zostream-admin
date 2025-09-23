@@ -752,7 +752,7 @@ const movieBooleanFields = ref({
     isDocumentary: 'Documentary', isAgeRestricted: 'Age Restricted', isDubbed: 'Dubbed',
     isEnable: 'Enable', isHollywood: 'Hollywood', isKorean: 'Korean', isMizo: 'Mizo',
     isPayPerView: 'Pay Per View', isPremium: 'Premium', isSeason: 'Season',
-    isSubtitle: 'Has Subtitle', notification: 'Notification',
+    isSubtitle: 'Has Subtitle', notification: 'Notification', isChildMode: 'Child Mode'
 });
 
 const episodeBooleanFields = ref({

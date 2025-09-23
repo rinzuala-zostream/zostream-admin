@@ -530,7 +530,7 @@ const getInitialFormState = () => ({
     dash_url: '',  // Prefilled Dash URL
     trailer: '',
     title_img: '',
-    release_on: '', create_date: '', status: '', notification: true,
+    release_on: '', create_date: '', status: '', notification: true, isChildMode: true,
     isProtected: false, isBollywood: false, isCompleted: false, isDocumentary: false,
     isAgeRestricted: false, isDubbed: false, isEnable: true, isHollywood: false,
     isKorean: false, isMizo: false, isPayPerView: false, isPremium: false,
@@ -545,7 +545,7 @@ const booleanFields = reactive({
     isDocumentary: 'Documentary', isAgeRestricted: 'Age Restricted', isDubbed: 'Dubbed',
     isEnable: 'Enable', isHollywood: 'Hollywood', isKorean: 'Korean', isMizo: 'Mizo',
     isPayPerView: 'Pay Per View', isPremium: 'Premium', isSeason: 'Season',
-    isSubtitle: 'Has Subtitle'
+    isSubtitle: 'Has Subtitle', isChildMode: 'Child Mode'
 })
 
 const loading = ref(false)
