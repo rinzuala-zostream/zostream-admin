@@ -780,20 +780,25 @@ const getInitialEpisodeForm = () => ({
 const formatDateForInput = (dateValue) => {
     if (!dateValue) return '';
     try {
+        // Create the date object
         const d = new Date(
             (typeof dateValue === 'object' && dateValue.seconds) ? dateValue.seconds * 1000 : dateValue
         );
+        
         if (isNaN(d.valueOf())) return '';
-        const year = d.getUTCFullYear();
-        const month = String(d.getUTCMonth() + 1).padStart(2, '0');
-        const day = String(d.getUTCDate()).padStart(2, '0');
+
+        // CHANGE: Use local methods (getFullYear, getMonth, getDate) 
+        // instead of UTC methods (getUTCFullYear, etc.)
+        const year = d.getFullYear(); 
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+
         return `${year}-${month}-${day}`;
     } catch (e) {
         console.error("Could not format date:", dateValue, e);
         return '';
     }
 };
-
 const decryptUrl = async (urlToDecrypt) => {
     if (!urlToDecrypt || typeof urlToDecrypt !== 'string' || !urlToDecrypt.trim()) return '';
     try {
