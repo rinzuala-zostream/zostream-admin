@@ -959,14 +959,11 @@
 import ShakaPlayer from '@/components/shakaPlayerCom.vue';
 import { db } from '@/firebase';
 import axios from 'axios';
-import { getAuth } from 'firebase/auth';
 import { collection, getDocs } from 'firebase/firestore';
 import { computed, onMounted, ref } from 'vue';
 import { toast } from 'vue3-toastify';
 
 // --- Reactive State ---
-const auth = getAuth();
-console.log('User ID:', uid);
 const movies = ref([]);
 const search = ref('');
 const sortOrder = ref('asc');
@@ -1164,12 +1161,6 @@ const encryptViaProxy = async (plainUrl) => {
 };
 
 const fetchMovies = async (query = '') => {
-    if (user) {
-        const uid = user.uid; // ✅ Firebase UI/ 🔐 ID token to send to backend
-
-        console.log('UID:', uid);
-    }
-
     loading.value = true;
     movies.value = [];
     try {
@@ -1179,9 +1170,6 @@ const fetchMovies = async (query = '') => {
                 q: query,
                 age_restriction: String(true),
                 is_enable: String(false),
-                headers: {
-                    'X-User-Id': `${uid}`,
-                },
             }),
         );
         movies.value = Array.isArray(response.data) ? response.data : [];
