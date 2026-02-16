@@ -994,14 +994,6 @@ const modalMessage = ref('');
 const isFetchingEditItemDetails = ref(false);
 const editingItemContext = ref(null);
 
-auth.onAuthStateChanged(async (user) => {
-    if (user) {
-        const uid = user.uid; // ✅ Firebase UI/ 🔐 ID token to send to backend
-
-        console.log('UID:', uid);
-    }
-});
-
 // Simple function to play the video
 const playVideo = (url, isDrm = false, token = '', licenseUrl = '') => {
     currentVideo.value = {
@@ -1172,6 +1164,12 @@ const encryptViaProxy = async (plainUrl) => {
 };
 
 const fetchMovies = async (query = '') => {
+    if (user) {
+        const uid = user.uid; // ✅ Firebase UI/ 🔐 ID token to send to backend
+
+        console.log('UID:', uid);
+    }
+
     loading.value = true;
     movies.value = [];
     try {
