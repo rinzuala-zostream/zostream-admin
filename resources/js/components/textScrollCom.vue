@@ -1,167 +1,100 @@
 <template>
     <div class="min-h-screen bg-gray-50 p-6 text-gray-900 dark:bg-gray-900 dark:text-gray-100">
-        <div class="mx-auto max-w-4xl">
+        <div class="mx-auto max-w-3xl">
             <!-- HEADER -->
             <h1 class="mb-6 flex items-center gap-2 text-2xl font-bold">
                 <span class="text-blue-500">📝</span>
-                <span>Text Scroll Manager</span>
+                <span>Text Scroll Settings</span>
             </h1>
 
-            <!-- CREATE FORM -->
-            <div class="mb-8 rounded-xl bg-white p-6 shadow dark:bg-gray-800">
-                <h2 class="mb-4 text-lg font-semibold">Add New Text</h2>
-
-                <form @submit.prevent="addText" class="space-y-4">
-                    <input
-                        v-model="newText.text"
-                        type="text"
-                        placeholder="Enter scrolling text..."
+            <!-- CARD -->
+            <div class="space-y-5 rounded-xl bg-white p-6 shadow dark:bg-gray-800">
+                <!-- TEXT INPUT -->
+                <div>
+                    <label class="mb-1 block font-medium">Scroll Text</label>
+                    <textarea
+                        v-model="form.text"
+                        rows="3"
+                        placeholder="Enter scrolling text here..."
                         class="w-full rounded-lg border px-4 py-3 dark:bg-gray-700"
-                        required
                     />
-
-                    <label class="flex items-center gap-2">
-                        <input type="checkbox" v-model="newText.show" />
-                        <span>Show</span>
-                    </label>
-
-                    <button class="rounded-lg bg-blue-500 px-5 py-2 text-white hover:bg-blue-600">Add Text</button>
-                </form>
-            </div>
-
-            <!-- LIST -->
-            <div class="space-y-4">
-                <div
-                    v-for="item in texts"
-                    :key="item.id"
-                    class="flex items-start justify-between gap-4 rounded-xl bg-white p-5 shadow dark:bg-gray-800"
-                >
-                    <div class="flex-1 space-y-2">
-                        <!-- VIEW MODE -->
-                        <div v-if="editingId !== item.id">
-                            <p class="font-medium">{{ item.text }}</p>
-                            <p class="text-sm" :class="item.show ? 'text-green-500' : 'text-gray-400'">
-                                {{ item.show ? 'Visible' : 'Hidden' }}
-                            </p>
-                        </div>
-
-                        <!-- EDIT MODE -->
-                        <div v-else class="space-y-2">
-                            <input v-model="editCache.text" class="w-full rounded border px-3 py-2 dark:bg-gray-700" />
-                            <label class="flex items-center gap-2">
-                                <input type="checkbox" v-model="editCache.show" />
-                                <span>Show</span>
-                            </label>
-
-                            <div class="mt-2 flex gap-2">
-                                <button @click="saveEdit(item.id)" class="rounded bg-blue-500 px-3 py-1 text-white">Save</button>
-                                <button @click="cancelEdit" class="rounded bg-gray-400 px-3 py-1">Cancel</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- ACTIONS -->
-                    <div class="flex flex-col gap-2">
-                        <!-- TOGGLE SHOW -->
-                        <button @click="toggleShow(item)" class="rounded bg-gray-200 px-3 py-1 text-sm dark:bg-gray-700">
-                            {{ item.show ? 'Hide' : 'Show' }}
-                        </button>
-
-                        <!-- EDIT -->
-                        <button @click="startEdit(item)" class="text-sm text-blue-500">Edit</button>
-
-                        <!-- DELETE -->
-                        <button @click="deleteText(item.id)" class="text-sm text-red-500">Delete</button>
-                    </div>
                 </div>
+
+                <!-- SHOW TOGGLE -->
+                <div class="flex items-center justify-between">
+                    <span class="font-medium">Show Text</span>
+
+                    <label class="flex cursor-pointer items-center">
+                        <div class="relative">
+                            <input type="checkbox" class="sr-only" v-model="form.show" />
+                            <div class="block h-6 w-12 rounded-full bg-gray-300 dark:bg-gray-600"></div>
+                            <div
+                                class="dot absolute top-1 left-1 h-4 w-4 rounded-full bg-white transition"
+                                :class="{ 'translate-x-6 bg-blue-500': form.show }"
+                            ></div>
+                        </div>
+                    </label>
+                </div>
+
+                <!-- SAVE BUTTON -->
+                <button @click="save" class="w-full rounded-lg bg-blue-500 py-3 font-semibold text-white hover:bg-blue-600">Save Settings</button>
+
+                <!-- STATUS -->
+                <p class="text-center text-sm text-gray-500 dark:text-gray-400">
+                    Status:
+                    <span :class="form.show ? 'text-green-500' : 'text-gray-400'">
+                        {{ form.show ? 'Visible on app' : 'Hidden' }}
+                    </span>
+                </p>
             </div>
         </div>
     </div>
 </template>
 
 <script setup>
-import { ref as dbRef, getDatabase, onValue, push, remove, update } from 'firebase/database';
+import { ref as dbRef, getDatabase, onValue, update } from 'firebase/database';
 import { onMounted, ref } from 'vue';
 
 const db = getDatabase();
 
-const texts = ref([]);
-const newText = ref({ text: '', show: true });
+const form = ref({
+    text: '',
+    show: false,
+});
 
-// edit state
-const editingId = ref(null);
-const editCache = ref({ text: '', show: false });
-
-// 🔄 FETCH DATA (Realtime)
-const fetchTexts = () => {
+// 🔄 LOAD DATA (REALTIME)
+const loadData = () => {
     const textRef = dbRef(db, 'text_scroll');
 
     onValue(textRef, (snapshot) => {
         const data = snapshot.val();
-        const result = [];
 
-        for (let id in data) {
-            result.push({
-                id,
-                ...data[id],
-            });
+        if (data) {
+            form.value = {
+                text: data.text || '',
+                show: data.show || false,
+            };
         }
-
-        texts.value = result.reverse();
     });
 };
 
-// ➕ ADD
-const addText = async () => {
+// 💾 SAVE
+const save = async () => {
     const textRef = dbRef(db, 'text_scroll');
 
-    await push(textRef, {
-        text: newText.value.text,
-        show: newText.value.show,
+    await update(textRef, {
+        text: form.value.text,
+        show: form.value.show,
     });
 
-    newText.value = { text: '', show: true };
+    alert('Text scroll updated successfully ✅');
 };
 
-// ✏️ START EDIT
-const startEdit = (item) => {
-    editingId.value = item.id;
-    editCache.value = { text: item.text, show: item.show };
-};
-
-// ❌ CANCEL EDIT
-const cancelEdit = () => {
-    editingId.value = null;
-};
-
-// 💾 SAVE EDIT
-const saveEdit = async (id) => {
-    const itemRef = dbRef(db, `text_scroll/${id}`);
-
-    await update(itemRef, {
-        text: editCache.value.text,
-        show: editCache.value.show,
-    });
-
-    editingId.value = null;
-};
-
-// 🔄 TOGGLE SHOW
-const toggleShow = async (item) => {
-    const itemRef = dbRef(db, `text_scroll/${item.id}`);
-
-    await update(itemRef, {
-        show: !item.show,
-    });
-};
-
-// 🗑 DELETE
-const deleteText = async (id) => {
-    if (!confirm('Delete this text?')) return;
-
-    const itemRef = dbRef(db, `text_scroll/${id}`);
-    await remove(itemRef);
-};
-
-onMounted(fetchTexts);
+onMounted(loadData);
 </script>
+
+<style>
+.dot {
+    transition: all 0.3s ease-in-out;
+}
+</style>
