@@ -163,10 +163,13 @@
 import { ref, watch } from 'vue';
 import axios from 'axios';
 import { toast } from 'vue3-toastify';
+import { auth } from '@/firebase';
 
 const props = defineProps({
   isVisible: { type: Boolean, default: false },
 });
+
+const uid = auth.currentUser?.uid;
 
 const emit = defineEmits(['close', 'saved']);
 
@@ -209,6 +212,9 @@ const handleSubmit = async () => {
   try {
     const response = await axios.post(route('proxy.post'), payload, {
       params: { endpoint: 'ads' },
+      headers: {
+        'X-User-Id': `${uid}`
+      },
     });
 
     // Handle different possible success/error structures from the backend

@@ -657,8 +657,11 @@ import { db } from '@/firebase';
 import { collection, getDocs } from 'firebase/firestore';
 import ShakaPlayer from '@/components/shakaPlayerCom.vue'
 import { toast } from 'vue3-toastify';
+import { auth } from '@/firebase';
 
 // --- Reactive State ---
+const uid = ref(auth.currentUser?.uid || '');
+console.log("User ID:", uid);
 const movies = ref([]);
 const search = ref('');
 const sortOrder = ref('asc');
@@ -835,6 +838,9 @@ const fetchMovies = async (query = '') => {
             q: query,
             age_restriction: String(true),
             is_enable: String(false),
+            headers: {
+        'X-User-Id': `${uid}`
+      },
         }));
         movies.value = Array.isArray(response.data) ? response.data : [];
     } catch (error) {

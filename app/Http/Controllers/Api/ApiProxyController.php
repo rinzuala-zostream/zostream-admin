@@ -26,6 +26,7 @@ class ApiProxyController extends Controller
 
     // Common headers
     $headers = [
+        'X-User-Id' => $request->header('X-User-Id'),
         'X-API-KEY' => $apiKey,
         'Content-Type' => 'application/json',
     ];
